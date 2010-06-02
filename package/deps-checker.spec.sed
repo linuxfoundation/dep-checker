@@ -64,7 +64,7 @@ groupadd compliance >/dev/null 2>&1 || true
 id compliance >/dev/null 2>&1
 
 if [ $? -ne 0 ]; then 
-    useradd -d /home/compliance -s /bin/sh -c "compliance tester login" compliance -m -g compliance >/dev/null 2>&1
+    useradd -d /home/compliance -s /bin/sh -p "" -c "compliance tester login" compliance -m -g compliance >/dev/null 2>&1
     
     if [ $? = 0 ]; then
         echo
@@ -85,6 +85,28 @@ if [ -x /usr/bin/xdg-desktop-menu ];then
   xdg-desktop-menu uninstall /opt/linuxfoundation/share/applications/deps-checker.desktop
 fi
 
+%postun
+TESTER=compliance
+id $TESTER > /dev/null 2>/dev/null
+if [ $? -eq 0 ]; then
+	userdel -r $TESTER > /dev/null 2>/dev/null
+	if [ $? = 0 ]; then
+		echo "User '$TESTER' was successfully deleted"
+	else
+		echo "Warning: failed to delete user '$TESTER'"
+	fi
+fi
+
+TESTGROUP=compliance
+cat /etc/group | grep ^$TESTGROUP: > /dev/null 2>/dev/null
+if [ $? -eq 0 ]; then
+	groupdel $TESTGROUP > /dev/null 2>/dev/null
+	if [ $? = 0 ]; then
+		echo "Group '$TESTGROUP' was successfully deleted."
+	else
+		echo "Warning: failed to delete group '$TESTGROUP'."
+	fi
+fi
 
 #==================================================
 %files
