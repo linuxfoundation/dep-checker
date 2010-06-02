@@ -1,0 +1,37 @@
+Layout/Concept
+
+2 part app: cli/gui
+
+cli command, readelf.py should be standard python. It does run some system 
+  commands like readelf, ldd.
+
+gui all lives under "compliance", uses django so you need python-django or
+  equivalent
+
+database is sqlite - file "compliance". admin tables and data tables are setup 
+ 
+linkage: bulk of the gui code
+  models.py is the database/form models
+  views.py is the data/form processing code
+
+media: css/images
+
+templates: html pages using django's "template" language for data/form
+	   handling (these also have some javascript glue)
+
+top level directory is expected to be /opt/linuxfoundation/compliance, this
+is hardcoded in settings.py
+
+readelf.py is expected to be called from /opt/linuxfoundation/bin, this is
+hardcoded in views.py (should be moved to settings)
+
+to run the gui/server (as user compliance for installed package):
+	/opt/linuxfoundation/bin/deps-checker.sh
+
+to access the gui: http://127.0.0.1:8000/linkage
+admin interface: http://127/0.0.1:8000/admin 
+	(username compliance, password compliance)
+
+
+
+

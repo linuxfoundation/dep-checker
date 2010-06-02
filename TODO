@@ -9,6 +9,7 @@ GUI:
 
   All:
 	banner.html and header.html can tweak the look'n'feel
+	need a way to stop the server
 
   Home Tab:
 	fill this with some content
