@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Linux Foundation Deps Checker
+GenericName=Deps Checker
+Comment=Analyse linkage dependencies for FOSS software
+Exec=/opt/linuxfoundation/bin/deps-checker.sh
+Icon=/opt/linuxfoundation/share/icons/hicolor/16x16/apps/lf_small.png
+Terminal=false
+TryExec=/opt/linuxfoundation/bin/deps-checker.sh
+Type=Application
+MimeType=
+Categories=Development

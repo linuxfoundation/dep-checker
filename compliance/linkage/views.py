@@ -1,7 +1,7 @@
 # Create your views here.
 from django.template import Context, loader
 from django.shortcuts import render_to_response, get_object_or_404
-from compliance.linkage.models import Test, File, Lib, TestForm, FileForm, LibForm, ResultsForm
+from compliance.linkage.models import Test, File, Lib, TestForm, FileForm, LibForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 # so we can run readelf.py
@@ -36,9 +36,6 @@ def results(request):
                     q.delete()
                     q = Lib.objects.filter(test = test)
                     q.delete()
-
-    else:
-        resultsform = ResultsForm()
 
     latest_test_list = Test.objects.all().order_by('-test_date')
     return render_to_response('linkage/results.html', {'latest_test_list': latest_test_list})
