@@ -48,7 +48,7 @@ install -d ${RPM_BUILD_ROOT}%{basedir}/share/applications
 install desktop/%{name}.desktop ${RPM_BUILD_ROOT}%{basedir}/share/applications
 install -d ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install doc/Licence ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
-install -d /var/opt/linuxfoundation/log/compliance
+install -d ${RPM_BUILD_ROOT}/var%{basedir}/log/compliance
 
 #==================================================
 %clean
