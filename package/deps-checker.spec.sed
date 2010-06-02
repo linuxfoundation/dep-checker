@@ -19,6 +19,15 @@ Requires: python-django
 %description
 A compliance tool to explore FOSS dependencies in binaries/libraries
 
+If you don't get a menu entry, run the app with:
+	%{basedir}/bin/deps-checker.sh
+
+If a browser window or tab doesn't open, goto:
+	http://127.0.0.1:8000/linkage
+
+The command-line tool is: 
+	%{basedir}/readelf.py
+
 #==================================================
 %prep
 %setup -q
