@@ -1,0 +1,99 @@
+{% include "linkage/header.html" %}
+
+<body onload="setdefaults();">
+
+<div id="header">
+  {% include "linkage/banner.html" %}
+  <ul>
+    <li><a href="/linkage">Home</a></li>
+    <li id="current"><a href="/linkage/test">Test</a></li>
+    <li><a href="/linkage/results">Results</a></li>
+    <li><a href="/linkage/about">About</a></li>
+  </ul>
+</div>
+
+
+<b>Create Test:</b>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form name="entryform" method="post" action="" enctype="multipart/form-data">
+<!-- FIXME - probably not the django way of doing things, 
+     but I wasn't happy with testform.as_table -->
+
+<table halign="left">
+  <tr align="left">
+    <th>{{ testform.do_search.label }}</th>
+    <!--td>{{ testform.do_search }}</td-->
+    <!-- FIXME - how to set onClick for the django checkbox? -->
+    <td><input type="checkbox" name="do_search" onclick="toggledisabled()" /></td>
+  </tr>
+  <tr>   
+    <th>{{ testform.target_dir.label }}</th>
+    <td>{{ testform.target_dir }}</td>
+    <td><input type="file" name="targetdirname" size="200" 
+            onchange="filenametoentry(document.entryform.targetdirname, document.entryform.target_dir)"/></td>
+  </tr>
+  <tr>
+    <th>{{ testform.recursion.label }}</th>
+    <td>{{ testform.recursion }}</td>
+  </tr>      
+  <tr>
+    <th>{{ testform.target.label }}</th>
+    <td>{{ testform.target }}</td>
+    <td><input type="file" name="targetfilename" size="200" 
+            onchange="filenametoentry(document.entryform.targetfilename, document.entryform.target)"/></td>
+  </tr>      
+  <tr>
+    <th>{{ testform.user.label }}</th>
+    <td>{{ testform.user }}</td>
+  </tr>      
+  <tr>
+    <th>{{ testform.project.label }}</th>
+    <td>{{ testform.project }}</td>
+  </tr>      
+  <tr>
+    <th>{{ testform.comments.label }}</th>
+    <td>{{ testform.comments }}</td>
+  </tr>      
+
+  <tr>
+    <td></td>
+    <td></td>
+    <td><input type="submit" name="submit" value="Run Test" /></td>
+  </tr>
+</table>
+
+<script language="JavaScript">
+    function setdefaults() {
+        document.entryform.target_dir.disabled = true;
+        document.entryform.targetdirname.disabled = true;
+        document.entryform.do_search.onClick = "toggledisabled()";
+    }
+    function toggledisabled() {
+        if (document.entryform.do_search.checked == true) {
+            document.entryform.target_dir.disabled = false;
+            document.entryform.targetdirname.disabled = false;
+            document.entryform.targetfilename.disabled = true;
+        } else {
+            document.entryform.target_dir.disabled = true;
+            document.entryform.targetdirname.disabled = true;
+            document.entryform.targetfilename.disabled = false;
+        }
+    }
+    function filenametoentry(selector, entry) {
+        entry.value = selector.value;
+        data = selector.select();
+        alert(data);
+    }
+    function extract(what) {
+        if (what.indexOf('/') > -1)
+            answer = what.substring(what.lastIndexOf('/')+1,what.length);
+        else
+            answer = what.substring(what.lastIndexOf('\\')+1,what.length);
+        alert(answer);
+    }            
+</script>
+</form>
+
+

@@ -1,0 +1,14 @@
+# overrrides for LSB packaging
+#
+# Should unpackaged files in a build root terminate a build?
+#
+# 0 for legacy compatibility.
+%_unpackaged_files_terminate_build	0
+
+# Should missing %doc files in the build directory terminate a build?
+#
+# 0 for legacy compatibility.
+%_missing_doc_files_terminate_build	0
+
+# Force gzip payload
+%_binary_payload       w9.gzdio

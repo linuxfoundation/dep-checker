@@ -1,0 +1,14 @@
+macrofiles:     /usr/lib/rpm/macros:~/.rpmmacros:rpmmacros
+#
+# Force a 486 target
+buildarchtranslate: i686 i486
+buildarchtranslate: i586 i486
+buildarchtranslate: i386 i486
+buildarchtranslate: pentium3 i486
+buildarchtranslate: pentium4 i486
+buildarchtranslate: athlon i486
+buildarchtranslate: k6 i486
+
+# Force a ppc64 target
+buildarchtranslate: ppc64pseries ppc64
+buildarchtranslate: ppc64iseries ppc64

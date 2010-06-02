@@ -1,0 +1,87 @@
+{% include "linkage/header.html" %}
+<!-- for "assign" -->
+{% load custom_tags %}
+
+<body>
+
+<div id="header">
+  {% include "linkage/banner.html" %}
+  <ul>
+    <li><a href="/linkage">Home</a></li>
+    <li><a href="/linkage/test">Test</a></li>
+    <li><a href="/linkage/results">Results</a></li>
+    <li><a href="/linkage/about">About</a></li>
+  </ul>
+</div>
+
+<table hspace = "20" width = "90%" border = "1">
+  <tr>
+    <td><b>Project: </b>{{ test.project }}</td>
+    <td><b>Target: </b>{{ test.target }}</td>
+    <td><b>User: </b>{{ test.user }}</td>
+    <td><b>Date: </b>{{ test.test_date }}</td>   
+  </tr>
+</table>
+<br>
+<table hspace = "20" width = "90%" border = "1">
+  <tr>
+    <td><b>Target</b></td>
+    <td><b>License</b></td>
+    <td><b>Dependency</b></td>
+    <td><b>License</b></td>  
+  </tr>
+      
+  {% for file in test.file_set.all %}
+    {% ifequal file.level 1 %}
+      <tr valign = "top"> 
+      {% assign targetfile file.file %}
+      <td>{{ targetfile }}</td>
+      {% assign targetlicense file.license %}
+      <td>{{ targetlicense }}</td>
+<!-- FIXME - this is too slow for big data sets
+      {% for lib in test.lib_set.filter %}
+        {% assign count 0 %}
+        {% ifequal lib.file_id file.id %}
+          {% assign deplib[count] lib.library %}
+          {% assign deplicense[count] lib.license %}
+        {% endifequal %}
+      {% endfor %}
+ FIXME - do rowspan here
+      <td>{{ targetfile }}</td>
+      <td>{{ targetlicense }}</td>
+-->
+      <!-- FIXME - really slow for large datasets - need a filter -->
+      <td>
+      {% assign spacer "&nbsp&nbsp" %}
+      {% for lib in test.lib_set.filter %}
+        {% ifequal lib.file_id file.id %}
+          {% ifchanged lib.library %}
+            <!-- FIXME - must be an iterative way to do this -->
+            {% ifequal lib.level 2 %}
+              {{ spacer }}
+            {% endifequal %}
+            {% ifequal lib.level 3 %}
+              {{ spacer }} {{ spacer }}
+            {% endifequal %}
+            {% ifequal lib.level 4 %}
+              {{ spacer }} {{ spacer }} {{ spacer }}
+            {% endifequal %}
+            {{ lib.library }}<br>
+          {% endifchanged %}           
+        {% endifequal %}
+      {% endfor %}
+      </td>
+      <td>
+      {% for lib in test.lib_set.filter %}
+        {% ifequal lib.file_id file.id %}
+          {{ lib.license }}<br>
+        {% endifequal %}
+      {% endfor %}
+      </td>
+
+    </tr>
+    {% endifequal %}
+  {% endfor %}
+</table>
+
+
