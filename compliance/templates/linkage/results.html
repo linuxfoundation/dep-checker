@@ -58,21 +58,34 @@
 function toggleall() {
     chk = document.resultsform.testcheck;
     if (document.resultsform.selectall.checked == true) {
-        for (i = 0; i < chk.length; i++) {
-            chk[i].checked = true;
+        // if only one test, no array
+        if (typeof chk.length == 'undefined') {
+            chk.checked = true;
+        } else {
+            for (i = 0; i < chk.length; i++) {
+                chk[i].checked = true;
+            }
         }
     } else {
-        for (i = 0; i < chk.length; i++) {
-            chk[i].checked = false;
+        if (typeof chk.length == 'undefined') {
+            chk.checked = false;
+        } else {
+            for (i = 0; i < chk.length; i++) {
+                chk[i].checked = false;
+            }
         }
     }
 }
 function buildlist() {
     chk = document.resultsform.testcheck;
     tlist = '';
-    for (i = 0; i < chk.length; i++) {
-        if (chk[i].checked == true) {
-            tlist = tlist + chk[i].value + ",";
+    if (typeof chk.length == 'undefined') {
+        tlist = chk.value;
+    } else {
+        for (i = 0; i < chk.length; i++) {
+            if (chk[i].checked == true) {
+                tlist = tlist + chk[i].value + ",";
+            }
         }
     }
     document.resultsform.testlist.value = tlist;   

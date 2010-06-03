@@ -18,9 +18,6 @@ GUI:
 	need file/directory selection to work, modern browsers supress path
 	looking at several ajax/js solutions atm
 
-  Results Tab:
-	bug in delete - doesn't work when there is 1 test
-
   Detail Page:
 	too slow to render for large datasets, need to pre-setup a query
 	haven't quite grokked how to do this in django yet

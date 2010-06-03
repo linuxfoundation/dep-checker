@@ -1,7 +1,7 @@
 # XXX We should play the usual tricks defining stuff here and building
 # XXX a specfile from this info, but not yet: for now keep in sync
 PACKAGE=deps-checker
-VERSION=0.0.1
+VERSION=0.0.2
 RELEASE=1
 
 #
