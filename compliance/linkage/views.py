@@ -8,6 +8,7 @@ from django.http import Http404
 import os
 import re
 import urllib
+import itertools
 
 # each of these views has a corresponding html page in ../templates/linkage
 
@@ -17,10 +18,9 @@ def index(request):
 
 # test run detail page
 def detail(request, test_id):
-    # FIXME - need to filter or combine File + Lib here to speed things up
-    t = get_object_or_404(Test, pk=test_id)
-    return render_to_response('linkage/detail.html', {'test': t})
-
+    t, masterlist = render_detail(test_id)
+    return render_to_response('linkage/detail.html', {'test': t, 'master': masterlist })
+  
 # results list page - this is also a form, for test deletions
 def results(request):
     if request.method == 'POST': # If the form has been submitted...
@@ -70,7 +70,7 @@ def test(request):
                 # check for no result
                 if not re.search("(no deps|does not|files in that|was not found)", dbdata):
                     dbdata = dbdata.rstrip("\r\n")
-                    print dbdata
+                    #print dbdata
                     # format for level 1 is depth, parent, dep
                     # format for level 1 + N is depth, child path, child, dep, dep...
                     deps = dbdata.split(",")
@@ -123,8 +123,8 @@ def test(request):
             
             # FIXME - show status, goto results, handle error condition             
             # and show the results
-            t = get_object_or_404(Test, pk=testid)
-            return render_to_response('linkage/detail.html', {'test': t})
+            t, masterlist = render_detail(testid)
+            return render_to_response('linkage/detail.html', {'test': t, 'master': masterlist })
             
     else:
         testform = TestForm() # An unbound form
@@ -137,20 +137,51 @@ def test(request):
 def about(request):
     return render_to_response('linkage/about.html')
 
-def filetree(request):
-   r=['<ul class="jqueryFileTree" style="display: none;">']
-   try:
-       r=['<ul class="jqueryFileTree" style="display: none;">']
-       d=urllib.unquote(request.POST.get('dir','/'))
-       for f in os.listdir(d):
-           ff=os.path.join(d,f)
-           if os.path.isdir(ff):
-               r.append('<li class="directory collapsed"><a href="#" rel="%s/">%s</a></li>' % (ff,f))
-           else:
-               e=os.path.splitext(f)[1][1:] # get .ext and remove dot
-               r.append('<li class="file ext_%s"><a href="#" rel="%s">%s</a></li>' % (e,ff,f))
-       r.append('</ul>')
-   except Exception,e:
-       r.append('Could not load directory: %s' % str(e))
-   r.append('</ul>')
-   return HttpResponse(''.join(r))
+# utility functions
+
+# pre-render the table data for the detail page
+def render_detail(test_id):
+    t = get_object_or_404(Test, pk=test_id)
+    # all we want is the level 1 files
+    fileset = t.file_set.filter(level = 1)
+    libset = t.lib_set.all()
+
+    # the table renders too slow walking through the one-to-many of
+    # files -> libs, prefill a list with file, license, libs, lib_license 
+    # and indent the recursion level here, template just blobs out the table
+
+    flist = []
+    llist = []
+    for file in fileset:
+        flist.append(file.file)
+        llist.append(file.license)
+
+    lastid = ''
+    masterlist = []
+    liblist = ''
+    # this gets incremented before the first record is complete
+    counter = -1
+    spacer = "&nbsp;&nbsp;"
+
+    for lib in libset:
+        fileid = lib.file_id
+        # no indent for level 1
+        level = lib.level - 1
+        # we don't use this at the moment
+        parent = lib.parent_id
+        if fileid != lastid:
+            if liblist != '':
+                masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'licenses': liclist})
+            liblist = lib.library
+            liclist = lib.license
+            counter += 1
+        else:
+            liblist += '<BR>' + spacer * level + lib.library
+            liclist += '<BR>' + lib.license
+        lastid = fileid
+
+    # add the last record
+    masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'licenses': liclist})
+
+    return t, masterlist
+

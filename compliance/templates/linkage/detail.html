@@ -30,58 +30,15 @@
     <td><b>Dependency</b></td>
     <td><b>License</b></td>  
   </tr>
-      
-  {% for file in test.file_set.all %}
-    {% ifequal file.level 1 %}
-      <tr valign = "top"> 
-      {% assign targetfile file.file %}
-      <td>{{ targetfile }}</td>
-      {% assign targetlicense file.license %}
-      <td>{{ targetlicense }}</td>
-<!-- FIXME - this is too slow for big data sets
-      {% for lib in test.lib_set.filter %}
-        {% assign count 0 %}
-        {% ifequal lib.file_id file.id %}
-          {% assign deplib[count] lib.library %}
-          {% assign deplicense[count] lib.license %}
-        {% endifequal %}
-      {% endfor %}
- FIXME - do rowspan here
-      <td>{{ targetfile }}</td>
-      <td>{{ targetlicense }}</td>
--->
-      <!-- FIXME - really slow for large datasets - need a filter -->
-      <td>
-      {% assign spacer "&nbsp&nbsp" %}
-      {% for lib in test.lib_set.filter %}
-        {% ifequal lib.file_id file.id %}
-          {% ifchanged lib.library %}
-            <!-- FIXME - must be an iterative way to do this -->
-            {% ifequal lib.level 2 %}
-              {{ spacer }}
-            {% endifequal %}
-            {% ifequal lib.level 3 %}
-              {{ spacer }} {{ spacer }}
-            {% endifequal %}
-            {% ifequal lib.level 4 %}
-              {{ spacer }} {{ spacer }} {{ spacer }}
-            {% endifequal %}
-            {{ lib.library }}<br>
-          {% endifchanged %}           
-        {% endifequal %}
-      {% endfor %}
-      </td>
-      <td>
-      {% for lib in test.lib_set.filter %}
-        {% ifequal lib.file_id file.id %}
-          {{ lib.license }}<br>
-        {% endifequal %}
-      {% endfor %}
-      </td>
 
+  {% for row in master %}
+    <tr valign = "top">
+      <td>{{ row.file }}</td>
+      <td>{{ row.license }}</td>
+      {% autoescape off %}
+      <td>{{ row.libs }}</td>
+      <td>{{ row.licenses }}</td>
+      {% endautoescape %}
     </tr>
-    {% endifequal %}
   {% endfor %}
 </table>
-
-

@@ -19,8 +19,6 @@ GUI:
 	looking at several ajax/js solutions atm
 
   Detail Page:
-	too slow to render for large datasets, need to pre-setup a query
-	haven't quite grokked how to do this in django yet
 	re-look at how we display recursive results
 
   About Tab:
