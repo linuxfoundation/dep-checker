@@ -1,10 +1,8 @@
-# XXX We should play the usual tricks defining stuff here and building
-# XXX a specfile from this info, but not yet: for now keep in sync
 PACKAGE=deps-checker
-VERSION=0.0.2
+# version defined in site_settings.py
+VERSION=$(shell grep gui_version ../compliance/linkage/site_settings.py | awk '{print $$3}' | sed 's|"||g')
 RELEASE=1
 
-#
 # Derive date string for daily snapshots
 ISO_DATE=$(shell date +"%Y%m%d")
 PWD=$(shell pwd)
@@ -50,7 +48,7 @@ RPM_BINARY_DIR=$(RPM_TMP_BUILD_DIR)/RPMS/noarch
 RPM_SRPM_DIR=$(RPM_TMP_BUILD_DIR)/SRPMS
 
 # Override this on the command line to use a different repo
-BZRTREES?=http://bzr.freestandards.org/lsb/devel
+BZRTREES?=http://bzr.freestandards.org/unofficial/compliance
 BZR_MODULE=deps-checker
 
 # Default target
@@ -61,9 +59,9 @@ all: rpm_package
 endif
 
 clean:
-	@rm -f *.rpm *.deb $(SOURCE1) $(SOURCE6) $(PACKAGE).spec
+	@rm -f *.rpm *.deb $(SOURCE1) $(PACKAGE).spec
 
-tarball: $(SOURCE1) $(SOURCE2) $(SOURCE3) $(SOURCE4) $(SOURCE5) $(SOURCE6) $(SOURCE7)
+tarball: $(SOURCE1)
 
 # Specfile generation rule
 %.spec : %.spec.sed
@@ -80,7 +78,7 @@ ifndef BUILD_NO_DEB
 	@ls *.deb
 endif
 
-$(RPM_BINARY_NAME) $(RPM_SOURCE_NAME): $(PACKAGE).spec $(SOURCE1) $(SOURCE2) $(SOURCE3) $(SOURCE4) $(SOURCE5) $(SOURCE6) $(SOURCE7)
+$(RPM_BINARY_NAME) $(RPM_SOURCE_NAME): $(PACKAGE).spec $(SOURCE1)
 	@mkdir -p $(RPM_TMP_BUILD_DIR)/BUILD
 	@mkdir -p $(RPM_TMP_BUILD_DIR)/RPMS
 	@mkdir -p $(RPM_TMP_BUILD_DIR)/SRPMS

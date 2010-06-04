@@ -7,7 +7,7 @@ import sys
 import os
 import re
 import string
-version = '0.0.4'
+version = '0.0.5'
 
 def bad_depth():
     print "Recursion depth must be a positive number"
@@ -53,7 +53,7 @@ def deps_check(target):
                     dep = dep.replace("[","")
                     dep = dep.replace("]","")
                     deps.append(dep)
-        
+
     return deps
 
 def deps_print(title, parent, target, level, deps, do_csv, depth):
@@ -161,6 +161,9 @@ def main(argv):
         if len(argv) < 4:
             show_usage(argv)
         target_file = argv[prog_ndx_start]
+        if not os.path.isdir(target):
+            print target + " does not appear to be a directory..."
+    	    sys.exit(1)
 
     # sanity check on recursion level
     if len(argv) == prog_ndx_start + 1:
@@ -203,6 +206,10 @@ def main(argv):
         # top level deps
         parent = target
         deps = deps_check(target)
+        if not deps:
+            print "not an ELF file..."
+            sys.exit(1)
+
         if depth == 1:
             deps_print(parent, parent, target, 0, deps, do_csv, depth)
 

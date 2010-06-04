@@ -4,17 +4,17 @@ from django.shortcuts import render_to_response, get_object_or_404
 from compliance.linkage.models import Test, File, Lib, TestForm, FileForm, LibForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
+
 # so we can run readelf.py
 import os
 import re
-import urllib
-import itertools
 
-# each of these views has a corresponding html page in ../templates/linkage
+### each of these views has a corresponding html page in ../templates/linkage
 
 # main page
 def index(request):
-    return render_to_response('linkage/index.html')
+    from site_settings import gui_version
+    return render_to_response('linkage/index.html', {'version': gui_version})
 
 # test run detail page
 def detail(request, test_id):
@@ -28,6 +28,7 @@ def results(request):
         if testlist != '':
             tests = testlist.split(",")
 
+            # delete all the selected tests from the database
             for test in tests:
                 if test != '':
                     q = Test.objects.filter(id = test)
@@ -40,13 +41,12 @@ def results(request):
     latest_test_list = Test.objects.all().order_by('-test_date')
     return render_to_response('linkage/results.html', {'latest_test_list': latest_test_list})
 
-# process test form
+# process test form - this is where the real work happens
 def test(request):
+    from site_settings import cli_command
     if request.method == 'POST': # If the form has been submitted...
         testform = TestForm(request.POST) # A form bound to the POST data
         if testform.is_valid(): # All validation rules pass
-            # use -c to get csv output from the command line tool
-            cli_command = "/opt/linuxfoundation/bin/readelf.py -c "
             target = testform.cleaned_data['target']
             do_search = testform.cleaned_data['do_search']
             if do_search:
@@ -60,17 +60,15 @@ def test(request):
             testdata.save()
             testid = testdata.id
 
-            # FIXME - for debugging
-            print cli_command, testid
-
             # capture the output and push to the database
             lastdepth = 1
-            lastfile = ''            
+            lastfile = ''
+            errmsg = ''
+            dbdata = ''           
             for dbdata in os.popen(cli_command).readlines():
-                # check for no result
-                if not re.search("(no deps|does not|files in that|was not found)", dbdata):
+                # check for no result - these are known exit messages from the cli
+                if not re.search("(does not|was not found|not an ELF)", dbdata):
                     dbdata = dbdata.rstrip("\r\n")
-                    #print dbdata
                     # format for level 1 is depth, parent, dep
                     # format for level 1 + N is depth, child path, child, dep, dep...
                     deps = dbdata.split(",")
@@ -78,11 +76,9 @@ def test(request):
                     # write the file record
                     depth = int(deps[0])
                     testfile = deps[1]
-                    # FIXME - dummy license data for testing
-                    flicense = "BSD" + str(testid)
                     # the top level file may show multiple times, only get the first one
                     if depth == 1 and testfile != lastfile:
-                        filedata = File(test_id = testid, file = testfile, level = depth, license = flicense, parent_id = 0)
+                        filedata = File(test_id = testid, file = testfile, level = depth, parent_id = 0)
                         filedata.save()
                         fileid = filedata.id
                         lastfile = testfile
@@ -90,8 +86,8 @@ def test(request):
                         filedata.parent_id = parentid
                         filedata.save()
                     elif depth != 1:
-                        # FIXME - right now we're not really doing anything with theses
-                        filedata = File(test_id = testid, file = testfile, level = depth, license = flicense, parent_id = 0)
+                        # FIXME - right now we're not really doing anything with these
+                        filedata = File(test_id = testid, file = testfile, level = depth, parent_id = 0)
                         filedata.save()
                         fileid = filedata.id
                         # the 'child' files get the parent's id
@@ -103,11 +99,9 @@ def test(request):
                     # child records have the lib path and the parent dep
                     if depth > 1:
                         offset = 3
-                    # FIXME - filler for testing
-                    llicense = "Artistic" + str(testid)
                     for lib in deps[offset:len(deps)]:
                         # we link file_id to parent_id of the file for recursion
-                        libdata = Lib(test_id = testid, file_id = parentid, library = lib, license = llicense, level = depth, parent_id = 0)
+                        libdata = Lib(test_id = testid, file_id = parentid, library = lib, level = depth, parent_id = 0)
                         libdata.save()
                         libid = libdata.id
                         
@@ -118,13 +112,26 @@ def test(request):
                         libdata.save()
                         
                 else:
-                    # FIXME - do feedback in the gui here...
-                    print "bad result..."   
-            
-            # FIXME - show status, goto results, handle error condition             
-            # and show the results
-            t, masterlist = render_detail(testid)
-            return render_to_response('linkage/detail.html', {'test': t, 'master': masterlist })
+                    # do feedback in the gui from here
+                    errmsg += dbdata
+
+            # cli didn't return anything
+            if not dbdata:
+                errmsg = "no result..."
+
+            # if we got an error, delete the test entry
+            if errmsg:
+                    q = Test.objects.filter(id = testid)
+                    q.delete()
+                    t = []
+                    masterlist = []
+
+            else:             
+                # render the results
+                t, masterlist = render_detail(testid)
+
+            return render_to_response('linkage/detail.html', 
+                {'test': t, 'master': masterlist, 'error_message': errmsg })
             
     else:
         testform = TestForm() # An unbound form
@@ -135,9 +142,15 @@ def test(request):
 
 # Just an "about" page
 def about(request):
-    return render_to_response('linkage/about.html')
+    from site_settings import gui_version
+    return render_to_response('linkage/about.html', {'version': gui_version})
 
-# utility functions
+# doc page
+def documentation(request):
+    from site_settings import gui_version
+    return render_to_response('linkage/documentation.html', {'version': gui_version})
+
+### utility functions
 
 # pre-render the table data for the detail page
 def render_detail(test_id):
@@ -154,7 +167,10 @@ def render_detail(test_id):
     llist = []
     for file in fileset:
         flist.append(file.file)
-        llist.append(file.license)
+        if file.license:
+            llist.append(file.license)
+        else:
+            llist.append("TBD")
 
     lastid = ''
     masterlist = []
@@ -169,15 +185,19 @@ def render_detail(test_id):
         level = lib.level - 1
         # we don't use this at the moment
         parent = lib.parent_id
+        if lib.license:
+            llicense = lib.license
+        else:
+            llicense = 'TBD'
         if fileid != lastid:
             if liblist != '':
                 masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'licenses': liclist})
             liblist = lib.library
-            liclist = lib.license
+            liclist = llicense
             counter += 1
         else:
             liblist += '<BR>' + spacer * level + lib.library
-            liclist += '<BR>' + lib.license
+            liclist += '<BR>' + llicense
         lastid = fileid
 
     # add the last record
