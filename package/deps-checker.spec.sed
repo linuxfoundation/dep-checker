@@ -47,7 +47,8 @@ install desktop/lf_small.png ${RPM_BUILD_ROOT}%{basedir}/share/icons/hicolor/16x
 install -d ${RPM_BUILD_ROOT}%{basedir}/share/applications
 install desktop/%{name}.desktop ${RPM_BUILD_ROOT}%{basedir}/share/applications
 install -d ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
-install doc/Licence ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
+install doc/License ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
+install compliance/templates/linkage/README.html ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install -d ${RPM_BUILD_ROOT}/var%{basedir}/log/compliance
 
 #==================================================
@@ -86,26 +87,29 @@ if [ -x /usr/bin/xdg-desktop-menu ];then
 fi
 
 %postun
-TESTER=compliance
-id $TESTER > /dev/null 2>/dev/null
-if [ $? -eq 0 ]; then
+# don't mess with things on an upgrade
+if [ "$1" = "0" ];then
+    TESTER=compliance
+    id $TESTER > /dev/null 2>/dev/null
+    if [ $? -eq 0 ]; then
 	userdel -r $TESTER > /dev/null 2>/dev/null
 	if [ $? = 0 ]; then
 		echo "User '$TESTER' was successfully deleted"
 	else
 		echo "Warning: failed to delete user '$TESTER'"
 	fi
-fi
+    fi
 
-TESTGROUP=compliance
-cat /etc/group | grep ^$TESTGROUP: > /dev/null 2>/dev/null
-if [ $? -eq 0 ]; then
+    TESTGROUP=compliance
+    cat /etc/group | grep ^$TESTGROUP: > /dev/null 2>/dev/null
+    if [ $? -eq 0 ]; then
 	groupdel $TESTGROUP > /dev/null 2>/dev/null
 	if [ $? = 0 ]; then
 		echo "Group '$TESTGROUP' was successfully deleted."
 	else
 		echo "Warning: failed to delete group '$TESTGROUP'."
 	fi
+    fi
 fi
 
 #==================================================
@@ -123,8 +127,12 @@ fi
 %{basedir}/compliance/*
 %{basedir}/share/icons/hicolor/16x16/apps/*
 %{basedir}/share/applications/*
-%doc %{basedir}/doc/%{name}/Licence
+%doc %{basedir}/doc/%{name}/*
 
 %changelog
+* Fri Jun 04 2010 Stew Benedict <stewb@linux-foundation.org>
+- fix compliance user/group setup for upgrade, v0.0.3
+- add README.html s/Licence/License/
+
 * Wed Jun 02 2010 Stew Benedict <stewb@linux-foundation.org>
 - initial packaging
