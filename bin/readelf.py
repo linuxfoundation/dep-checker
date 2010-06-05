@@ -42,13 +42,52 @@ def dep_path(target, dep):
 def static_deps_check(target):
     "Look for statically linked dependencies."
 
+    # State enumeration for debug parser.
+    FIND_NEXT = 1
+    FIND_NAME = 2
+
     # The algorithm here is pretty basic.  We grab a complete symbol list
     # and debug information.  Any symbols that aren't covered by debug
     # information are considered to be source from static libraries.
 
-    # FIXME: Not implemented yet.
+    # Read the functions from the symbol list.
+    symlist = [ x.split() for x in os.popen("readelf -s " + target) ]
+    symlist = [ x for x in symlist if len(x) == 8 ]
+    sym_funcs = set([ x[7] for x in symlist if x[3] == "FUNC" ])
 
-    return []
+    # Read the functions from the debug information.
+    debuginfo = os.popen("readelf -wi " + target)
+    debug_funcs = set()
+    debugstate = FIND_NEXT
+    for line in debuginfo:
+        if len(line) < 2:
+            continue
+
+        if debugstate == FIND_NAME:
+            if line[1] == "<":
+                debugstate = FIND_NEXT
+            else:
+                match = re.match(r'\s+<.+>\s+(.+?)\s+:\s+\(.+\):\s+(.+)$', line)
+                if match:
+                    (field, value) = match.group(1, 2)
+                    if field == "DW_AT_name":
+                        debug_funcs.add(value.strip())
+                        debugstate = FIND_NEXT
+
+        if debugstate == FIND_NEXT and line[1] == "<":
+            match = re.search(r'\((.+)\)$', line)
+            if match and match.group(1) == "DW_TAG_subprogram":
+                found_name = None
+                debugstate = FIND_NAME
+
+    # Get the functions in the symbol list that have no debug info.
+    staticsym_funcs = sym_funcs - debug_funcs
+
+    # FIXME: For now, just report the symbols without trying to
+    # figure out which library they belong to.
+    staticsym_funclist = list(staticsym_funcs)
+    staticsym_funclist.sort()
+    return [ "%s (undebugged symbol)" % x for x in staticsym_funclist ]
     
 def deps_check(target):
     deps = []
