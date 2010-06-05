@@ -230,6 +230,12 @@ def main(argv):
             print "not an ELF file..."
             sys.exit(1)
 
+        # FIXME: for now, if no deps were found, assume the file
+        # is statically linked.  Should rework the recursion so
+        # we don't need this.
+        if not deps:
+            deps.append("STATIC")
+
         if depth == 1:
             deps_print(parent, parent, target, 0, deps, do_csv, depth)
 
