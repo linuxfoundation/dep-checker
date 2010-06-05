@@ -33,6 +33,17 @@ def dep_path(target, dep):
             break
 
     return dpath        
+
+def static_deps_check(target):
+    "Look for statically linked dependencies."
+
+    # The algorithm here is pretty basic.  We grab a complete symbol list
+    # and debug information.  Any symbols that aren't covered by debug
+    # information are considered to be source from static libraries.
+
+    # FIXME: Not implemented yet.
+
+    return []
     
 def deps_check(target):
     deps = []
@@ -40,10 +51,7 @@ def deps_check(target):
     filetype = os.popen("file " + target).read()
     
     if re.search("ELF", filetype):
-        if re.search("statically linked", filetype):
-            # FIXME - eventually do something interesting here - in the GUI?
-            deps.append("STATIC")
-        else:
+        if not re.search("statically linked", filetype):
             elfcall = "readelf -d " + target
             for elfdata in os.popen(elfcall).readlines():
                 # lines we want all have "NEEDED"
@@ -54,6 +62,7 @@ def deps_check(target):
                     dep = dep.replace("]","")
                     deps.append(dep)
 
+    deps.extend(static_deps_check(target))
     return deps
 
 def deps_print(title, parent, target, level, deps, do_csv, depth):
