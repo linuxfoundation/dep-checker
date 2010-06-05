@@ -9,6 +9,11 @@ import re
 import string
 version = '0.0.5'
 
+# Custom exceptions.
+
+class NotELFError(StandardError):
+    pass
+
 def bad_depth():
     print "Recursion depth must be a positive number"
     sys.exit(1)
@@ -62,7 +67,11 @@ def deps_check(target):
                     dep = dep.replace("]","")
                     deps.append(dep)
 
-    deps.extend(static_deps_check(target))
+        deps.extend(static_deps_check(target))
+
+    else:
+        raise NotELFError, "not an ELF file"
+
     return deps
 
 def deps_print(title, parent, target, level, deps, do_csv, depth):
@@ -214,8 +223,10 @@ def main(argv):
 	    # single file, just check it and exit
         # top level deps
         parent = target
-        deps = deps_check(target)
-        if not deps:
+
+        try:
+            deps = deps_check(target)
+        except NotELFError:
             print "not an ELF file..."
             sys.exit(1)
 
