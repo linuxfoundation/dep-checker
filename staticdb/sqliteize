@@ -1,0 +1,24 @@
+#!/usr/bin/python
+
+import os
+import sqlite3
+
+def main():
+    if os.path.exists("staticdb.sqlite"):
+        os.unlink("staticdb.sqlite")
+
+    conn = sqlite3.connect("staticdb.sqlite")
+    c = conn.cursor()
+    c.execute('''CREATE TABLE static (symbol text, library text)''')
+    c.execute('''CREATE INDEX symbol ON static (symbol)''')
+
+    rawfile = open("staticdb")
+    for line in rawfile:
+        (symbol, library) = line.strip().split(":")
+        c.execute('''INSERT INTO static values (?, ?)''', 
+                  (symbol, library))
+
+    conn.commit()
+
+if __name__ == "__main__":
+    main()

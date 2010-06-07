@@ -7,12 +7,18 @@ import sys
 import os
 import re
 import string
+import sqlite3
 version = '0.0.5'
 
 # Custom exceptions.
 
 class NotELFError(StandardError):
     pass
+
+# Globals.
+
+database_search_path = [ '/opt/linuxfoundation/share/deps-checker',
+                         './staticdb' ]
 
 def bad_depth():
     print "Recursion depth must be a positive number"
@@ -38,6 +44,31 @@ def dep_path(target, dep):
             break
 
     return dpath        
+
+def find_static_library(func):
+    "Given a symbol, return the most likely static library it's from."
+
+    found_lib = None
+    dbpath = None
+    for dp in database_search_path:
+        if os.path.exists(os.path.join(dp, "staticdb.sqlite")):
+            dbpath = dp
+            break
+
+    if dbpath:
+        staticdb = sqlite3.connect(os.path.join(dbpath, "staticdb.sqlite"))
+        cursor = staticdb.cursor()
+        cursor.execute("SELECT library FROM static WHERE symbol=?", (func,))
+        results = cursor.fetchall()
+        if len(results) == 1:
+            found_lib = results[0][0] + " (static)"
+        elif len(results) > 1:
+            found_libs = [ x[0] for x in results ]
+            found_lib = ",".join(found_libs) + " (static)"
+        else:
+            found_lib = func + " (from unidentified static library)"
+
+    return found_lib
 
 def static_deps_check(target):
     "Look for statically linked dependencies."
@@ -83,12 +114,17 @@ def static_deps_check(target):
     # Get the functions in the symbol list that have no debug info.
     staticsym_funcs = sym_funcs - debug_funcs
 
-    # FIXME: For now, just report the symbols without trying to
-    # figure out which library they belong to.
-    staticsym_funclist = list(staticsym_funcs)
-    staticsym_funclist.sort()
-    return [ "%s (undebugged symbol)" % x for x in staticsym_funclist ]
-    
+    # For each function, figure out where it came from.
+    staticlib_list = []
+    for func in staticsym_funcs:
+        lib = find_static_library(func)
+        if lib not in staticlib_list:
+            staticlib_list.append(lib)
+
+    # Return the list.
+    staticlib_list.sort()
+    return staticlib_list
+
 def deps_check(target):
     deps = []
     # run the "file" command and see if it's ELF
