@@ -2,9 +2,8 @@ default: staticdb.sqlite
 
 staticdb:
 	rm -f staticdb_tmp
-	(for p in /lib /usr/lib; do \
-	   find $$p -type f -name '*.so*' -print; done) | \
-	   egrep '\.so(\.[[:digit:]]+)*$$' > liblist
+	ls /lib/*.so* /usr/lib/*.so* | \
+	   egrep '\.so(\.[[:digit:]]+)$$' > liblist
 	for lib in $$(cat liblist); do \
 	    libname=$$(basename $$lib); \
 	    objdump -T $$lib | fgrep .text | awk '{ print $$7 }' | \
