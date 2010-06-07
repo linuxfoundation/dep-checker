@@ -66,9 +66,6 @@ def find_static_library(func):
             found_libs = [ x[0] for x in results ]
             found_lib = ",".join(found_libs) + " (static)"
 
-    if not found_lib:
-        found_lib = func + " (from unidentified static library)"
-
     return found_lib
 
 def static_deps_check(target):
@@ -119,7 +116,7 @@ def static_deps_check(target):
     staticlib_list = []
     for func in staticsym_funcs:
         lib = find_static_library(func)
-        if lib not in staticlib_list:
+        if lib and lib not in staticlib_list:
             staticlib_list.append(lib)
 
     # Return the list.
