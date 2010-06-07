@@ -65,8 +65,9 @@ def find_static_library(func):
         elif len(results) > 1:
             found_libs = [ x[0] for x in results ]
             found_lib = ",".join(found_libs) + " (static)"
-        else:
-            found_lib = func + " (from unidentified static library)"
+
+    if not found_lib:
+        found_lib = func + " (from unidentified static library)"
 
     return found_lib
 
