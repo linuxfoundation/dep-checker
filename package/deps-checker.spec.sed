@@ -34,6 +34,7 @@ The command-line tool is:
 
 #==================================================
 %build
+cd staticdb && make
   
 #==================================================
 %install
@@ -46,6 +47,8 @@ install -d ${RPM_BUILD_ROOT}%{basedir}/share/icons/hicolor/16x16/apps
 install desktop/lf_small.png ${RPM_BUILD_ROOT}%{basedir}/share/icons/hicolor/16x16/apps
 install -d ${RPM_BUILD_ROOT}%{basedir}/share/applications
 install desktop/%{name}.desktop ${RPM_BUILD_ROOT}%{basedir}/share/applications
+install -d ${RPM_BUILD_ROOT}%{basedir}/share/deps-checker
+install staticdb/staticdb.sqlite ${RPM_BUILD_ROOT}%{basedir}/share/deps-checker
 install -d ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install doc/License ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install compliance/templates/linkage/README.html ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
@@ -121,15 +124,20 @@ fi
 %dir %{basedir}/compliance
 %dir %{basedir}/share/applications
 %dir %{basedir}/share/icons/hicolor/16x16/apps
+%dir %{basedir}/share/deps-checker
 %dir /var/%{basedir}/log/compliance
 
 %{basedir}/bin/*
 %{basedir}/compliance/*
 %{basedir}/share/icons/hicolor/16x16/apps/*
 %{basedir}/share/applications/*
+%{basedir}/share/deps-checker/*
 %doc %{basedir}/doc/%{name}/*
 
 %changelog
+* Mon Jun 07 2010 Jeff Licquia <licquia@linuxfoundation.org>
+- add static checking database
+
 * Fri Jun 04 2010 Stew Benedict <stewb@linux-foundation.org>
 - fix compliance user/group setup for upgrade, v0.0.3
 - add README.html s/Licence/License/
