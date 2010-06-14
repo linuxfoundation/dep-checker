@@ -4,14 +4,14 @@
 %define basedir /opt/linuxfoundation
  
 # %{version}, %{rel} are provided by the Makefile
-Summary: Linux Foundation deps checker
-Name: deps-checker
+Summary: Linux Foundation dependency checker tool
+Name: dep-checker
 Version: %{ver}
 Release: %{rel}
 License: LF
 Group: Development/Tools
 Source: %{name}-%{version}.tar.gz
-URL: http://bzr.linux-foundation.org/lsb/compliance/devel/deps-checker
+URL: http://bzr.linux-foundation.org/lsb/compliance/devel/dep-checker
 BuildRoot: %{_tmppath}/%{name}-root
 AutoReqProv: no
 Requires: python-django
@@ -20,7 +20,7 @@ Requires: python-django
 A compliance tool to explore FOSS dependencies in binaries/libraries
 
 If you don't get a menu entry, run the app with:
-	%{basedir}/bin/deps-checker.sh
+	%{basedir}/bin/dep-checker.sh
 
 If a browser window or tab doesn't open, goto:
 	http://127.0.0.1:8000/linkage
@@ -47,8 +47,8 @@ install -d ${RPM_BUILD_ROOT}%{basedir}/share/icons/hicolor/16x16/apps
 install desktop/lf_small.png ${RPM_BUILD_ROOT}%{basedir}/share/icons/hicolor/16x16/apps
 install -d ${RPM_BUILD_ROOT}%{basedir}/share/applications
 install desktop/%{name}.desktop ${RPM_BUILD_ROOT}%{basedir}/share/applications
-install -d ${RPM_BUILD_ROOT}%{basedir}/share/deps-checker
-install staticdb/staticdb.sqlite ${RPM_BUILD_ROOT}%{basedir}/share/deps-checker
+install -d ${RPM_BUILD_ROOT}%{basedir}/share/dep-checker
+install staticdb/staticdb.sqlite ${RPM_BUILD_ROOT}%{basedir}/share/dep-checker
 install -d ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install doc/License ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install AUTHORS Changelog ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
@@ -82,12 +82,12 @@ fi
 
 %post
 if [ -x /usr/bin/xdg-desktop-menu ];then
-  xdg-desktop-menu install /opt/linuxfoundation/share/applications/deps-checker.desktop
+  xdg-desktop-menu install /opt/linuxfoundation/share/applications/dep-checker.desktop
 fi
 
 %preun
 if [ -x /usr/bin/xdg-desktop-menu ];then
-  xdg-desktop-menu uninstall /opt/linuxfoundation/share/applications/deps-checker.desktop
+  xdg-desktop-menu uninstall /opt/linuxfoundation/share/applications/dep-checker.desktop
 fi
 
 %postun
@@ -125,14 +125,14 @@ fi
 %dir %{basedir}/compliance
 %dir %{basedir}/share/applications
 %dir %{basedir}/share/icons/hicolor/16x16/apps
-%dir %{basedir}/share/deps-checker
+%dir %{basedir}/share/dep-checker
 %dir /var/%{basedir}/log/compliance
 
 %{basedir}/bin/*
 %{basedir}/compliance/*
 %{basedir}/share/icons/hicolor/16x16/apps/*
 %{basedir}/share/applications/*
-%{basedir}/share/deps-checker/*
+%{basedir}/share/dep-checker/*
 %doc %{basedir}/doc/%{name}/*
 
 %changelog

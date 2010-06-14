@@ -1,4 +1,4 @@
-PACKAGE=deps-checker
+PACKAGE=dep-checker
 # version defined in site_settings.py
 VERSION=$(shell grep gui_version ../compliance/linkage/site_settings.py | awk '{print $$3}' | sed 's|"||g')
 RELEASE=1
@@ -48,8 +48,8 @@ RPM_BINARY_DIR=$(RPM_TMP_BUILD_DIR)/RPMS/noarch
 RPM_SRPM_DIR=$(RPM_TMP_BUILD_DIR)/SRPMS
 
 # Override this on the command line to use a different repo
-BZRTREES?=http://bzr.freestandards.org/unofficial/compliance
-BZR_MODULE=deps-checker
+BZRTREES?=http://bzr.freestandards.org/compliance/devel
+BZR_MODULE=dep-checker
 
 # Default target
 ifndef BUILD_NO_DEB
