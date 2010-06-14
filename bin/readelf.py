@@ -19,6 +19,8 @@ class NotELFError(StandardError):
 
 database_search_path = [ '/opt/linuxfoundation/share/deps-checker',
                          './staticdb' ]
+depth = 1
+do_csv = 0
 
 def bad_depth():
     print "Recursion depth must be a positive number"
@@ -147,7 +149,7 @@ def deps_check(target):
 
     return deps
 
-def deps_print(title, parent, target, level, deps, do_csv, depth):
+def deps_print(title, parent, target, level, deps):
     csvstring = ''
     spacer = ''
     nospace = ''
@@ -183,15 +185,15 @@ def deps_print(title, parent, target, level, deps, do_csv, depth):
             for dep in deps:
                 print spacer + dep
 
-def print_parent(parent, dep, do_csv, depth):
+def print_parent(parent, dep):
     if not do_csv:
         print '[1]' + parent + ":"
     else:
         print '1,' + parent + "," + dep
 
-def dep_loop(depth, parent, deps, do_csv):    
+def dep_loop(parent, deps):    
     for dep in deps:
-        print_parent(parent, dep, do_csv, depth)
+        print_parent(parent, dep)
 
         if dep != "STATIC":
          
@@ -200,7 +202,7 @@ def dep_loop(depth, parent, deps, do_csv):
 
             for level in range(1, depth):
                 childdeps = deps_check(target)
-                deps_print(dep, childparent, target, level, childdeps, do_csv, depth)
+                deps_print(dep, childparent, target, level, childdeps)
                 if len(childdeps) > 0:
                     childparent = target            
                     target = dep_path(childparent,childdeps[0])                
@@ -225,9 +227,9 @@ def main(argv):
     # prog_ndx_start is the offset in argv for the file/dir and recursion
     prog_ndx_start = 1
     do_search = 0
-    do_csv = 0
     found = 0
     parent = ""
+    global do_csv, depth
 
     if '-c' in argv:
         sloc = string.index(argv, "-c")
@@ -284,10 +286,10 @@ def main(argv):
                         
                         if len(deps) > 0:
                             if depth == 1:
-                                deps_print(parent, parent, candidate, 0, deps, do_csv, depth)
+                                deps_print(parent, parent, candidate, 0, deps)
                             # do recursion if called for
                             else:
-                                dep_loop(depth, candidate, deps, do_csv)
+                                dep_loop(candidate, deps)
                     if do_search and (filename == target_file):
                         found = 1                   
                         break
@@ -314,11 +316,11 @@ def main(argv):
             deps.append("STATIC")
 
         if depth == 1:
-            deps_print(parent, parent, target, 0, deps, do_csv, depth)
+            deps_print(parent, parent, target, 0, deps)
 
         # do recursion if called for       
         else:
-            dep_loop(depth, parent, deps, do_csv)
+            dep_loop(parent, deps)
          
         sys.exit(0)
 
