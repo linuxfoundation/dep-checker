@@ -17,7 +17,7 @@ class NotELFError(StandardError):
 
 # Globals.
 
-database_search_path = [ '/opt/linuxfoundation/share/deps-checker',
+database_search_path = [ '/opt/linuxfoundation/share/dep-checker',
                          './staticdb' ]
 depth = 1
 do_csv = 0
