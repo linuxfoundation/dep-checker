@@ -7,10 +7,8 @@
 <div id="header">
   {% include "linkage/banner.html" %}
   <ul>
-    <li><a href="/linkage">Home</a></li>
     <li><a href="/linkage/test">Test</a></li>
     <li><a href="/linkage/results">Results</a></li>
-    <li><a href="/linkage/about">About</a></li>
     <li><a href="/linkage/documentation">Documentation</a></li>
   </ul>
 </div>
@@ -27,7 +25,7 @@
       <td><b>Project: </b>{{ test.project }}</td>
       <td><b>Target: </b>{{ test.target }}</td>
       <td><b>User: </b>{{ test.user }}</td>
-      <td><b>Date: </b>{{ test.test_date }}</td>
+      <td><b>Date: </b>{{ test.test_date|date:"M d, Y H:i:s" }}</td>
       <td align = "center">
         <input type="button" name="doprint" value="Print Results" onClick="javascript:void(processPrint())" id="noPrint">
         {% comment %}

@@ -31,7 +31,7 @@
       <tr valign="top">
         <td><input type="checkbox" name="testcheck" value="{{ test.id }}" /></td>
         <td><a href="/linkage/{{ test.id }}/detail">{{ test.target }}</a></td>
-        <td>{{ test.test_date }}</td>
+        <td>{{ test.test_date|date:"M d, Y H:i:s" }}</td>
         <td><i>Target Directory:</i>
             {% if test.target_dir %}
                 {{ test.target_dir }}
