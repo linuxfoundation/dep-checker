@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # program to gather link dependencies of ELF files for compliance analysis
-# Stew Benedict <stewb@linux-foundation.org>
+# Stew Benedict <stewb@linux-foundation.org>, Jeff Licquia
 # copyright 2010 Linux Foundation
 
 import sys
@@ -277,7 +277,11 @@ def main(argv):
                 if (do_search and (filename == target_file)) or not(do_search):
                     candidate = os.path.join(path, filename)
                     if os.path.isfile(candidate):
-                        deps = deps_check(candidate)
+                        try:
+                            deps = deps_check(candidate)
+                        except NotELFError:
+                            deps = []    
+                        
                         if len(deps) > 0:
                             if depth == 1:
                                 deps_print(parent, parent, candidate, 0, deps, do_csv, depth)

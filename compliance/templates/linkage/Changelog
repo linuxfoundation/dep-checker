@@ -5,3 +5,4 @@
     Add AUTHORS, Changelog
     Add bzr, bugzilla, mail list info to README.html
     Fix date/time display in detail, results
+    Fix directory recursion
