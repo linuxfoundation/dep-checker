@@ -18,11 +18,24 @@
 <div id="overview">
 <b>Overview</b>&nbsp;<a href="#home">Top</a>
 <p>
-The Linux Foundation deps-checker is a tool to explore linkage dependencies of binaries
+The Linux Foundation dependency checker is a tool to explore linkage dependencies of binaries
 and libraries built with FOSS components.<br> 
 The system consists of 2 pieces, a command-line program 
 "readelf.py" and a GUI frontend that runs in a web browser. 
 </p>
+<p>You can view the development source from 
+<a href="http://bzr.linuxfoundation.org/loggerhead/compliance/devel/dep-checker">bzr</a>, 
+or check it out using standard bzr commands:
+<pre>
+bzr branch http://bzr.linuxfoundation.org/loggerhead/compliance/devel/dep-checker
+</pre>
+</p>
+<p>Bugs can be filed under the 
+<a href="http://bugs.linuxfoundation.org/enter_bug.cgi?product=Compliance">Compliance</a>
+product.</p>
+<p>There is also a 
+<a href="https://lists.linux-foundation.org/mailman/listinfo/dep-checker-dev">mail list</a>
+for discussion of the tool.</p>
 
 <div id="requirements">
 <b>System Requirements</b>&nbsp;<a href="#home">Top</a>
@@ -193,14 +206,12 @@ If a browser does not open by launching the menu item, you can access the GUI
 <div id="gui-use">
 <b>Using the GUI</b>&nbsp;<a href="#home">Top</a>
 
-<p>The GUI interface is pretty straighforward, with 5 tabs to access various aspects of
+<p>The GUI interface is pretty straighforward, with 3 tabs to access various aspects of
 program:
 
 <ul>
-<li><b>Home</b> - Top level page</li>
 <li><b>Test</b> - Test entry, initiate form</li>
 <li><b>Results</b> - Tabular list of existing test results</li>
-<li><b>About</B> - An "about" page with license info</li>
 <li><b>Documentation</b> - This documentation</li>
 </ul>
 

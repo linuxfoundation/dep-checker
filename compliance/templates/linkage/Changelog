@@ -1,0 +1,7 @@
+0.0.4:
+    Change name to Dependency Checker Tool
+    Drop Home, About tabs
+    Drop copyright notice
+    Add AUTHORS, Changelog
+    Add bzr, bugzilla, mail list info to README.html
+

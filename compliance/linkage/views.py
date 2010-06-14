@@ -13,8 +13,8 @@ import re
 
 # main page
 def index(request):
-    from site_settings import gui_version
-    return render_to_response('linkage/index.html', {'version': gui_version})
+    from site_settings import gui_name, gui_version
+    return render_to_response('linkage/index.html', {'name': gui_name, 'version': gui_version})
 
 # test run detail page
 def detail(request, test_id):
@@ -142,13 +142,23 @@ def test(request):
 
 # Just an "about" page
 def about(request):
-    from site_settings import gui_version
-    return render_to_response('linkage/about.html', {'version': gui_version})
+    from site_settings import gui_name, gui_version
+    return render_to_response('linkage/about.html', {'name': gui_name, 'version': gui_version})
 
 # doc page
 def documentation(request):
-    from site_settings import gui_version
-    return render_to_response('linkage/documentation.html', {'version': gui_version})
+    from site_settings import gui_name, gui_version
+    return render_to_response('linkage/documentation.html', {'name': gui_name, 'version': gui_version})
+
+# authors page
+def authors(request):
+    from site_settings import gui_name, gui_version
+    return render_to_response('linkage/authors.html', {'name': gui_name, 'version': gui_version})
+
+# changelog page
+def changelog(request):
+    from site_settings import gui_name, gui_version
+    return render_to_response('linkage/changelog.html', {'name': gui_name, 'version': gui_version})
 
 ### utility functions
 

@@ -11,7 +11,7 @@ Release: %{rel}
 License: LF
 Group: Development/Tools
 Source: %{name}-%{version}.tar.gz
-URL: http://bzr.linux-foundation.org/lsb/devel/deps-checker
+URL: http://bzr.linux-foundation.org/lsb/compliance/devel/deps-checker
 BuildRoot: %{_tmppath}/%{name}-root
 AutoReqProv: no
 Requires: python-django
@@ -51,6 +51,7 @@ install -d ${RPM_BUILD_ROOT}%{basedir}/share/deps-checker
 install staticdb/staticdb.sqlite ${RPM_BUILD_ROOT}%{basedir}/share/deps-checker
 install -d ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install doc/License ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
+install AUTHORS Changelog ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install compliance/templates/linkage/README.html ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install -d ${RPM_BUILD_ROOT}/var%{basedir}/log/compliance
 

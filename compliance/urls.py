@@ -5,9 +5,11 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'^linkage/$', 'compliance.linkage.views.index'),
+    (r'^linkage/$', 'compliance.linkage.views.test'),
     (r'^linkage/test/$', 'compliance.linkage.views.test'),
     (r'^linkage/about/$', 'compliance.linkage.views.about'),
+    (r'^linkage/authors/$', 'compliance.linkage.views.authors'),
+    (r'^linkage/changelog/$', 'compliance.linkage.views.changelog'),
     (r'^linkage/documentation/$', 'compliance.linkage.views.documentation'),
     (r'^linkage/results/$', 'compliance.linkage.views.results'),
     (r'^linkage/(?P<test_id>\d+)/detail/$', 'compliance.linkage.views.detail'),
