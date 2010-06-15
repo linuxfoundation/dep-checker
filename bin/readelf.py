@@ -25,13 +25,16 @@ command_line_options = [
     optparse.make_option("-c", action="store_true", dest="do_csv", 
                          default=False, help="output in csv format"),
     optparse.make_option("-s", action="store", type="string", dest="target",
-                         metavar="DIR", help="directory tree to search")
+                         metavar="DIR", help="directory tree to search"),
+    optparse.make_option("--no-static", action="store_false", dest="do_static",
+                         default=True, help="don't look for static deps")
 ]
 
 database_search_path = [ '/opt/linuxfoundation/share/dep-checker',
                          './staticdb' ]
 depth = 1
 do_csv = False
+do_static = True
 
 def bad_depth():
     print "Recursion depth must be a positive number"
@@ -153,7 +156,8 @@ def deps_check(target):
                     dep = dep.replace("]","")
                     deps.append(dep)
 
-        deps.extend(static_deps_check(target))
+        if do_static:
+            deps.extend(static_deps_check(target))
 
     else:
         raise NotELFError, "not an ELF file"
@@ -234,7 +238,9 @@ def main():
     prog_ndx_start = 1
     found = 0
     parent = ""
-    global do_csv, depth
+    global do_csv, depth, do_static
+
+    do_static = options.do_static
 
     do_csv = options.do_csv
     if options.target:
