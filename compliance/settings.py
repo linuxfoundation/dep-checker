@@ -1,5 +1,18 @@
 # Django settings for compliance project.
 
+import os
+
+# Function for finding the project root.
+
+def get_project_root():
+    project_root_paths = [ ".", "..", "/opt/linuxfoundation" ]
+    for path in project_root_paths:
+        if os.path.exists(os.path.join(path, "bin/readelf.py")):
+            return path
+
+    # Shouldn't get here unless we can't find the path.
+    raise RuntimeError, "could not find the project path"
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -10,7 +23,8 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'sqlite3'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = 'compliance'             # Or path to database file if using sqlite3.
+DATABASE_NAME = os.path.join(get_project_root(), 'compliance', 'compliance')
+                               # Or path to database file if using sqlite3.
 DATABASE_USER = ''             # Not used with sqlite3.
 DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
@@ -33,11 +47,17 @@ SITE_ID = 1
 # to load the internationalization machinery.
 USE_I18N = False
 
+# Project root.
+PROJECT_ROOT = get_project_root()
+
+# Command-line client.  Use '-c' to force CSV format.
+CLI_COMMAND = os.path.join(PROJECT_ROOT, 'bin/readelf.py') + ' -c '
+
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = '' 
 
-STATIC_DOC_ROOT = '/opt/linuxfoundation/compliance/media'
+STATIC_DOC_ROOT = os.path.join(PROJECT_ROOT, 'compliance/media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
@@ -71,7 +91,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    "/opt/linuxfoundation/compliance/templates",
+    os.path.join(PROJECT_ROOT, "compliance/templates"),
 )
 
 INSTALLED_APPS = (
