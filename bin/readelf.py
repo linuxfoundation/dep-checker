@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # program to gather link dependencies of ELF files for compliance analysis
-# Stew Benedict <stewb@linux-foundation.org>, Jeff Licquia
+# Stew Benedict <stewb@linux-foundation.org>
+# Jeff Licquia <licquia@linuxfoundation.org>
 # copyright 2010 Linux Foundation
 
 import sys
@@ -8,7 +9,8 @@ import os
 import re
 import string
 import sqlite3
-version = '0.0.5'
+import optparse
+version = '0.0.6'
 
 # Custom exceptions.
 
@@ -17,10 +19,19 @@ class NotELFError(StandardError):
 
 # Globals.
 
+usage_line = "usage: %prog [options] <file/dir tree to examine> [recursion depth]"
+
+command_line_options = [
+    optparse.make_option("-c", action="store_true", dest="do_csv", 
+                         default=False, help="output in csv format"),
+    optparse.make_option("-s", action="store", type="string", dest="target",
+                         metavar="DIR", help="directory tree to search")
+]
+
 database_search_path = [ '/opt/linuxfoundation/share/dep-checker',
                          './staticdb' ]
 depth = 1
-do_csv = 0
+do_csv = False
 
 def bad_depth():
     print "Recursion depth must be a positive number"
@@ -210,61 +221,43 @@ def dep_loop(parent, deps):
                     # must be at the bottom of the chain, stop
                     break
         
-def show_usage(argv):
-    print argv[0] + ' version ' + version 
-    print 'Usage: ' + argv[0]
-    print '       -c output in csv format'
-    print '       -s <directory tree to search>'
-    print '       <directory tree or file to examine> [recursion depth]'
-    print '       Specifying a directory without -s will report all ELF'
-    print '       files in that directory tree'
-    sys.exit(1)
+def main():
+    opt_parser = optparse.OptionParser(usage=usage_line, 
+                                       version="%prog version " + version,
+                                       option_list=command_line_options)
+    (options, args) = opt_parser.parse_args()
 
-def main(argv):
-    if len(argv) < 2 or '-?' in argv or '-h' in argv:
-        show_usage(argv)
+    if len(args) == 0 or len(args) > 2:
+        opt_parser.error("improper number of non-option arguments")
 
     # prog_ndx_start is the offset in argv for the file/dir and recursion
     prog_ndx_start = 1
-    do_search = 0
     found = 0
     parent = ""
     global do_csv, depth
 
-    if '-c' in argv:
-        sloc = string.index(argv, "-c")
-        if prog_ndx_start <= sloc:
-            prog_ndx_start = sloc + 1;
-        do_csv = 1
-
-    if '-s' in argv:
-        sloc = string.index(argv, "-s")
-        target = argv[sloc + 1]
-        if prog_ndx_start <= sloc:
-            prog_ndx_start = sloc + 2;
-        do_search = 1
-        
-    # sanity check on file/directory name
-    if not(do_search):
-        target = argv[prog_ndx_start]
-        if not(os.path.isdir(target) or os.path.isfile(target)):
-            print target + " does not appear to be a directory or file..."
-    	    sys.exit(1)
-    else:
-        if len(argv) < 4:
-            show_usage(argv)
-        target_file = argv[prog_ndx_start]
+    do_csv = options.do_csv
+    if options.target:
+        do_search = True
+        target = options.target
+        target_file = args[0]
         if not os.path.isdir(target):
             print target + " does not appear to be a directory..."
     	    sys.exit(1)
+    else:
+        do_search = False
+        target = args[0]
+        if not(os.path.isdir(target) or os.path.isfile(target)):
+            print target + " does not appear to be a directory or file..."
+    	    sys.exit(1)
 
     # sanity check on recursion level
-    if len(argv) == prog_ndx_start + 1:
+    if len(args) == 1:
         depth = 1
         
     else:
         try:
-            recursion_arg = argv[prog_ndx_start + 1]
+            recursion_arg = args[1]
             depth = int(recursion_arg)
         except:
             bad_depth()
@@ -325,5 +318,5 @@ def main(argv):
         sys.exit(0)
 
 if __name__=='__main__':
-    main(sys.argv)
+    main()
 
