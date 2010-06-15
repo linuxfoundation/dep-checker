@@ -2,8 +2,11 @@ Layout/Concept
 
 2 part app: cli/gui
 
-cli command, readelf.py should be standard python. It does run some system 
-  commands like readelf, ldd.
+The cli command, readelf.py, should be standard python. It does run
+some system commands like readelf, file, and ldd.  It also relies on a
+separate SQLite database called "staticdb".  To create that, type
+"make" in the top-level directory (the directory containing this
+file).
 
 gui all lives under "compliance", uses django so you need python-django or
   equivalent
@@ -19,19 +22,15 @@ media: css/images
 templates: html pages using django's "template" language for data/form
 	   handling (these also have some javascript glue)
 
-top level directory is expected to be /opt/linuxfoundation/compliance, this
-is hardcoded in settings.py
-
-readelf.py is expected to be called from /opt/linuxfoundation/bin, this is
-hardcoded in views.py (should be moved to settings)
+The web app can be run "in-place"; otherwise, it expects to be run
+from /opt/linuxfoundation/compliance.  Similarly, readelf.py can be
+run in-place, but otherwise expects to be called from
+/opt/linuxfoundation/bin.
 
 to run the gui/server (as user compliance for installed package):
-	/opt/linuxfoundation/bin/deps-checker.sh
+   bin/deps-checker.sh (for running in-place)
+   /opt/linuxfoundation/bin/deps-checker.sh (for running installed)
 
 to access the gui: http://127.0.0.1:8000/linkage
 admin interface: http://127/0.0.1:8000/admin 
 	(username compliance, password compliance)
-
-
-
-
