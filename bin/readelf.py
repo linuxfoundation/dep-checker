@@ -154,8 +154,8 @@ def deps_check(target):
                     dep = dep.strip("[]")
                     deps.append(dep)
 
-    if do_static:
-        deps.extend(static_deps_check(target))
+        if do_static:
+            deps.extend(static_deps_check(target))
 
     else:
         raise NotELFError, "not an ELF file"
