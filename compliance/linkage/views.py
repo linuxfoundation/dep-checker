@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from compliance.linkage.models import Test, File, Lib, TestForm, FileForm, LibForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
+from django.conf import settings
 
 # so we can run readelf.py
 import os
@@ -43,7 +44,7 @@ def results(request):
 
 # process test form - this is where the real work happens
 def test(request):
-    from site_settings import cli_command
+    cli_command = settings.CLI_COMMAND
     if request.method == 'POST': # If the form has been submitted...
         testform = TestForm(request.POST) # A form bound to the POST data
         if testform.is_valid(): # All validation rules pass

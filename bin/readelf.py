@@ -31,7 +31,7 @@ command_line_options = [
 ]
 
 database_search_path = [ '/opt/linuxfoundation/share/dep-checker',
-                         './staticdb' ]
+                         './staticdb', '../staticdb' ]
 depth = 1
 do_csv = False
 do_static = True
