@@ -11,9 +11,12 @@
   </ul>
 </div>
 
-
-{% if latest_test_list %}
-    <form name="resultsform" method="post" action="" enctype="multipart/form-data">
+{% if not latest_test_list %}
+   <b>No tests are available.</b>
+{% else %}
+    <form name="resultsform" method="post" action="" enctype="multipart/form-data">   
+    <br> <!-- why does firefox 3.6.3 need this? - table ends up 
+              in the upper rh corner, off the page -->
     <table hspace = "20" width = "90%" border="1">
       <tr align="left">
         <td><input type="checkbox" name="selectall" onclick="toggleall()" /></td>
@@ -49,8 +52,6 @@
     </table>
     <input type="hidden", name="testlist", value="" />
     </form>
-{% else %}
-    <b>No tests are available.</b>
 {% endif %}
 
 </body>
