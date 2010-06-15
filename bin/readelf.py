@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # program to gather link dependencies of ELF files for compliance analysis
-# Stew Benedict <stewb@linux-foundation.org>
+# Stew Benedict <stewb@linuxfoundation.org>
 # Jeff Licquia <licquia@linuxfoundation.org>
 # copyright 2010 Linux Foundation
 
@@ -10,7 +10,7 @@ import re
 import string
 import sqlite3
 import optparse
-version = '0.0.6'
+version = '0.0.7'
 
 # Custom exceptions.
 
@@ -41,7 +41,6 @@ def bad_depth():
     sys.exit(1)
 
 def dep_path(target, dep):
-    #print target, dep
     # readelf gives us the lib, but not the path to check during recursion
     ldcall = "ldd " + target
     for lddata in os.popen(ldcall).readlines():
@@ -152,78 +151,73 @@ def deps_check(target):
                 if re.search("NEEDED", elfdata):
                     # library is the 5th field
                     dep = string.split(elfdata)[4]
-                    dep = dep.replace("[","")
-                    dep = dep.replace("]","")
+                    dep = dep.strip("[]")
                     deps.append(dep)
 
-        if do_static:
-            deps.extend(static_deps_check(target))
+    if do_static:
+        deps.extend(static_deps_check(target))
 
     else:
         raise NotELFError, "not an ELF file"
 
     return deps
 
-def deps_print(title, parent, target, level, deps):
+# non-recursive case
+def print_deps(target, deps):
     csvstring = ''
     spacer = ''
-    nospace = ''
-
-    if level > 0:
-        nospace += spacer
-
-    for space in range(0, level):
-        spacer += "  "
 
     if len(deps) < 1:
-        # FIXME - this blows up the recursion, just drop it?
-        #deps.append("NONE")
-        # at ld-linux - just suppress the output
         return
 
     if do_csv:
-        if depth == 1:
-            csvstring += str(level + 1) + "," + target
-        else:
-            csvstring += str(level + 1) + "," + target + "," + title
-        if level > 0 or depth < 2:
-            for dep in deps:
-                csvstring += "," + dep
+        csvstring += str(1) + "," + target
+        for dep in deps:
+            csvstring += "," + dep
         print csvstring
 
     else:
-        if level == 1:
-            print spacer + title
-        print spacer + "[" + str(level + 1) + "]" + target + ":"
+        print spacer + "[" + str(1) + "]" + target + ":"
         spacer += "  "
-        if level > 0 or depth < 2:
-            for dep in deps:
-                print spacer + dep
+        for dep in deps:
+            print spacer + dep
 
-def print_parent(parent, dep):
+def print_dep(dep, indent):
+    spacer = 2 * indent * " "
     if not do_csv:
-        print '[1]' + parent + ":"
+        print spacer + dep
+
+def print_path_dep(parent, soname, dep, indent):
+    csvstring = ''
+    spacer = (indent - 1) * "  "
+    token = "[" + str(indent) + "]"
+    if not do_csv:
+        print spacer + token + parent + ":"
     else:
-        print '1,' + parent + "," + dep
+        csvstring += str(indent) + "," + parent + ","
+        # indent = level, treat level 1 slightly differently
+        if indent != 1 and soname:
+            csvstring += soname + ","
+        csvstring += dep
+        print csvstring
 
-def dep_loop(parent, deps):    
-    for dep in deps:
-        print_parent(parent, dep)
+def dep_loop(parent, soname, dep, level):
+    if level > depth:
+        return
 
-        if dep != "STATIC":
-         
-            childparent = parent            
-            target = dep_path(childparent,dep)
+    if level == 1:
+        print_path_dep(parent, soname, dep, level)
+        print_dep(dep, level)
+    else:
+        print_path_dep(parent, soname, dep, level)
+        print_dep(dep, level)
 
-            for level in range(1, depth):
-                childdeps = deps_check(target)
-                deps_print(dep, childparent, target, level, childdeps)
-                if len(childdeps) > 0:
-                    childparent = target            
-                    target = dep_path(childparent,childdeps[0])                
-                else:
-                    # must be at the bottom of the chain, stop
-                    break
+    target = dep_path(parent, dep)
+    childdeps = deps_check(target)
+
+    if len(childdeps) > 0:
+        for childdep in childdeps:
+            dep_loop(target, dep, childdep, level + 1)
         
 def main():
     opt_parser = optparse.OptionParser(usage=usage_line, 
@@ -285,10 +279,11 @@ def main():
                         
                         if len(deps) > 0:
                             if depth == 1:
-                                deps_print(parent, parent, candidate, 0, deps)
+                                print_deps(candidate, deps)
                             # do recursion if called for
                             else:
-                                dep_loop(candidate, deps)
+                                for dep in deps:
+                                    dep_loop(candidate, None, dep, 1)
                     if do_search and (filename == target_file):
                         found = 1                   
                         break
@@ -308,19 +303,14 @@ def main():
             print "not an ELF file..."
             sys.exit(1)
 
-        # FIXME: for now, if no deps were found, assume the file
-        # is statically linked.  Should rework the recursion so
-        # we don't need this.
-        if not deps:
-            deps.append("STATIC")
-
         if depth == 1:
-            deps_print(parent, parent, target, 0, deps)
+            print_deps(target, deps)
 
         # do recursion if called for       
         else:
-            dep_loop(parent, deps)
-         
+            for dep in deps:
+                dep_loop(parent, None, dep, 1)
+        
         sys.exit(0)
 
 if __name__=='__main__':

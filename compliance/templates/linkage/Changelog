@@ -8,3 +8,5 @@
     Fix directory recursion
     New License file
     Add contribution requirements
+    Rework dep recursion in command line app
+
