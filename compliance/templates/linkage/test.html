@@ -22,37 +22,37 @@
 
 <table halign="left">
   <tr align="left">
-    <th>{{ testform.do_search.label }}</th>
+    <td align="right"><b>{{ testform.do_search.label }}:</b></td>
     <!--td>{{ testform.do_search }}</td-->
     <!-- FIXME - how to set onClick for the django checkbox? -->
     <td><input type="checkbox" name="do_search" onclick="toggledisabled()" /></td>
   </tr>
   <tr>   
-    <th>{{ testform.target_dir.label }}</th>
+    <td align="right"><b>{{ testform.target_dir.label }}:</b></td>
     <td>{{ testform.target_dir }}</td>
-    <td><input type="file" name="targetdirname" size="200" 
+    <td><input type="button" name="targetdirname" value="Select Dir" 
             onchange="filenametoentry(document.entryform.targetdirname, document.entryform.target_dir)"/></td>
   </tr>
   <tr>
-    <th>{{ testform.recursion.label }}</th>
+    <td align="right"><b>{{ testform.recursion.label }}:</b></td>
     <td>{{ testform.recursion }}</td>
   </tr>      
   <tr>
-    <th>{{ testform.target.label }}</th>
+    <td align="right"><b>{{ testform.target.label }}:</b></td>
     <td>{{ testform.target }}</td>
-    <td><input type="file" name="targetfilename" size="200" 
+    <td><input type="button" name="targetfilename" value="Select File"
             onchange="filenametoentry(document.entryform.targetfilename, document.entryform.target)"/></td>
   </tr>      
   <tr>
-    <th>{{ testform.user.label }}</th>
+    <td align="right"><b>{{ testform.user.label }}:</b></td>
     <td>{{ testform.user }}</td>
   </tr>      
   <tr>
-    <th>{{ testform.project.label }}</th>
+    <td align="right"><b>{{ testform.project.label }}:</b></td>
     <td>{{ testform.project }}</td>
   </tr>      
   <tr>
-    <th>{{ testform.comments.label }}</th>
+    <td align="right"><b>{{ testform.comments.label }}:</b></td>
     <td>{{ testform.comments }}</td>
   </tr>      
 

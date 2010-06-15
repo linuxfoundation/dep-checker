@@ -9,4 +9,4 @@
     New License file
     Add contribution requirements
     Rework dep recursion in command line app
-
+    Fix test.html so it displays ok on most browsers
