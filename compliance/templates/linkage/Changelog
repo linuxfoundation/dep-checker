@@ -12,3 +12,4 @@
     Fix test.html so it displays ok on most browsers
     Workaround weird display issue for results,detail in firefox 3.6.3
     Fix detail page printing, suppress unwanted elements with css
+    Add new logo

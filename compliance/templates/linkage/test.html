@@ -23,15 +23,14 @@
 <table halign="left">
   <tr align="left">
     <td align="right"><b>{{ testform.do_search.label }}:</b></td>
-    <!--td>{{ testform.do_search }}</td-->
-    <!-- FIXME - how to set onClick for the django checkbox? -->
     <td><input type="checkbox" name="do_search" onclick="toggledisabled()" /></td>
   </tr>
   <tr>   
     <td align="right"><b>{{ testform.target_dir.label }}:</b></td>
     <td>{{ testform.target_dir }}</td>
     <td><input type="button" name="targetdirname" value="Select Dir" 
-            onchange="filenametoentry(document.entryform.targetdirname, document.entryform.target_dir)"/></td>
+            onchange="filenametoentry(document.entryform.targetdirname, document.entryform.target_dir)"
+            onclick="dobrowse('dir')"/></td>
   </tr>
   <tr>
     <td align="right"><b>{{ testform.recursion.label }}:</b></td>
@@ -41,7 +40,8 @@
     <td align="right"><b>{{ testform.target.label }}:</b></td>
     <td>{{ testform.target }}</td>
     <td><input type="button" name="targetfilename" value="Select File"
-            onchange="filenametoentry(document.entryform.targetfilename, document.entryform.target)"/></td>
+            onchange="filenametoentry(document.entryform.targetfilename, document.entryform.target)"
+            onclick="dobrowse('file')"/></td>
   </tr>      
   <tr>
     <td align="right"><b>{{ testform.user.label }}:</b></td>
@@ -84,6 +84,10 @@
         entry.value = selector.value;
         data = selector.select();
         alert(data);
+    }
+    function dobrowse(where) {
+        alert_string = "browse for " + where; 
+        alert(alert_string);
     }
     function extract(what) {
         if (what.indexOf('/') > -1)
