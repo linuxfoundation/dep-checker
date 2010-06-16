@@ -1,3 +1,4 @@
+@media screen, print {
 body {
   background:#fff;
   margin:0;
@@ -7,7 +8,8 @@ body {
   voice-family: "\"}\""; voice-family:inherit;
   font-size:small;
   } html>body {font-size:small;}
-
+}
+@media screen {
 #header {
   float:left;
   width:100%;
@@ -50,3 +52,30 @@ body {
   color:#333;
   padding-bottom:5px;
   }
+}
+@media screen {
+  #print {
+    display:block;
+    }
+  #noprint {
+    display:block;
+    }
+}
+/* when we print the detail page, suppress the header and the print button */
+@media print {
+  #print {
+    display:block;
+    }
+  #noprint {
+    display:none;
+    }
+  #header {
+    display:none;
+    }
+}
+/* try to force a landscape layout for print */
+@page
+{
+  size: landscape;
+  margin: 2cm;
+}

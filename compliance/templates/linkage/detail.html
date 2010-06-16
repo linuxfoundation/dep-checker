@@ -17,7 +17,7 @@
   {{ error_message }}
   </pre>
 {% else %}
-  <div id="printMe">
+  <div id="print">
   <br> <!-- weird firefox 3.6.3 formatting issue -->
   <table hspace = "20" width = "90%" border = "1">
     <tr>
@@ -25,13 +25,9 @@
       <td><b>Target: </b>{{ test.target }}</td>
       <td><b>User: </b>{{ test.user }}</td>
       <td><b>Date: </b>{{ test.test_date|date:"M d, Y H:i:s" }}</td>
-      <td align = "center">
-        <input type="button" name="doprint" value="Print Results" onClick="javascript:void(processPrint())" id="noPrint">
-        {% comment %}
-        <!-- FIXME - this one prints the header, the one above doesn't print -->
-        <input type="button" name="doprint" value="Print Results" onClick="javascript:window.print()" id="noPrint">
-        {% endcomment %}
-      </td>   
+      <td align = "center" id = "noprint">
+        <input type="button" name="doprint" value="Print Results" onClick="javascript:window.print()">
+      </td>
     </tr>
   </table> 
   <br>
@@ -59,49 +55,3 @@
 
 </body>
 
-<script language="JavaScript">
-var gAutoPrint = true;
-  
-function processPrint(){
-    if (document.getElementById != null) {
-        var html = '<HTML>\n<HEAD>\n';
-
-        if (document.getElementsByTagName != null) {
-            var headTags = document.getElementsByTagName("head");
-        }
-
-        if (headTags.length > 0) html += headTags[0].innerHTML;
-    }
-
-    html += '\n</HE' + 'AD>\n<BODY>\n';
-
-    var printReadyElem = document.getElementById("printMe");
-
-    if (printReadyElem != null) {
-        html += printReadyElem.innerHTML;
-    } else {
-        alert("Error, no content.");
-        return;
-    }
-
-    html += '\n</BO' + 'DY>\n</HT' + 'ML>';
-    var printWin = window.open("","processPrint");
-    printWin.document.open();
-    printWin.document.write(html);
-
-    // hide some elements
-    var noPrintElem = printWin.document.getElementById("noPrint");
-    printWin.noPrintElem.visible = false;
- 
-    printWin.document.close()
-    printWin.focus();
-    printWin.print();   
-    printWin.close();
-
-    if (gAutoPrint) {
-        printWin.print();
-    } else {
-        alert("Browser not supported.");
-    }
-}
-</script>
