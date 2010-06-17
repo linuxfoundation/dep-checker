@@ -13,3 +13,4 @@
     Workaround weird display issue for results,detail in firefox 3.6.3
     Fix detail page printing, suppress unwanted elements with css
     Add new logo
+    Detect/use local timezone settings

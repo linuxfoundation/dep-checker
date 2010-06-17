@@ -1,6 +1,6 @@
 # Django settings for compliance project.
 
-import os
+import os, time
 
 # Function for finding the project root.
 
@@ -35,7 +35,11 @@ DATABASE_PORT = ''             # Set to empty string for default. Not used with 
 # although not all choices may be available on all operating systems.
 # If running in a Windows environment this must be set to the same as your
 # system time zone.
-TIME_ZONE = 'America/Chicago'
+
+if 'TZ' not in os.environ:  # env is clear => timezone is the system one
+    TIME_ZONE = 'Etc/GMT%+d' % (time.altzone / 3600)
+else:                       # env is updated => timezone is obsolete
+    TIME_ZONE = os.environ['TZ']
 
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
