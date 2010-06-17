@@ -1,15 +1,6 @@
-{% include "linkage/header.html" %}
+{% extends "linkage/base.html" %}
 
-<body>
-
-<div id="header">
-  {% include "linkage/banner.html" %}
-  <ul>
-    <li><a href="/linkage/test">Test</a></li>
-    <li id="current"><a href="/linkage/results">Results</a></li>
-    <li><a href="/linkage/documentation">Documentation</a></li>
-  </ul>
-</div>
+{% block content %}
 
 {% if not latest_test_list %}
    <b>No tests are available.</b>
@@ -54,7 +45,9 @@
     </form>
 {% endif %}
 
-</body>
+{% endblock %}
+
+{% block scripts %}
 
 <script language="JavaScript">
 function toggleall() {
@@ -94,3 +87,4 @@ function buildlist() {
 }
 </script>
 
+{% endblock %}

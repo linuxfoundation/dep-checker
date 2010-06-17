@@ -20,7 +20,7 @@ def index(request):
 # test run detail page
 def detail(request, test_id):
     t, masterlist = render_detail(test_id)
-    return render_to_response('linkage/detail.html', {'test': t, 'master': masterlist })
+    return render_to_response('linkage/detail.html', {'test': t, 'master': masterlist, 'tab_results': True})
   
 # results list page - this is also a form, for test deletions
 def results(request):
@@ -40,7 +40,7 @@ def results(request):
                     q.delete()
 
     latest_test_list = Test.objects.all().order_by('-test_date')
-    return render_to_response('linkage/results.html', {'latest_test_list': latest_test_list})
+    return render_to_response('linkage/results.html', {'latest_test_list': latest_test_list, 'tab_results': True})
 
 # process test form - this is where the real work happens
 def test(request):
@@ -138,7 +138,8 @@ def test(request):
         testform = TestForm() # An unbound form
 
     return render_to_response('linkage/test.html', {
-        'testform': testform
+        'testform': testform,
+        'tab_test': True,
     })
 
 # Just an "about" page

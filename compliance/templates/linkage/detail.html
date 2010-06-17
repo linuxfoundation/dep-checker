@@ -1,15 +1,6 @@
-{% include "linkage/header.html" %}
+{% extends "linkage/base.html" %}
 
-<body>
-
-<div id="header">
-  {% include "linkage/banner.html" %}
-  <ul>
-    <li><a href="/linkage/test">Test</a></li>
-    <li><a href="/linkage/results">Results</a></li>
-    <li><a href="/linkage/documentation">Documentation</a></li>
-  </ul>
-</div>
+{% block content %}
 
 {% if error_message %}
   <b>No test result, or error message from cli was:</b>
@@ -53,5 +44,4 @@
   </div>
 {% endif %}
 
-</body>
-
+{% endblock %}

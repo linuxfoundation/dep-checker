@@ -1,16 +1,6 @@
-{% include "linkage/header.html" %}
+{% extends "linkage/base.html" %}
 
-<body onload="setdefaults();">
-
-<div id="header">
-  {% include "linkage/banner.html" %}
-  <ul>
-    <li id="current"><a href="/linkage/test">Test</a></li>
-    <li><a href="/linkage/results">Results</a></li>
-    <li><a href="/linkage/documentation">Documentation</a></li>
-  </ul>
-</div>
-
+{% block content %}
 
 <b>Create Test:</b>
 
@@ -99,4 +89,4 @@
 </script>
 </form>
 
-
+{% endblock %}
