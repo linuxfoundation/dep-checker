@@ -1,20 +1,10 @@
-{% include "linkage/header.html" %}
+{% extends "linkage/base.html" %}
 
-<body>
+{% block content %}
 
-<div id="header">
-  {% include "linkage/banner.html" %}
-  <ul>
-    <li><a href="/linkage/test">Test</a></li>
-    <li><a href="/linkage/results">Results</a></li>
-    <li><a href="/linkage/documentation">Documentation</a></li>
-  </ul>
-</div>
+<p>This is the Linux Foundation Dependency Checker Tool.</p>
 
-<br>
-<center>
-<b>{{ name }} version {{ version }}.</b>
-</center>
+<p>Copyright 2010 Linux Foundation.  See the License link for licensing 
+information.</p>
 
-</body>
-				
+{% endblock %}
