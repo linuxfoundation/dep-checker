@@ -161,6 +161,11 @@ def changelog(request):
     from site_settings import gui_name, gui_version
     return render_to_response('linkage/changelog.html', {'name': gui_name, 'version': gui_version})
 
+# license page
+def license(request):
+    from site_settings import gui_name, gui_version
+    return render_to_response('linkage/license.html', {'name': gui_name, 'version': gui_version})
+
 ### utility functions
 
 # pre-render the table data for the detail page
