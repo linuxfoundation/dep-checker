@@ -1,0 +1,24 @@
+{% include "linkage/header.html" %}
+
+<body>
+
+<div id="header">
+  {% include "linkage/banner.html" %}
+  <ul>
+    <li><a href="/linkage/test">Test</a></li>
+    <li><a href="/linkage/results">Results</a></li>
+    <li><a href="/linkage/documentation">Documentation</a></li>
+  </ul>
+</div>
+
+<br>
+<center>
+<b>{{ name }} version {{ version }}.</b>
+</center>
+
+<pre>
+{% include "linkage/License" %}
+</pre>
+
+</body>
+				

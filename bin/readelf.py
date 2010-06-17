@@ -63,7 +63,7 @@ def dep_path(target, dep):
 def find_static_library(func):
     "Given a symbol, return the most likely static library it's from."
 
-    found_lib = None
+    found_libs = []
     dbpath = None
     for dp in database_search_path:
         if os.path.exists(os.path.join(dp, "staticdb.sqlite")):
@@ -76,12 +76,11 @@ def find_static_library(func):
         cursor.execute("SELECT library FROM static WHERE symbol=?", (func,))
         results = cursor.fetchall()
         if len(results) == 1:
-            found_lib = results[0][0] + " (static)"
+            found_libs.append(results[0][0])
         elif len(results) > 1:
             found_libs = [ x[0] for x in results ]
-            found_lib = ",".join(found_libs) + " (static)"
 
-    return found_lib
+    return found_libs
 
 def static_deps_check(target):
     "Look for statically linked dependencies."
@@ -130,13 +129,15 @@ def static_deps_check(target):
     # For each function, figure out where it came from.
     staticlib_list = []
     for func in staticsym_funcs:
-        lib = find_static_library(func)
-        if lib and lib not in staticlib_list:
-            staticlib_list.append(lib)
+        libs = find_static_library(func)
+        for lib in libs:
+            if lib not in staticlib_list:
+                staticlib_list.append(lib)
 
-    # Return the list.
+    # Format and return the list.
     staticlib_list.sort()
-    return staticlib_list
+    staticlib_results = [ x + " (static)" for x in staticlib_list ]
+    return staticlib_results
 
 def deps_check(target):
     deps = []
