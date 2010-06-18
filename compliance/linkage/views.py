@@ -175,7 +175,9 @@ def dirlist(request):
     r=['<ul class="jqueryFileTree" style="display: none;">']
     try:
         d=urllib.unquote(request.POST.get('dir'))
-        for f in os.listdir(d):
+        content = os.listdir(d)
+        # slows things a little, but looks more like 'ls'
+        for f in sorted(content, key=unicode.lower):
             ff=os.path.join(d,f)
             if ff not in not_wanted and f != 'lost+found':
                 if os.path.isdir(ff): 
