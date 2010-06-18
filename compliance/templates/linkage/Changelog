@@ -14,3 +14,4 @@
     Fix detail page printing, suppress unwanted elements with css
     Add new logo
     Detect/use local timezone settings
+    Add directory/file browsing to test input form

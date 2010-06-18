@@ -1,15 +1,36 @@
-{% extends "linkage/base.html" %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
-{% block content %}
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>Dependency Checker Tool</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <style type="text/css">@import "/site_media/css/tabstyle.css";</style>
+  <!-- for the file browser -->
+  <style type="text/css" media="screen">@import "/site_media/css/jqueryFileTree.css";</style>
+  <style type="text/css">@import "/site_media/css/containers.css";</style>
+  <script type="text/javascript" src="/site_media/js/jquery-1.4.2.min.js"></script>
+  <script type="text/javascript" src="/site_media/js/jqueryFileTree.js"></script>
+</head>
+
+<body onload="setdefaults();">
+
+<div id="header">
+  {% include "linkage/banner.html" %}
+  <ul>
+    <li id="current"><a href="/linkage/test">Test</a></li>
+    <li><a href="/linkage/results">Results</a></li>
+    <li><a href="/linkage/documentation">Documentation</a></li>
+  </ul>
+</div>
+
 
 <b>Create Test:</b>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
 <form name="entryform" method="post" action="" enctype="multipart/form-data">
-<!-- FIXME - probably not the django way of doing things, 
-     but I wasn't happy with testform.as_table -->
 
+<div class="container" id="entry_form">
 <table halign="left">
   <tr align="left">
     <td align="right"><b>{{ testform.do_search.label }}:</b></td>
@@ -19,8 +40,7 @@
     <td align="right"><b>{{ testform.target_dir.label }}:</b></td>
     <td>{{ testform.target_dir }}</td>
     <td><input type="button" name="targetdirname" value="Select Dir" 
-            onchange="filenametoentry(document.entryform.targetdirname, document.entryform.target_dir)"
-            onclick="dobrowse('dir')"/></td>
+            onclick="toggle_visibility('target_select')"/></td>
   </tr>
   <tr>
     <td align="right"><b>{{ testform.recursion.label }}:</b></td>
@@ -30,8 +50,7 @@
     <td align="right"><b>{{ testform.target.label }}:</b></td>
     <td>{{ testform.target }}</td>
     <td><input type="button" name="targetfilename" value="Select File"
-            onchange="filenametoentry(document.entryform.targetfilename, document.entryform.target)"
-            onclick="dobrowse('file')"/></td>
+            onclick="toggle_visibility('target_select')"/></td>
   </tr>      
   <tr>
     <td align="right"><b>{{ testform.user.label }}:</b></td>
@@ -52,41 +71,64 @@
     <td><input type="submit" name="submit" value="Run Test" /></td>
   </tr>
 </table>
+</div>
+	
+<div class="container" id="target_select"> 
+	<div id="target" class="browser"></div> 
+</div>
 
 <script language="JavaScript">
+    $(document).ready( function() {
+        $('#target').fileTree({
+            root: '/',
+            script: '/linkage/dirlist/',
+            loadMessage: 'waiting to load'
+            }, function(file) {
+                filenametoentry(file);
+        });
+    });
     function setdefaults() {
         document.entryform.target_dir.disabled = true;
         document.entryform.targetdirname.disabled = true;
         document.entryform.do_search.onClick = "toggledisabled()";
+        document.getElementById('target_select').style.display = 'none';
     }
     function toggledisabled() {
         if (document.entryform.do_search.checked == true) {
             document.entryform.target_dir.disabled = false;
             document.entryform.targetdirname.disabled = false;
             document.entryform.targetfilename.disabled = true;
+            document.entryform.target.value = '';
         } else {
             document.entryform.target_dir.disabled = true;
             document.entryform.targetdirname.disabled = true;
             document.entryform.targetfilename.disabled = false;
+            document.entryform.target_dir.value = '';
         }
     }
-    function filenametoentry(selector, entry) {
-        entry.value = selector.value;
-        data = selector.select();
-        alert(data);
+    function filenametoentry(filename) {
+        lastchar = filename.slice(-1);
+        if (document.entryform.do_search.checked == true) {
+            // drop the trailing "/" on a dir, ignore files
+            if (lastchar == '/') {
+                filename = filename.slice(0, -1);
+                document.entryform.target_dir.value = filename;
+            }
+        } else {
+            if (lastchar == '/')
+                filename = filename.slice(0, -1);
+            // here we accept a file or dir
+            document.entryform.target.value = filename;
+        }
     }
-    function dobrowse(where) {
-        alert_string = "browse for " + where; 
-        alert(alert_string);
-    }
-    function extract(what) {
-        if (what.indexOf('/') > -1)
-            answer = what.substring(what.lastIndexOf('/')+1,what.length);
+    function toggle_visibility(id) {
+        var e = document.getElementById(id);
+        if (e.style.display == 'block')
+            e.style.display = 'none';
         else
-            answer = what.substring(what.lastIndexOf('\\')+1,what.length);
-        alert(answer);
-    }            
+            e.style.display = 'block';
+    }
 </script>
 </form>
 
-{% endblock %}
+

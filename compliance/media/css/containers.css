@@ -1,0 +1,16 @@
+.container {
+    float: left;
+    margin: 15px;
+}
+			
+.browser {
+    width: 250px;
+    height: 300px;
+    border-top: solid 1px #BBB;
+    border-left: solid 1px #BBB;
+    border-bottom: solid 1px #FFF;
+    border-right: solid 1px #FFF;
+    background: #FFF;
+    overflow: scroll;
+    padding: 5px;
+}			

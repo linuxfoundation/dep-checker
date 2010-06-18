@@ -6,9 +6,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 from django.conf import settings
 
-# so we can run readelf.py
 import os
 import re
+import urllib
 
 ### each of these views has a corresponding html page in ../templates/linkage
 
@@ -180,6 +180,31 @@ def contributing(request):
 def license(request):
     from site_settings import gui_name, gui_version
     return render_to_response('linkage/license.html', {'name': gui_name, 'version': gui_version})
+
+# this does not have a corresponding dirlist.html
+# this is dynamic filetree content fed to jqueryFileTree for the test.html file/dir selection
+# script for jqueryFileTree points to /linkage/dirlist/
+def dirlist(request):
+    # filter out some directories that aren't useful from "/"
+    not_wanted = [ '/proc', '/dev', '/sys', '/initrd' ]
+    r=['<ul class="jqueryFileTree" style="display: none;">']
+    try:
+        d=urllib.unquote(request.POST.get('dir'))
+        content = os.listdir(d)
+        # slows things a little, but looks more like 'ls'
+        for f in sorted(content, key=unicode.lower):
+            ff=os.path.join(d,f)
+            if ff not in not_wanted and f != 'lost+found':
+                if os.path.isdir(ff): 
+                    r.append('<li class="directory collapsed"><a href="#" rel="%s/">%s</a></li>' % (ff,f))
+                else:
+                    e=os.path.splitext(f)[1][1:] # get .ext and remove dot
+                    r.append('<li class="file ext_%s"><a href="#" rel="%s">%s</a></li>' % (e,ff,f))
+        r.append('</ul>')
+    except Exception,e:
+        r.append('Could not load directory: %s' % str(e))
+    r.append('</ul>')
+    return HttpResponse(''.join(r))
 
 ### utility functions
 
