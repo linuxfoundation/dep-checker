@@ -1,0 +1,37 @@
+{% include "linkage/header.html" %}
+
+<body>
+
+<div id="header">
+  {% include "linkage/banner.html" %}
+  <ul>
+    <li><a href="/linkage/test">Test</a></li>
+    <li><a href="/linkage/results">Results</a></li>
+    <li id="current"><a href="/linkage/documentation">Documentation</a></li>
+  </ul>
+</div>
+
+<br>
+<center>
+<b>{{ name }} version {{ version }}.</b><br>
+<a href="/linkage/about">About</a>
+<a href="/linkage/authors">Authors</a>
+<a href="/linkage/changelog">Changelog</a>
+<a href="/linkage/license">License</a>
+<a href="/linkage/setup">Setup</a>
+<a href="/linkage/contributing">Contributing</a>
+</center>
+
+<div style="overflow:auto; height:300px; width:100%">
+  <table cellpadding="0" cellspacing="0" hspace="20px" width="90%" >
+    <tr>
+      <td>
+{% block content %} {% endblock %}
+      </td>
+    </tr>
+  </table>
+</div>
+
+</body>
+
+{% block scripts %} {% endblock %}

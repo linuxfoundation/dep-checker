@@ -1,24 +1,7 @@
-{% include "linkage/header.html" %}
+{% extends "linkage/base.html" %}
 
-<body>
-
-<div id="header">
-  {% include "linkage/banner.html" %}
-  <ul>
-    <li id="current"><a href="/linkage">Home</a></li>
-    <li><a href="/linkage/test">Test</a></li>
-    <li><a href="/linkage/results">Results</a></li>
-    <li><a href="/linkage/about">About</a></li>
-    <li><a href="/linkage/documentation">Documentation</a></li>
-  </ul>
-</div>
-
-<br>
-<center>
-<b>{{ name }} version {{ version }}.</b>
-</center>
+{% block content %}
 
 <p>This is a tool to analyze linked and static dependencies of compiled ELF binaries and libraries.</p>
 
-</body>
-				
+{% endblock %}

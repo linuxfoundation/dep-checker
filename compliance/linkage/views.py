@@ -20,7 +20,7 @@ def index(request):
 # test run detail page
 def detail(request, test_id):
     t, masterlist = render_detail(test_id)
-    return render_to_response('linkage/detail.html', {'test': t, 'master': masterlist })
+    return render_to_response('linkage/detail.html', {'test': t, 'master': masterlist, 'tab_results': True})
   
 # results list page - this is also a form, for test deletions
 def results(request):
@@ -40,11 +40,11 @@ def results(request):
                     q.delete()
 
     latest_test_list = Test.objects.all().order_by('-test_date')
-    return render_to_response('linkage/results.html', {'latest_test_list': latest_test_list})
+    return render_to_response('linkage/results.html', {'latest_test_list': latest_test_list, 'tab_results': True})
 
 # process test form - this is where the real work happens
 def test(request):
-    cli_command = settings.CLI_COMMAND
+    cli_command = settings.CLI_COMMAND + " -c"
     if request.method == 'POST': # If the form has been submitted...
         testform = TestForm(request.POST) # A form bound to the POST data
         if testform.is_valid(): # All validation rules pass
@@ -138,7 +138,8 @@ def test(request):
         testform = TestForm() # An unbound form
 
     return render_to_response('linkage/test.html', {
-        'testform': testform
+        'testform': testform,
+        'tab_test': True,
     })
 
 # Just an "about" page
@@ -149,7 +150,11 @@ def about(request):
 # doc page
 def documentation(request):
     from site_settings import gui_name, gui_version
-    return render_to_response('linkage/documentation.html', {'name': gui_name, 'version': gui_version})
+
+    # Read current command-line docs.
+    cmdline_help = os.popen(settings.CLI_COMMAND + " --help").read()
+
+    return render_to_response('linkage/documentation.html', {'name': gui_name, 'version': gui_version, 'cmdline_help': cmdline_help})
 
 # authors page
 def authors(request):
@@ -160,6 +165,16 @@ def authors(request):
 def changelog(request):
     from site_settings import gui_name, gui_version
     return render_to_response('linkage/changelog.html', {'name': gui_name, 'version': gui_version})
+
+# setup page
+def setup(request):
+    from site_settings import gui_name, gui_version
+    return render_to_response('linkage/setup.html', {'name': gui_name, 'version': gui_version})
+
+# contributing page
+def contributing(request):
+    from site_settings import gui_name, gui_version
+    return render_to_response('linkage/contributing.html', {'name': gui_name, 'version': gui_version})
 
 # license page
 def license(request):

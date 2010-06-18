@@ -54,8 +54,8 @@ USE_I18N = False
 # Project root.
 PROJECT_ROOT = get_project_root()
 
-# Command-line client.  Use '-c' to force CSV format.
-CLI_COMMAND = os.path.join(PROJECT_ROOT, 'bin/readelf.py') + ' -c '
+# Command-line client.
+CLI_COMMAND = os.path.join(PROJECT_ROOT, 'bin/readelf.py')
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"

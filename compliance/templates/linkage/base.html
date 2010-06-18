@@ -1,0 +1,20 @@
+{% include "linkage/header.html" %}
+
+<body>
+
+<div id="header">
+  {% include "linkage/banner.html" %}
+  <ul>
+    <li {% if tab_test %}id="current"{% endif %}><a href="/linkage/test">Test</a></li>
+    <li {% if tab_results %}id="current"{% endif %}><a href="/linkage/results">Results</a></li>
+    <li><a href="/linkage/documentation">Documentation</a></li>
+  </ul>
+</div>
+
+<br>
+
+{% block content %} {% endblock %}
+
+</body>
+
+{% block scripts %} {% endblock %}

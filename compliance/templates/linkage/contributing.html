@@ -1,0 +1,72 @@
+{% extends "linkage/base-doc.html" %}
+
+{% block content %}
+
+<div id="home">
+<center>
+<a href="#contributing">Contributing</a>
+<a href="#database">Database Structure</a>
+</center>
+</div>
+
+<div id="contributing">
+<b>Contributing</b>&nbsp;<a href="#home">Top</a>
+
+<p>Any contribution submitted for inclusion in the Dependency Checker Tool must be signed by its author 
+following the Developer's Certificate of Origin 1.1.</p>
+
+<pre>
+By making a contribution to this project, I certify that:
+a) The contribution was created in whole or in part by me and I have the right to submit it under the open
+   source license indicated in the file; or
+b) The contribution is based upon previous work that, to the best of my knowledge, is covered under an 
+   appropriate open source license and I have the right under that license to submit that work with 
+   modifications, whether created in whole or in part by me, under the same open source license (unless I 
+   am permitted to submit under a different license), as indicated in the file; or
+c) The contribution was provided directly to me by some other person who certified (a), (b) or (c) and I 
+   have not modified it.
+d) I understand and agree that this project and the contribution are public and that a record of the 
+   contribution (including all personal information I submit with it, including my sign-off) is maintained 
+   indefinitely and may be redistributed consistent with this project or the open source license(s) involved.
+</pre>
+
+Patches to the mailing list need to be signed as:
+<pre>
+    Signed-off-by: &lt;author name&gt; &lt;author email address&gt;
+</pre>
+Same thing applies for reviewers: 
+<pre>
+    Signed-off-by: &lt;reviewer name&gt; &lt;reviewer email address&gt;
+</pre>
+and committer:
+<pre>
+    Signed-off-by: &lt;committer name&gt; &lt;committer email address&gt;
+</pre>
+
+<div id="database">
+<b>Database Structure</b>&nbsp;<a href="#home">Top</a>
+
+<p>There are basically 3 tables that are used by the application in <i>compliance</i>
+database:</p>
+
+<ul>
+<li><b>linkage_test</b> - Test summary data</li>
+<li><b>linkage_file</b> - Test record for each target file tested. <i>child</i> files from
+recursion are also stored here, but not currently used in reporting</li>
+<li><b>linkage_lib</b> - Test record for each library dependency</li>
+</ul>
+
+Both the <b>file</b> and <b>lib</b> tables have <i>license</i> fields which can be populated
+with license data using normal SQL tools to access the sqlite data. A simple example would
+be something like:
+
+<pre>
+su - compliance
+sqlite3 /opt/linuxfoundation/compliance/compliance
+sqlite> update linkage_lib set license = "GPLv3" where library = "libc.so.6";
+ctrl-D
+</pre>
+
+<p>This could of course be automated with some scripts, perhaps driven by a cron job.</p>
+
+{% endblock %}
