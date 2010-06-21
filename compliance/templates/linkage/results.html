@@ -1,4 +1,8 @@
 {% extends "linkage/base.html" %}
+{% block header %}
+<script type="text/javascript" src="/site_media/js/checklist.js"></script>
+</head>
+{% endblock %}
 
 {% block content %}
 
@@ -10,9 +14,13 @@
               in the upper rh corner, off the page -->
     <table hspace = "20" width = "90%" border="1">
       <tr align="left">
-        <td><input type="checkbox" name="selectall" onclick="toggleall()" /></td>
+        <td><input type="checkbox" name="selectall" 
+                   onclick="toggleall(this.form,'testcheck','selectall')" />
+        </td>
         <td></td>
-        <td><input type="submit" name="submit" value="Delete Selected Tests" onclick="buildlist()" /></td>
+        <td><input type="submit" name="submit" value="Delete Selected Tests"
+                   onclick="buildlist(this.form,'testcheck','testlist')" />
+        </td>
         <td></td>
       </tr>
       <tr align="left">
@@ -44,47 +52,5 @@
     <input type="hidden", name="testlist", value="" />
     </form>
 {% endif %}
-
-{% endblock %}
-
-{% block scripts %}
-
-<script language="JavaScript">
-function toggleall() {
-    chk = document.resultsform.testcheck;
-    if (document.resultsform.selectall.checked == true) {
-        // if only one test, no array
-        if (typeof chk.length == 'undefined') {
-            chk.checked = true;
-        } else {
-            for (i = 0; i < chk.length; i++) {
-                chk[i].checked = true;
-            }
-        }
-    } else {
-        if (typeof chk.length == 'undefined') {
-            chk.checked = false;
-        } else {
-            for (i = 0; i < chk.length; i++) {
-                chk[i].checked = false;
-            }
-        }
-    }
-}
-function buildlist() {
-    chk = document.resultsform.testcheck;
-    tlist = '';
-    if (typeof chk.length == 'undefined') {
-        tlist = chk.value;
-    } else {
-        for (i = 0; i < chk.length; i++) {
-            if (chk[i].checked == true) {
-                tlist = tlist + chk[i].value + ",";
-            }
-        }
-    }
-    document.resultsform.testlist.value = tlist;   
-}
-</script>
 
 {% endblock %}

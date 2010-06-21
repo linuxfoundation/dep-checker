@@ -1,0 +1,49 @@
+{% extends "linkage/base.html" %}
+{% block header %}
+<script type="text/javascript" src="/site_media/js/checklist.js"></script>
+</head>
+{% endblock %}
+
+{% block content %}
+<form name="licenseform" method="post" action="" enctype="multipart/form-data">   
+  <br> <!-- why does firefox 3.6.3 need this? - table ends up 
+            in the upper rh corner, off the page -->
+  <table hspace = "20" width = "90%" border="1">
+    <tr align="center">
+      <td></td>
+      <th>License</th>
+      <td></td>
+    </tr>
+    <tr align="center">
+      <td></td>
+      <td>{{ licenseform.license }}</td>
+      <td><input type="submit" name="submit" value="Add License" /></td>
+    </tr>
+    <tr align="center">
+      <td><input type="checkbox" name="selectall" 
+                 onclick="toggleall(this.form,'licensecheck','selectall')" />
+      </td>
+      <td>
+        <input type="submit" name="submit" value="Delete Selected Licenses" 
+               onclick="buildlist(this.form,'licensecheck','licenselist')" />
+      </td>
+      <td></td>
+    </tr>
+
+    {% for lic in latest_license_list %}
+    <tr>
+      <td align="center"><input type="checkbox" name="licensecheck" value="{{ lic.id }}" /></td>
+      <td>{{ lic.license }}</td>
+      <td></td>
+    </tr>
+    {% endfor %}
+  </table>
+  <input type="hidden", name="licenselist", value="" />
+</form>
+
+{% if not latest_license_list %}
+  <br>
+  <b>No licenses are available.</b>
+{% endif %}
+
+{% endblock %}

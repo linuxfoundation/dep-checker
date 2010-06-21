@@ -1,28 +1,15 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-  <title>Dependency Checker Tool</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <style type="text/css">@import "/site_media/css/tabstyle.css";</style>
+{% extends "linkage/base.html" %}
+{% block header %}
   <!-- for the file browser -->
   <style type="text/css" media="screen">@import "/site_media/css/jqueryFileTree.css";</style>
   <style type="text/css">@import "/site_media/css/containers.css";</style>
   <script type="text/javascript" src="/site_media/js/jquery-1.4.2.min.js"></script>
   <script type="text/javascript" src="/site_media/js/jqueryFileTree.js"></script>
 </head>
+{% endblock %}
 
-<body onload="setdefaults();">
 
-<div id="header">
-  {% include "linkage/banner.html" %}
-  <ul>
-    <li id="current"><a href="/linkage/test">Test</a></li>
-    <li><a href="/linkage/results">Results</a></li>
-    <li><a href="/linkage/documentation">Documentation</a></li>
-  </ul>
-</div>
-
+{% block content %}
 
 <b>Create Test:</b>
 
@@ -76,7 +63,11 @@
 <div class="container" id="target_select"> 
 	<div id="target" class="browser"></div> 
 </div>
+</form>
 
+{% endblock %}
+
+{% block scripts %}
 <script language="JavaScript">
     $(document).ready( function() {
         $('#target').fileTree({
@@ -129,6 +120,6 @@
             e.style.display = 'block';
     }
 </script>
-</form>
 
+{% endblock %}
 

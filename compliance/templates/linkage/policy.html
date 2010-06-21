@@ -1,0 +1,80 @@
+{% extends "linkage/base.html" %}
+{% block header %}
+<script type="text/javascript" src="/site_media/js/checklist.js"></script>
+</head>
+{% endblock %}
+
+{% block content %}
+
+<form name="policyform" method="post" action="" enctype="multipart/form-data">   
+  <br> <!-- why does firefox 3.6.3 need this? - table ends up 
+              in the upper rh corner, off the page -->
+  <table hspace = "20" width = "90%" border="1">
+    <tr>
+      <td></td>
+      <th>Target License</th>
+      <th>Dependency License</th>
+      <th>Relationship</th>
+      <!-- Rank field is not used right now -->
+      {% if show_rank %}
+      <th>Rank</th>
+      {% endif %}
+      <th>Date</th>
+    </tr>
+    <tr align="center">
+      <td></td>
+      <td>{{ policyform.tlicense }}</td>
+      <td>{{ policyform.dlicense }}</td>
+      <td>{{ policyform.relationship }}</td>
+      <!-- Rank field is not used right now -->
+      {% if show_rank %}
+      <td>{{ policyform.rank }}</td>
+      {% endif %}
+      <td><input type="submit" name="submit" value="Add Policy" /></td>
+    </tr>
+    <tr align="center">
+      <td><input type="checkbox" name="selectall" 
+                 onclick="toggleall(this.form,'policycheck','selectall')" />
+      </td>
+      <td></td>
+      <td>
+        <input type="submit" name="submit" value="Delete Selected Policies" 
+               onclick="buildlist(this.form,'policycheck','policylist')" />
+      </td>
+      <td></td>
+      <!-- Rank field is not used right now -->
+      {% if show_rank %}
+      <td></td>
+      {% endif %}
+      <td></td>
+    </tr>
+  {% for pol in latest_policy_list %}
+    <tr>
+      <td align="center"><input type="checkbox" name="policycheck" value="{{ pol.id }}" /></td>
+      <td>{{ pol.tlicense }}</td>
+      <td>{{ pol.dlicense }}</td>
+      <td>{{ pol.relationship }}</td>
+      <!-- Rank field is not used right now -->
+      {% if show_rank %}
+      <td>{{ pol.rank }}</td>
+      {% endif %}
+      <td>{{ pol.edit_date|date:"M d, Y H:i:s" }}</td>
+    </tr>
+  {% endfor %}
+  </table>
+  <input type="hidden", name="policylist", value="" />
+  {% if not show_rank %}
+    <div style="display:none">
+    {{ policyform.rank }}
+    </duv>
+  {% endif %}
+</form>
+
+{% if not latest_policy_list %}
+   <br>
+   <b>No policies are available.</b>
+{% endif %}
+{{ choices }}
+
+{% endblock %}
+

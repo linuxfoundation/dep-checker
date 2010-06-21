@@ -1,5 +1,6 @@
 from django.db import models
 from django.forms import ModelForm, forms
+from django import forms
 import os
 
 # Create your models here.
@@ -8,6 +9,8 @@ import os
 rchoices = tuple(enumerate(range(0, 100)))
 RECURSION_CHOICES = rchoices[1:]
 DEFAULT_USER = os.environ['USER']
+REL_CHOICES = (('Static','Static'), ('Dynamic','Dynamic'), ('Both', 'Both'))
+RANK_CHOICES = (('Low','Low'), ('Normal','Normal'), ('Critical', 'Critical'))
 
 class Test(models.Model):
     do_search = models.BooleanField('Search for target file in target directory')
@@ -41,6 +44,22 @@ class Lib(models.Model):
     def __unicode__(self):
         return self.library
 
+class License(models.Model):
+    license = models.CharField('License', max_length=200, unique=True)
+    def __unicode__(self):
+        return self.license
+
+class Policy(models.Model):
+    tlicense = models.CharField('Target License', max_length=200)
+    dlicense = models.CharField('Dependency License', max_length=200)
+    relationship = models.CharField('Relationship', max_length=20,
+                                    default = 'Static', choices = REL_CHOICES)
+    rank = models.CharField('Rank', max_length=20,
+                            default = 'Low', choices = RANK_CHOICES)
+    edit_date = models.DateTimeField('test date', auto_now=True)
+    def __unicode__(self):
+        return self.tlicense
+
 class Dep(models.Model):
     file = models.ForeignKey(File)
     lib = models.ForeignKey(Lib)
@@ -56,7 +75,29 @@ class FileForm(ModelForm):
         model = File
 
 class LibForm(ModelForm):
-    class meta:
+    class Meta:
         model = Lib
 
+class LicenseForm(ModelForm):
+    class Meta:
+        model = License
+
+class PolicyForm(ModelForm):
+    class Meta:
+        model = Policy
+
+    tlicense = forms.ChoiceField()
+    dlicense = forms.ChoiceField()
+
+    # get the available licenses to populated the form drop-downs
+    licenses = License.objects.all().order_by('license')
+    # need a tuple for the drop-down
+    choices = []
+    # no default
+    choices.append(('',''))
+    for lic in licenses:
+        choices.append((lic.license, lic.license))
+
+    tlicense.choices = choices
+    dlicense.choices = choices
 

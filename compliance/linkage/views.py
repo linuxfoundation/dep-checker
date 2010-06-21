@@ -1,7 +1,7 @@
 # Create your views here.
 from django.template import Context, loader
 from django.shortcuts import render_to_response, get_object_or_404
-from compliance.linkage.models import Test, File, Lib, TestForm, FileForm, LibForm
+from compliance.linkage.models import Test, File, Lib, License, Policy, TestForm, LicenseForm, PolicyForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 from django.conf import settings
@@ -42,6 +42,60 @@ def results(request):
     latest_test_list = Test.objects.all().order_by('-test_date')
     return render_to_response('linkage/results.html', {'latest_test_list': latest_test_list, 'tab_results': True})
 
+# licenses entry/maintenance page
+def licenses(request):
+    if request.method == 'POST': # If the form has been submitted...
+        mode = urllib.unquote(request.POST.get('submit'))
+
+        if re.search("^Add", mode):   
+            licenseform = LicenseForm(request.POST) # A form bound to the POST data
+            # request to add data
+            if licenseform.is_valid(): # All validation rules pass
+                licenseform.save()
+
+        else:
+            # delete request
+            licenselist = request.POST.get('licenselist', '')
+            if licenselist != '':
+                delete_records(License, licenselist)
+
+    licenseform = LicenseForm() # An unbound form
+
+    latest_license_list = License.objects.all().order_by('license')
+    return render_to_response('linkage/licenses.html', {
+                              'latest_license_list': latest_license_list, 
+                              'licenseform': licenseform,
+                              'tab_licenses': True })
+
+# policy list page - this is also a form, for policy deletions/updates
+def policy(request):
+    from site_settings import show_rank
+
+    if request.method == 'POST': # If the form has been submitted...
+        mode = urllib.unquote(request.POST.get('submit'))
+
+        if re.search("^Add", mode):
+            policyform = PolicyForm(request.POST) # A form bound to the POST data
+            # request to add data
+            if policyform.is_valid(): # All validation rules pass
+                policyform.save()
+       
+        else:
+            # delete request       
+            policylist = request.POST.get('policylist', '')
+            if policylist != '':
+                delete_records(Policy, policylist)
+
+    policyform = PolicyForm() # An unbound form
+
+    latest_policy_list = Policy.objects.all().order_by('-edit_date')
+
+    return render_to_response('linkage/policy.html', {
+                              'show_rank': show_rank,
+                              'latest_policy_list': latest_policy_list, 
+                              'policyform': policyform, 
+                              'tab_policy': True })
+
 # process test form - this is where the real work happens
 def test(request):
     cli_command = settings.CLI_COMMAND + " -c"
@@ -70,8 +124,8 @@ def test(request):
                 # check for no result - these are known exit messages from the cli
                 if not re.search("(does not|was not found|not an ELF)", dbdata):
                     dbdata = dbdata.rstrip("\r\n")
-                    # format for level 1 is depth, parent, dep
-                    # format for level 1 + N is depth, child path, child, dep, dep...
+                    # format for level 1 is: depth, parent, dep
+                    # format for level 1 + N is: depth, child path, child, dep, dep...
                     deps = dbdata.split(",")
 
                     # write the file record
@@ -142,6 +196,8 @@ def test(request):
         'tab_test': True,
     })
 
+### these are all basically documentation support
+
 # Just an "about" page
 def about(request):
     from site_settings import gui_name, gui_version
@@ -207,6 +263,16 @@ def dirlist(request):
     return HttpResponse(''.join(r))
 
 ### utility functions
+
+# delete table records requested by id from one of the input forms
+def delete_records(table, rlist):
+            
+    records = rlist.split(",")
+
+    for record in records:
+        if record != '':
+            q = table.objects.filter(id = record)
+            q.delete()
 
 # pre-render the table data for the detail page
 def render_detail(test_id):

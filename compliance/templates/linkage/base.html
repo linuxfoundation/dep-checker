@@ -1,12 +1,15 @@
 {% include "linkage/header.html" %}
+{% block header %} {% endblock %}
 
-<body>
+{% if tab_test %}<body onload="setdefaults();">{% else %}<body>{% endif %}
 
 <div id="header">
   {% include "linkage/banner.html" %}
   <ul>
     <li {% if tab_test %}id="current"{% endif %}><a href="/linkage/test">Test</a></li>
     <li {% if tab_results %}id="current"{% endif %}><a href="/linkage/results">Results</a></li>
+    <li {% if tab_licenses %}id="current"{% endif %}><a href="/linkage/licenses">Licenses</a></li>
+    <li {% if tab_policy %}id="current"{% endif %}><a href="/linkage/policy">License Policies</a></li>
     <li><a href="/linkage/documentation">Documentation</a></li>
   </ul>
 </div>
