@@ -7,9 +7,17 @@
 {% block content %}
 
 <form name="policyform" method="post" action="" enctype="multipart/form-data">   
-  <br> <!-- why does firefox 3.6.3 need this? - table ends up 
-              in the upper rh corner, off the page -->
-  <table hspace = "20" width = "90%" border="1">
+  <p>In this window setting, you will define the license combinations that you want 
+     the tool to flag as part of reporting linkage relationship.</p>
+  <p>As an example, if you want to be flagged when a binary licensed under A links 
+     statically to a library licensed under B, then you need to enter A under the 
+     "Target License" field, B under the "Dependency License" field, specify "Static" 
+     under relationship and click on "Add Policy".</p> 
+  <p>Once you do that, anytime the tool comes across a binary licensed under license A 
+     that statically links to a library licensed under license B, you
+     will be visually notified via the UI. You can delete and add these policies.</p> 
+
+  <table width = "100%" border="1">
     <tr>
       <td></td>
       <th>Target License</th>

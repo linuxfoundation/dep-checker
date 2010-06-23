@@ -6,17 +6,20 @@
 
 {% block content %}
 <form name="licenseform" method="post" action="" enctype="multipart/form-data">   
-  <br> <!-- why does firefox 3.6.3 need this? - table ends up 
-            in the upper rh corner, off the page -->
-  <table hspace = "20" width = "90%" border="1">
+  <p>In this page, users create references to the various licenses used in 
+     their products to allow them to define policies around linkages made between 
+     binaries and libraries available under licenses.</p>
+  <table width = "100%" border="1">
     <tr align="center">
       <td></td>
       <th>License</th>
+      <th>Version</th>
       <td></td>
     </tr>
     <tr align="center">
       <td></td>
       <td>{{ licenseform.license }}</td>
+      <td>{{ licenseform.version }}</td>
       <td><input type="submit" name="submit" value="Add License" /></td>
     </tr>
     <tr align="center">
@@ -28,12 +31,14 @@
                onclick="buildlist(this.form,'licensecheck','licenselist')" />
       </td>
       <td></td>
+      <td></td>
     </tr>
 
     {% for lic in latest_license_list %}
     <tr>
       <td align="center"><input type="checkbox" name="licensecheck" value="{{ lic.id }}" /></td>
       <td>{{ lic.license }}</td>
+      <td>{{ lic.version }}</td>
       <td></td>
     </tr>
     {% endfor %}

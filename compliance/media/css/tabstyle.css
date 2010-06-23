@@ -13,6 +13,7 @@ body {
 #header {
   float:left;
   width:100%;
+  height:15%;
   background:#DAE0D2 url("/site_media/images/bg.png") repeat-x bottom;
   font-size:93%;
   line-height:normal;

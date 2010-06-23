@@ -1,4 +1,8 @@
 {% include "linkage/header.html" %}
+
+<!-- sets up the divs to control the styling of the main page body -->
+<style type="text/css">@import "/site_media/css/bodystyle.css";</style>
+
 {% block header %} {% endblock %}
 
 {% if tab_test %}<body onload="setdefaults();">{% else %}<body>{% endif %}
@@ -14,9 +18,13 @@
   </ul>
 </div>
 
-<br>
-
+<div id="wrapper">
+<div id="lmargin"></div>
+<div id="main">
 {% block content %} {% endblock %}
+</div>
+<div id="rmargin"></div>
+</div>
 
 </body>
 

@@ -6,14 +6,14 @@
 {% block content %}
 
 {% if error_message %}
-  <b>No test result, or error message from cli was:</b>
+  <p><b>No test result, or error message from cli was:</b></p>
   <pre>
   {{ error_message }}
   </pre>
 {% else %}
   <div id="print">
   <br> <!-- weird firefox 3.6.3 formatting issue -->
-  <table hspace = "20" width = "90%" border = "1">
+  <table width = "100%" border = "1">
     <tr>
       <td><b>Project: </b>{{ test.project }}</td>
       <td><b>Target: </b>{{ test.target }}</td>
@@ -25,7 +25,7 @@
     </tr>
   </table> 
   <br>
-  <table hspace = "20" width = "90%" border = "1">
+  <table width = "100%" border = "1">
     <tr>
       <td><b>Target</b></td>
       <td><b>Target License</b></td>

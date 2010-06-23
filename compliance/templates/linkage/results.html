@@ -7,14 +7,13 @@
 {% block content %}
 
 {% if not latest_test_list %}
-   <b>No tests are available.</b>
+   <p><b>No tests are available.</b></p>
 {% else %}
+    <br>
     <form name="resultsform" method="post" action="" enctype="multipart/form-data">   
-    <br> <!-- why does firefox 3.6.3 need this? - table ends up 
-              in the upper rh corner, off the page -->
-    <table hspace = "20" width = "90%" border="1">
+    <table width = "100%" border="1">
       <tr align="left">
-        <td><input type="checkbox" name="selectall" 
+        <td align="center"><input type="checkbox" name="selectall" 
                    onclick="toggleall(this.form,'testcheck','selectall')" />
         </td>
         <td></td>
@@ -31,7 +30,7 @@
       </tr>
     {% for test in latest_test_list %}
       <tr valign="top">
-        <td><input type="checkbox" name="testcheck" value="{{ test.id }}" /></td>
+        <td align="center"><input type="checkbox" name="testcheck" value="{{ test.id }}" /></td>
         <td><a href="/linkage/{{ test.id }}/detail">{{ test.target }}</a></td>
         <td>{{ test.test_date|date:"M d, Y H:i:s" }}</td>
         <td><i>Target Directory:</i>

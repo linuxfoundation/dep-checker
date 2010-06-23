@@ -12,6 +12,19 @@ DEFAULT_USER = os.environ['USER']
 REL_CHOICES = (('Static','Static'), ('Dynamic','Dynamic'), ('Both', 'Both'))
 RANK_CHOICES = (('Low','Low'), ('Normal','Normal'), ('Critical', 'Critical'))
 
+def license_choices():
+    # get the available licenses to populated the form drop-downs
+    licenses = License.objects.all().order_by('license')
+    # need a tuple for the drop-down
+    choices = []
+    # no default
+    choices.append(('',''))
+    for lic in licenses:
+        selector = lic.license + " " + lic.version
+        choices.append((selector, selector))
+
+    return choices
+
 class Test(models.Model):
     do_search = models.BooleanField('Search for target file in target directory')
     recursion = models.IntegerField('Recursion level for analysis', 
@@ -45,7 +58,8 @@ class Lib(models.Model):
         return self.library
 
 class License(models.Model):
-    license = models.CharField('License', max_length=200, unique=True)
+    license = models.CharField('License', max_length=200)
+    version = models.CharField('Version', max_length=20)
     def __unicode__(self):
         return self.license
 
@@ -89,15 +103,8 @@ class PolicyForm(ModelForm):
     tlicense = forms.ChoiceField()
     dlicense = forms.ChoiceField()
 
-    # get the available licenses to populated the form drop-downs
-    licenses = License.objects.all().order_by('license')
-    # need a tuple for the drop-down
-    choices = []
-    # no default
-    choices.append(('',''))
-    for lic in licenses:
-        choices.append((lic.license, lic.license))
-
-    tlicense.choices = choices
-    dlicense.choices = choices
+    def __init__(self, *args, **kwargs):
+        super(PolicyForm, self).__init__(*args, **kwargs)
+        self.fields['tlicense'].choices = license_choices()
+        self.fields['dlicense'].choices = license_choices()
 
