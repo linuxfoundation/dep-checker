@@ -14,7 +14,7 @@
     padding-right: 0px; 
     list-style-type: none;
 }
-/* same as lside, but offset 20% down for embedded in the gui, don't shrink fonts */
+/* same as lside, but offset 22% down for embedded in the gui, don't shrink fonts */
 #lside_e {
     position: fixed; 
     width: 14%; 

@@ -109,10 +109,7 @@ def liblicense(request):
                 liblicenseform.save()
        
         elif re.search("^Update", mode):
-            # update the test data with the license bindings
-            llist = LibLicense.objects.all().order_by('library')
-            for ll in llist:
-                Lib.objects.filter(library = ll.library).update(license = ll.license)
+            update_lib_bindings()
 
         else:
             # delete request       
@@ -142,10 +139,7 @@ def targetlicense(request):
                 targetlicenseform.save()
        
         elif re.search("^Update", mode):
-            # update the test data with the license bindings
-            flist = FileLicense.objects.all().order_by('file')
-            for fl in flist:
-                File.objects.filter(file = fl.file).update(license = fl.license)
+            update_file_bindings()
 
         else:
             # delete request       
@@ -247,7 +241,11 @@ def test(request):
                     t = []
                     masterlist = []
 
-            else:             
+            else:
+                # update the license bindings
+                update_file_bindings()
+                update_lib_bindings()
+             
                 # render the results
                 t, masterlist = render_detail(testid)
 
@@ -340,6 +338,18 @@ def delete_records(table, rlist):
         if record != '':
             q = table.objects.filter(id = record)
             q.delete()
+
+# update Lib records for license bindings
+def update_lib_bindings():
+    llist = LibLicense.objects.all().order_by('library')
+    for ll in llist:
+        Lib.objects.filter(library = ll.library).update(license = ll.license)
+
+# update File records for license bindings
+def update_file_bindings():
+    flist = FileLicense.objects.all().order_by('file')
+    for fl in flist:
+        File.objects.filter(file = fl.file).update(license = fl.license)
 
 # pre-render the table data for the detail page
 def render_detail(test_id):
