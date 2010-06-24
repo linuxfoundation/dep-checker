@@ -1,26 +1,8 @@
-Known issues as of 6/2/2010
-
-CLI:
-
-do static analysis here or in gui?
-still not completely happy with the way recursive output is displayed
+Known issues as of 6/24/2010
 
 GUI:
 
-  All:
-	banner.html and header.html can tweak the look'n'feel
-	need a way to stop the server
-
-  Home Tab:
-	fill this with some content
-
-  Test Tab:
-	need file/directory selection to work, modern browsers supress path
-	looking at several ajax/js solutions atm
-
   Detail Page:
-	re-look at how we display recursive results
-
-  About Tab:
-	fill this with some content
+	flag license policy violations
+	update license bindings when we run a test
 
