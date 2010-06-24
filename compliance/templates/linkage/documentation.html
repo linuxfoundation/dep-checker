@@ -1,5 +1,29 @@
-{% extends "linkage/base-doc.html" %}
+{% include "linkage/header.html" %}
+  <!-- sets up the divs to control the styling of the main page body -->
+  <style type="text/css">@import "/site_media/css/docstyle.css";</style>
+</head>
 
-{% block content %}
-{% include "linkage/README.html" %}
-{% endblock %}
+<body>
+
+<div id="header">
+  {% include "linkage/banner.html" %}
+  <ul>
+    <li><a href="/linkage/test">Test</a></li>
+    <li><a href="/linkage/results">Results</a></li>
+    <li><a href="/linkage/licenses">Licenses</a></li>
+    <li><a href="/linkage/policy">License Policies</a></li>
+    <li id="current"><a href="/linkage/documentation">Documentation</a></li>
+  </ul>
+</div>
+
+<div height="5%">
+  <center>
+    <b>{{ name }} version {{ version }}.</b>
+  </center>
+</div>
+
+{% autoescape off %}
+{{ gui_docs }}
+{% endautoescape %}
+</body>
+

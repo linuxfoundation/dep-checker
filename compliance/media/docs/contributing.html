@@ -1,17 +1,3 @@
-{% extends "linkage/base-doc.html" %}
-
-{% block content %}
-
-<div id="home">
-<center>
-<a href="#contributing">Contributing</a>
-<a href="#database">Database Structure</a>
-</center>
-</div>
-
-<div id="contributing">
-<b>Contributing</b>&nbsp;<a href="#home">Top</a>
-
 <p>Any contribution submitted for inclusion in the Dependency Checker Tool must be signed by its author 
 following the Developer's Certificate of Origin 1.1.</p>
 
@@ -43,30 +29,3 @@ and committer:
     Signed-off-by: &lt;committer name&gt; &lt;committer email address&gt;
 </pre>
 
-<div id="database">
-<b>Database Structure</b>&nbsp;<a href="#home">Top</a>
-
-<p>There are basically 3 tables that are used by the application in <i>compliance</i>
-database:</p>
-
-<ul>
-<li><b>linkage_test</b> - Test summary data</li>
-<li><b>linkage_file</b> - Test record for each target file tested. <i>child</i> files from
-recursion are also stored here, but not currently used in reporting</li>
-<li><b>linkage_lib</b> - Test record for each library dependency</li>
-</ul>
-
-Both the <b>file</b> and <b>lib</b> tables have <i>license</i> fields which can be populated
-with license data using normal SQL tools to access the sqlite data. A simple example would
-be something like:
-
-<pre>
-su - compliance
-sqlite3 /opt/linuxfoundation/compliance/compliance
-sqlite> update linkage_lib set license = "GPLv3" where library = "libc.so.6";
-ctrl-D
-</pre>
-
-<p>This could of course be automated with some scripts, perhaps driven by a cron job.</p>
-
-{% endblock %}
