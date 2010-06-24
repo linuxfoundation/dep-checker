@@ -23,8 +23,4 @@ else
     SU_CMD="/bin/sh -c"
 fi
 
-$SU_CMD "cd $depchecker_path/compliance; python manage.py runserver &" 
-
-sleep 10
-xdg-open "http://127.0.0.1:8000/linkage"
-
+exec $SU_CMD "$depchecker_path/bin/dep-checker.py start"
