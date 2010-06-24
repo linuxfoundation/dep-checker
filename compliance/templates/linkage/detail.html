@@ -36,8 +36,8 @@
     {% for row in master %}
       <tr valign = "top">
         <td>{{ row.file }}</td>
-        <td>{{ row.license }}</td>
         {% autoescape off %}
+        <td>{{ row.license }}</td>
         <td>{{ row.libs }}</td>
         <td>{{ row.licenses }}</td>
         {% endautoescape %}

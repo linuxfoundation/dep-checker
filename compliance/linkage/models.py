@@ -2,6 +2,7 @@ from django.db import models
 from django.forms import ModelForm, forms
 from django import forms
 import os
+import re
 
 # Create your models here.
 
@@ -27,13 +28,14 @@ def license_choices():
 
 def library_choices():
     # get the available libraries to populated the form drop-downs
-    libraries = Lib.objects.values('library').distinct()
+    libraries = Lib.objects.exclude(library__contains='(static)').values('library').distinct()
     # need a tuple for the drop-down
     choices = []
     # no default
     choices.append(('',''))
     for lib in libraries:
-        choices.append((lib['library'], lib['library']))
+        selector = lib['library']
+        choices.append((selector, selector))
 
     return choices
 

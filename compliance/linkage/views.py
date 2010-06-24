@@ -5,10 +5,14 @@ from compliance.linkage.models import Test, File, Lib, License, LibLicense, File
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 from django.conf import settings
+from django.db.models import Q
 
 import os
 import re
 import urllib
+
+# used for binding and policy
+is_static = '(static)'
 
 ### each of these views has a corresponding html page in ../templates/linkage
 
@@ -342,14 +346,36 @@ def delete_records(table, rlist):
 # update Lib records for license bindings
 def update_lib_bindings():
     llist = LibLicense.objects.all().order_by('library')
+    # bind both the dynamic and static version
     for ll in llist:
-        Lib.objects.filter(library = ll.library).update(license = ll.license)
+        Lib.objects.filter(Q(library = ll.library) | Q(library = ll.library + is_static)).update(license = ll.license)
 
 # update File records for license bindings
 def update_file_bindings():
     flist = FileLicense.objects.all().order_by('file')
     for fl in flist:
         File.objects.filter(file = fl.file).update(license = fl.license)
+
+# check a target/library pair for policy violations
+def check_policy(flicense, llicense, library, issue):
+    ltype = 'Dynamic'
+    if re.search(is_static, library):
+        ltype = 'Static'
+    policyset = Policy.objects.filter(tlicense = flicense, dlicense = llicense)
+    policyset = policyset.filter(Q(relationship = ltype) | Q(relationship = 'Both'))
+    if policyset:
+        issue = issue or True
+        llicense = flag_policy_issue(llicense)
+
+    return issue, llicense
+        
+# flag a policy issue for the test results rendering
+def flag_policy_issue(value):
+    # to highlight the issues
+    tag_red = '<font color="red">'
+    tag_end = '</font><img src="/site_media/images/red_flag.png">'
+    value = tag_red + value + tag_end
+    return value
 
 # pre-render the table data for the detail page
 def render_detail(test_id):
@@ -377,7 +403,8 @@ def render_detail(test_id):
     # this gets incremented before the first record is complete
     counter = -1
     spacer = "&nbsp;&nbsp;"
-
+    
+    policy_issue = False
     for lib in libset:
         fileid = lib.file_id
         # no indent for level 1
@@ -385,22 +412,30 @@ def render_detail(test_id):
         # we don't use this at the moment
         parent = lib.parent_id
         if lib.license:
-            llicense = lib.license
+            policy_issue, llicense = check_policy(llist[counter], lib.license, lib.library, policy_issue)
         else:
             llicense = 'TBD'
         if fileid != lastid:
             if liblist != '':
+                if policy_issue:
+                    llist[counter] = flag_policy_issue(llist[counter]) 
                 masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'licenses': liclist})
             liblist = lib.library
-            liclist = llicense
             counter += 1
+            # reset and check against the new binary, if we have a license
+            policy_issue = False
+            if lib.license:
+                policy_issue, llicense = check_policy(llist[counter], lib.license, lib.library, policy_issue)
+            liclist = llicense
         else:
             liblist += '<BR>' + spacer * level + lib.library
             liclist += '<BR>' + llicense
         lastid = fileid
 
     # add the last record
+    if policy_issue:
+        llist[counter] = flag_policy_issue(llist[counter]) 
     masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'licenses': liclist})
-
+    
     return t, masterlist
 
