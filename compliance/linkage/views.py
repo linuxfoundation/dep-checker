@@ -198,11 +198,6 @@ def test(request):
 
 ### these are all basically documentation support
 
-# Just an "about" page
-def about(request):
-    from site_settings import gui_name, gui_version
-    return render_to_response('linkage/about.html', {'name': gui_name, 'version': gui_version})
-
 # doc page
 def documentation(request):
     from site_settings import gui_name, gui_version
@@ -242,31 +237,6 @@ def documentation(request):
                                'version': gui_version, 
                                'cmdline_help': cmdline_help,
                                'gui_docs': docs })
-
-# authors page
-def authors(request):
-    from site_settings import gui_name, gui_version
-    return render_to_response('linkage/authors.html', {'name': gui_name, 'version': gui_version})
-
-# changelog page
-def changelog(request):
-    from site_settings import gui_name, gui_version
-    return render_to_response('linkage/changelog.html', {'name': gui_name, 'version': gui_version})
-
-# setup page
-def setup(request):
-    from site_settings import gui_name, gui_version
-    return render_to_response('linkage/setup.html', {'name': gui_name, 'version': gui_version})
-
-# contributing page
-def contributing(request):
-    from site_settings import gui_name, gui_version
-    return render_to_response('linkage/contributing.html', {'name': gui_name, 'version': gui_version})
-
-# license page
-def license(request):
-    from site_settings import gui_name, gui_version
-    return render_to_response('linkage/license.html', {'name': gui_name, 'version': gui_version})
 
 # this does not have a corresponding dirlist.html
 # this is dynamic filetree content fed to jqueryFileTree for the test.html file/dir selection
