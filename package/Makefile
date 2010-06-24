@@ -17,14 +17,13 @@ SOURCE1 = $(PACKAGE)-$(VERSION).tar.gz
 TMP_BUILD_DIR=/tmp/$(FULL_PACKAGE_NAME)
 
 # Handle different version generation for snapshots than for official builds
-# OFFICIAL_RELEASE should be set to the tag to extract from CVS
+# OFFICIAL_RELEASE should be set to the tag to extract from version control
 ifdef OFFICIAL_RELEASE
 VERSION_SUFFIX=
-# EXPORT_TAG should be set to the cvs tag to use
-EXPORT_TAG=-r $(OFFICIAL_RELEASE)
+EXPORT_TAG=$(OFFICIAL_RELEASE)
 else
 VERSION_SUFFIX=.$(ISO_DATE)
-EXPORT_TAG=-D now
+EXPORT_TAG=HEAD
 endif
 
 # Determine whether to use rpm or rpmbuild to build the packages
@@ -92,6 +91,7 @@ endif
 	@rm -rf $(RPM_TMP_BUILD_DIR)
 
 $(SOURCE1):
-	bzr export $(SOURCE1) $(BZRTREES)/$(BZR_MODULE)
+	(cd .. && git archive --format=tar --prefix=$(PACKAGE)-$(VERSION)/ $(EXPORT_TAG)) \
+	  | gzip -9 > $@
 
 .PHONY : tarball rpm_package

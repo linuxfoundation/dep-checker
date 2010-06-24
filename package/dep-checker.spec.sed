@@ -52,7 +52,6 @@ install staticdb/staticdb.sqlite ${RPM_BUILD_ROOT}%{basedir}/share/dep-checker
 install -d ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install doc/License ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install AUTHORS Changelog ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
-install compliance/templates/linkage/README.html ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install -d ${RPM_BUILD_ROOT}/var%{basedir}/log/compliance
 
 #==================================================
