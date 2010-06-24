@@ -1,0 +1,57 @@
+{% extends "linkage/base.html" %}
+{% block header %}
+<script type="text/javascript" src="/site_media/js/checklist.js"></script>
+</head>
+{% endblock %}
+
+{% block content %}
+
+<form name="liblicenseform" method="post" action="" enctype="multipart/form-data">   
+  <br> <!-- why does firefox 3.6.3 need this? - table ends up 
+              in the upper rh corner, off the page -->
+  <table hspace = "20" width = "90%" border="1">
+    <tr>
+      <td></td>
+      <th>Library</th>
+      <th>License</th>
+      <td></td>
+    </tr>
+    <tr align="center">
+      <td></td>
+      <td>{{ liblicenseform.library }}</td>
+      <td>{{ liblicenseform.license }}</td>
+      <td><input type="submit" name="submit" value="Add Binding" /></td>
+    </tr>
+    <tr align="center">
+      <td><input type="checkbox" name="selectall" 
+                 onclick="toggleall(this.form,'llcheck','selectall')" />
+      </td>
+      <td>
+        <input type="submit" name="submit" value="Delete Selected Bindings" 
+               onclick="buildlist(this.form,'llcheck','liblicenselist')" />
+      </td>
+      <td>
+        <input type="submit" name="submit" value="Update Test Data" />
+      </td>
+      <td></td>
+    </tr>
+  {% for lib in latest_liblicense_list %}
+    <tr>
+      <td align="center"><input type="checkbox" name="llcheck" value="{{ lib.id }}" /></td>
+      <td>{{ lib.library }}</td>
+      <td>{{ lib.license }}</td>
+      <td></td>
+    </tr>
+  {% endfor %}
+  </table>
+  <input type="hidden", name="liblicenselist", value="" />
+</form>
+
+{% if not latest_liblicense_list %}
+   <br>
+   <b>No bindings are available.</b>
+{% endif %}
+{{ choices }}
+
+{% endblock %}
+

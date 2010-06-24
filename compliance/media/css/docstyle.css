@@ -18,8 +18,8 @@
 #lside_e {
     position: fixed; 
     width: 14%; 
-    height: 80%; 
-    top: 20%; 
+    height: 78%; 
+    top: 22%; 
     left: 0;
     margin: 5;
     background:#DAE0D2;
@@ -41,12 +41,12 @@
     font-size: smaller;
     overflow: auto; 
 }
-/* same as main, but offset 20% down for embedded in the gui, don't shrink fonts */
+/* same as main, but offset 22% down for embedded in the gui, don't shrink fonts */
 #main_e {
     position: fixed; 
     width: 85%; 
-    height: 80%; 
-    top: 20%; 
+    height: 78%; 
+    top: 22%; 
     left: 14%;
     margin: 5;
     padding-left: 10px;

@@ -1,7 +1,7 @@
 # Create your views here.
 from django.template import Context, loader
 from django.shortcuts import render_to_response, get_object_or_404
-from compliance.linkage.models import Test, File, Lib, License, Policy, TestForm, LicenseForm, PolicyForm
+from compliance.linkage.models import Test, File, Lib, License, LibLicense, FileLicense, Policy, TestForm, LicenseForm, PolicyForm, LibLicenseForm, FileLicenseForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 from django.conf import settings
@@ -95,6 +95,72 @@ def policy(request):
                               'latest_policy_list': latest_policy_list, 
                               'policyform': policyform, 
                               'tab_policy': True })
+
+# library/license binding page
+def liblicense(request):
+
+    if request.method == 'POST': # If the form has been submitted...
+        mode = urllib.unquote(request.POST.get('submit'))
+
+        if re.search("^Add", mode):
+            liblicenseform = LibLicenseForm(request.POST) # A form bound to the POST data
+            # request to add data
+            if liblicenseform.is_valid(): # All validation rules pass
+                liblicenseform.save()
+       
+        elif re.search("^Update", mode):
+            # update the test data with the license bindings
+            llist = LibLicense.objects.all().order_by('library')
+            for ll in llist:
+                Lib.objects.filter(library = ll.library).update(license = ll.license)
+
+        else:
+            # delete request       
+            liblicenselist = request.POST.get('liblicenselist', '')
+            if liblicenselist != '':
+                delete_records(LibLicense, liblicenselist)
+
+    liblicenseform = LibLicenseForm() # An unbound form
+
+    latest_liblicense_list = LibLicense.objects.all().order_by('library')
+
+    return render_to_response('linkage/liblicense.html', {
+                              'latest_liblicense_list': latest_liblicense_list, 
+                              'liblicenseform': liblicenseform, 
+                              'tab_liblicense': True })
+
+# target/license binding page
+def targetlicense(request):
+
+    if request.method == 'POST': # If the form has been submitted...
+        mode = urllib.unquote(request.POST.get('submit'))
+
+        if re.search("^Add", mode):
+            targetlicenseform = FileLicenseForm(request.POST) # A form bound to the POST data
+            # request to add data
+            if targetlicenseform.is_valid(): # All validation rules pass
+                targetlicenseform.save()
+       
+        elif re.search("^Update", mode):
+            # update the test data with the license bindings
+            flist = FileLicense.objects.all().order_by('file')
+            for fl in flist:
+                File.objects.filter(file = fl.file).update(license = fl.license)
+
+        else:
+            # delete request       
+            targetlicenselist = request.POST.get('targetlicenselist', '')
+            if targetlicenselist != '':
+                delete_records(FileLicense, targetlicenselist)
+
+    targetlicenseform = FileLicenseForm() # An unbound form
+
+    latest_targetlicense_list = FileLicense.objects.all().order_by('file')
+
+    return render_to_response('linkage/targetlicense.html', {
+                              'latest_targetlicense_list': latest_targetlicense_list, 
+                              'targetlicenseform': targetlicenseform, 
+                              'tab_targetlicense': True })
 
 # process test form - this is where the real work happens
 def test(request):

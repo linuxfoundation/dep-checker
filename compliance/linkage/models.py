@@ -25,6 +25,30 @@ def license_choices():
 
     return choices
 
+def library_choices():
+    # get the available libraries to populated the form drop-downs
+    libraries = Lib.objects.values('library').distinct()
+    # need a tuple for the drop-down
+    choices = []
+    # no default
+    choices.append(('',''))
+    for lib in libraries:
+        choices.append((lib['library'], lib['library']))
+
+    return choices
+
+def file_choices():
+    # get the available targets to populated the form drop-downs
+    files = File.objects.filter(level = 1).values('file').distinct()
+    # need a tuple for the drop-down
+    choices = []
+    # no default
+    choices.append(('',''))
+    for f in files:
+        choices.append((f['file'], f['file']))
+
+    return choices
+
 class Test(models.Model):
     do_search = models.BooleanField('Search for target file in target directory')
     recursion = models.IntegerField('Recursion level for analysis', 
@@ -62,6 +86,14 @@ class License(models.Model):
     version = models.CharField('Version', max_length=20)
     def __unicode__(self):
         return self.license
+
+class LibLicense(models.Model):
+    library = models.CharField('Library', max_length=200, unique=True)
+    license = models.CharField('License', max_length=200)
+
+class FileLicense(models.Model):
+    file = models.CharField('Library', max_length=200, unique=True)
+    license = models.CharField('License', max_length=200)
 
 class Policy(models.Model):
     tlicense = models.CharField('Target License', max_length=200)
@@ -107,4 +139,28 @@ class PolicyForm(ModelForm):
         super(PolicyForm, self).__init__(*args, **kwargs)
         self.fields['tlicense'].choices = license_choices()
         self.fields['dlicense'].choices = license_choices()
+
+class LibLicenseForm(ModelForm):
+    class Meta:
+        model = LibLicense
+
+    license = forms.ChoiceField()
+    library = forms.ChoiceField()
+ 
+    def __init__(self, *args, **kwargs):
+        super(LibLicenseForm, self).__init__(*args, **kwargs)
+        self.fields['license'].choices = license_choices()
+        self.fields['library'].choices = library_choices()
+
+class FileLicenseForm(ModelForm):
+    class Meta:
+        model = FileLicense
+
+    license = forms.ChoiceField()
+    file = forms.ChoiceField()
+ 
+    def __init__(self, *args, **kwargs):
+        super(FileLicenseForm, self).__init__(*args, **kwargs)
+        self.fields['license'].choices = license_choices()
+        self.fields['file'].choices = file_choices()
 
