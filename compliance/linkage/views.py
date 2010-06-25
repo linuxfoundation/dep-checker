@@ -271,17 +271,22 @@ def documentation(request):
     from site_settings import gui_name, gui_version
 
     # Read the standalone docs, and reformat for the gui
-    f = open(settings.STATIC_DOC_ROOT + "/docs/index.html", 'r')
-    doc_index = []
-    for line in f:
-        #replace the div styles for embedded use
-        line = line.replace('<div id="lside">', '<div id="lside_e">')
-        line = line.replace('<div id="main">', '<div id="main_e">')
-        doc_index.append(line)
-    f.close()
+    try:
+        f = open(settings.STATIC_DOC_ROOT + "/docs/index.html", 'r')
+        doc_index = []
+        for line in f:
+            #replace the div styles for embedded use
+            line = line.replace('<div id="lside">', '<div id="lside_e">')
+            line = line.replace('<div id="main">', '<div id="main_e">')
+            doc_index.append(line)
+        f.close()
     
-    # drop the first 11 lines
-    docs = ''.join(doc_index[11:])
+        # drop the first 11 lines
+        docs = ''.join(doc_index[11:])
+
+    except:
+        docs = "<b>Error, no index.html in compliance/media/docs.</b><br>"
+        docs += "If working with a git checkout or tarball, please type 'make' in the top level directory."
 
     return render_to_response('linkage/documentation.html', 
                               {'name': gui_name, 
