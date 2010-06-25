@@ -1,0 +1,33 @@
+#!/usr/bin/python
+import os
+import cgi
+
+# process some plain text files and append to index.html
+# gets around using inline frames and the quasi-html plain text files
+
+doc = ''
+doc_root = '../../../'
+files = ('AUTHORS', 'Changelog')
+    
+def html_ize(root, files):
+    d = ''
+    for file in files:
+        d += '<div id="' + file.lower() + '">\n'
+        d += '<b>' + file.capitalize() + ':</b>\n'
+        d += '<pre>\n'
+        f = open(root + file, 'r')
+        for line in f:
+            d += cgi.escape(line, quote=None)
+        f.close()
+        d += '</pre>\n'
+        d += '</div>\n\n'
+    return d
+
+doc += html_ize(doc_root, files)
+
+doc_root = '../../../doc/'
+files = ('Contributing', 'License')
+
+doc += html_ize(doc_root, files)
+
+print doc

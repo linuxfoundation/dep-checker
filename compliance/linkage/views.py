@@ -270,32 +270,15 @@ def test(request):
 def documentation(request):
     from site_settings import gui_name, gui_version
 
-    # Read current command-line docs - not really being used now 
-    # (good idea but standalone docs need to be hard-coded)
-    cmdline_help = os.popen(settings.CLI_COMMAND + " --help").read()
-
     # Read the standalone docs, and reformat for the gui
     f = open(settings.STATIC_DOC_ROOT + "/docs/index.html", 'r')
     doc_index = []
     for line in f:
-        # drop the iframes and we'll embed these files
-        if re.search('<div id="authors">', line):
-            break
-        else:
-            #replace the div styles for embedded use
-            line = line.replace('<div id="lside">', '<div id="lside_e">')
-            line = line.replace('<div id="main">', '<div id="main_e">')
-            doc_index.append(line)
+        #replace the div styles for embedded use
+        line = line.replace('<div id="lside">', '<div id="lside_e">')
+        line = line.replace('<div id="main">', '<div id="main_e">')
+        doc_index.append(line)
     f.close()
-    # read in the files that were iframes and embed them
-    for file in ('authors','changelog','contributing','license'):
-        doc_index.append('<div id="' + file + '">\n')
-        doc_index.append('<b>' + file.capitalize() + ':</b>\n')
-        f = open(settings.STATIC_DOC_ROOT + "/docs/" + file + ".html", 'r')
-        for line in f:
-            doc_index.append(line)
-        f.close()
-        doc_index.append('</div>\n\n')
     
     # drop the first 11 lines
     docs = ''.join(doc_index[11:])
@@ -303,7 +286,6 @@ def documentation(request):
     return render_to_response('linkage/documentation.html', 
                               {'name': gui_name, 
                                'version': gui_version, 
-                               'cmdline_help': cmdline_help,
                                'gui_docs': docs })
 
 # this does not have a corresponding dirlist.html

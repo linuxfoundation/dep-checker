@@ -15,6 +15,7 @@ URL: http://bzr.linux-foundation.org/lsb/compliance/devel/dep-checker
 BuildRoot: %{_tmppath}/%{name}-root
 AutoReqProv: no
 Requires: python-django
+BuildRequires: python w3m
 
 %description
 A compliance tool to explore FOSS dependencies in binaries/libraries
@@ -34,7 +35,7 @@ The command-line tool is:
 
 #==================================================
 %build
-cd staticdb && make
+make
   
 #==================================================
 %install
@@ -43,6 +44,8 @@ rm -rf ${RPM_BUILD_ROOT}
 install -d ${RPM_BUILD_ROOT}%{basedir}
 cp -ar bin ${RPM_BUILD_ROOT}%{basedir}
 cp -ar compliance ${RPM_BUILD_ROOT}%{basedir}
+rm -f ${RPM_BUILD_ROOT}%{basedir}/compliance/media/docs/*
+install -m 644 compliance/media/docs/*.html ${RPM_BUILD_ROOT}%{basedir}/compliance/media/docs
 install -d ${RPM_BUILD_ROOT}%{basedir}/share/icons/hicolor/16x16/apps
 install -m 644 desktop/lf_small.png ${RPM_BUILD_ROOT}%{basedir}/share/icons/hicolor/16x16/apps
 install -d ${RPM_BUILD_ROOT}%{basedir}/share/applications
@@ -51,10 +54,7 @@ install -d ${RPM_BUILD_ROOT}%{basedir}/share/dep-checker
 install -m 644 staticdb/staticdb.sqlite ${RPM_BUILD_ROOT}%{basedir}/share/dep-checker
 install -d ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install -m 644 doc/License doc/Contributing ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
-install -m 644 AUTHORS Changelog ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
-cd ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
-ln -sf ../../compliance/media/docs/index.html README.html
-cd -
+install -m 644 AUTHORS Changelog README.txt ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install -d ${RPM_BUILD_ROOT}/var%{basedir}/log/compliance
 
 #==================================================
