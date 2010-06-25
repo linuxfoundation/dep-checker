@@ -26,6 +26,16 @@ def get_base_path():
 def set_import_path():
     sys.path.append(get_base_path())
 
+def check_current_user():
+    if os.getuid() == 0:
+        try:
+            compliance_user = pwd.getpwnam("compliance")
+        except KeyError:
+            sys.stderr.write("Could not find user 'compliance'.\n")
+            sys.exit(1)
+
+        os.setuid(compliance_user.pw_uid)
+
 def start():
     childpid = os.fork()
     if childpid == 0:
@@ -61,16 +71,9 @@ def main():
 
     # Switch users if needed.
 
-    if not options.force_root and os.getuid() == 0:
-        try:
-            compliance_user = pwd.getpwnam("compliance")
-        except KeyError:
-            sys.stderr.write("Could not find user 'compliance'.\n")
-            sys.exit(1)
-
-        os.setuid(compliance_user.pw_uid)
-
     if args[0] == "start":
+        if not options.force_root:
+            check_current_user()
         start()
     else:
         stop()
