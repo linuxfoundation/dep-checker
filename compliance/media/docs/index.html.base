@@ -9,6 +9,8 @@
 
 <body>
 
+<!-- if the line count above changes, you need to adjust 
+     documentation in views.py, as it cuts the first 11 lines -->
 <div id="lside">
   <ul>
     <li><a href="#overview">Overview</a></li>
@@ -109,7 +111,7 @@ git clone http://git.linuxfoundation.org/dep-checker.git
 cd dep-checker
 </pre>
 
-Create the static deps database:
+Create the static deps database and the documentation (you will need w3m to create README.txt):
 <pre>
 make
 </pre>
@@ -326,29 +328,4 @@ license information to records.</p>
 </p>
 </div>
 
-<div id="authors">
-  <b>Authors:</b><br>
-  <iframe src="authors.html"></iframe>
-</div>
-
-<div id="changelog">
-<b>Changelog:</b><br>
-  <iframe src="changelog.html"></iframe>
-</div>
-
-<div id="contributing">
-  <b>Contributing:</b><br>
-  <iframe src="contributing.html"></iframe>
-</div>
-
-<div id="license">
-<b>License:</b><br>
-  <iframe src="license.html"></iframe>
-</div>
-
-</div> <!-- end of main -->
-
-<div id="rside">&nbsp;</div>
-
-</body>
-
+<!-- content beyond here is generate by the Makefile -->
