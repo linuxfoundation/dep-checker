@@ -12,6 +12,16 @@ import sqlite3
 import optparse
 version = '0.0.7'
 
+# Get Django loaded.  This has to be done outside a function so
+# the setup is only done once and the modules are globally available.
+
+os.environ["DJANGO_SETTINGS_MODULE"] = "compliance.settings"
+
+django_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(django_path)
+
+from compliance.linkage.models import StaticSymbol
+
 # Custom exceptions.
 
 class NotELFError(StandardError):
@@ -30,8 +40,6 @@ command_line_options = [
                          default=True, help="don't look for static deps")
 ]
 
-database_search_path = [ '/opt/linuxfoundation/share/dep-checker',
-                         './staticdb', '../staticdb' ]
 depth = 1
 do_csv = False
 do_static = True
@@ -63,24 +71,8 @@ def dep_path(target, dep):
 def find_static_library(func):
     "Given a symbol, return the most likely static library it's from."
 
-    found_libs = []
-    dbpath = None
-    for dp in database_search_path:
-        if os.path.exists(os.path.join(dp, "staticdb.sqlite")):
-            dbpath = dp
-            break
-
-    if dbpath:
-        staticdb = sqlite3.connect(os.path.join(dbpath, "staticdb.sqlite"))
-        cursor = staticdb.cursor()
-        cursor.execute("SELECT library FROM static WHERE symbol=?", (func,))
-        results = cursor.fetchall()
-        if len(results) == 1:
-            found_libs.append(results[0][0])
-        elif len(results) > 1:
-            found_libs = [ x[0] for x in results ]
-
-    return found_libs
+    found_libs = StaticSymbol.objects.filter(symbol=func)
+    return [x.libraryname for x in found_libs]
 
 def static_deps_check(target):
     "Look for statically linked dependencies."

@@ -166,3 +166,6 @@ class FileLicenseForm(ModelForm):
         self.fields['license'].choices = license_choices()
         self.fields['file'].choices = file_choices()
 
+class StaticSymbol(models.Model):
+    symbol = models.CharField('Symbol', max_length=200, db_index=True)
+    libraryname = models.CharField('Library', max_length=80)
