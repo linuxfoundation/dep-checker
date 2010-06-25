@@ -6,6 +6,7 @@
 
 import sys
 import os
+import pwd
 import time
 import signal
 import optparse
@@ -13,7 +14,10 @@ import optparse
 from django.core.management import execute_manager
 
 command_line_usage = "%prog start | stop"
-command_line_options = []
+command_line_options = [
+    optparse.make_option("--force-root", action="store_true", 
+                         dest="force_root", default=False)
+    ]
 
 def get_base_path():
     this_module_path = os.path.dirname(os.path.abspath(__file__))
@@ -54,6 +58,18 @@ def main():
     (options, args) = cmdline_parser.parse_args()
     if len(args) != 1 or args[0] not in ["start", "stop"]:
         cmdline_parser.error("incorrect arguments")
+
+    # Switch users if needed.
+
+    if not options.force_root and os.getuid() == 0:
+        try:
+            compliance_user = pwd.getpwnam("compliance")
+        except KeyError:
+            sys.stderr.write("Could not find user 'compliance'.\n")
+            sys.exit(1)
+
+        os.setuid(compliance_user.pw_uid)
+
     if args[0] == "start":
         start()
     else:
