@@ -1,7 +1,7 @@
 PACKAGE=dep-checker
 # version defined in site_settings.py
 VERSION=$(shell grep gui_version ../compliance/linkage/site_settings.py | awk '{print $$3}' | sed 's|"||g')
-RELEASE=1
+RELEASE=2
 
 # Derive date string for daily snapshots
 ISO_DATE=$(shell date +"%Y%m%d")
@@ -45,10 +45,6 @@ RPM_BINARY_DIR=$(RPM_TMP_BUILD_DIR)/RPMS/noarch
 #RPM_BUILD_ARCH=$(shell rpm --rcfile ${RCFILELIST} --eval=%{_target_cpu})
 #RPM_BINARY_DIR=$(RPM_TMP_BUILD_DIR)/RPMS/$(RPM_BUILD_ARCH)
 RPM_SRPM_DIR=$(RPM_TMP_BUILD_DIR)/SRPMS
-
-# Override this on the command line to use a different repo
-BZRTREES?=http://bzr.freestandards.org/compliance/devel
-BZR_MODULE=dep-checker
 
 # Default target
 ifndef BUILD_NO_DEB

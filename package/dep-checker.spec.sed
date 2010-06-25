@@ -44,14 +44,17 @@ install -d ${RPM_BUILD_ROOT}%{basedir}
 cp -ar bin ${RPM_BUILD_ROOT}%{basedir}
 cp -ar compliance ${RPM_BUILD_ROOT}%{basedir}
 install -d ${RPM_BUILD_ROOT}%{basedir}/share/icons/hicolor/16x16/apps
-install desktop/lf_small.png ${RPM_BUILD_ROOT}%{basedir}/share/icons/hicolor/16x16/apps
+install -m 644 desktop/lf_small.png ${RPM_BUILD_ROOT}%{basedir}/share/icons/hicolor/16x16/apps
 install -d ${RPM_BUILD_ROOT}%{basedir}/share/applications
-install desktop/%{name}.desktop ${RPM_BUILD_ROOT}%{basedir}/share/applications
+install -m 644 desktop/%{name}.desktop ${RPM_BUILD_ROOT}%{basedir}/share/applications
 install -d ${RPM_BUILD_ROOT}%{basedir}/share/dep-checker
-install staticdb/staticdb.sqlite ${RPM_BUILD_ROOT}%{basedir}/share/dep-checker
+install -m 644 staticdb/staticdb.sqlite ${RPM_BUILD_ROOT}%{basedir}/share/dep-checker
 install -d ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
-install doc/License ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
-install AUTHORS Changelog ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
+install -m 644 doc/License doc/Contributing ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
+install -m 644 AUTHORS Changelog ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
+cd ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
+ln -sf ../../compliance/media/docs/index.html README.html
+cd -
 install -d ${RPM_BUILD_ROOT}/var%{basedir}/log/compliance
 
 #==================================================
