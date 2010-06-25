@@ -50,8 +50,6 @@ install -d ${RPM_BUILD_ROOT}%{basedir}/share/icons/hicolor/16x16/apps
 install -m 644 desktop/lf_small.png ${RPM_BUILD_ROOT}%{basedir}/share/icons/hicolor/16x16/apps
 install -d ${RPM_BUILD_ROOT}%{basedir}/share/applications
 install -m 644 desktop/%{name}.desktop ${RPM_BUILD_ROOT}%{basedir}/share/applications
-install -d ${RPM_BUILD_ROOT}%{basedir}/share/dep-checker
-install -m 644 staticdb/staticdb.sqlite ${RPM_BUILD_ROOT}%{basedir}/share/dep-checker
 install -d ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install -m 644 doc/License doc/Contributing ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install -m 644 AUTHORS Changelog README.txt ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
@@ -127,17 +125,21 @@ fi
 %dir %{basedir}/compliance
 %dir %{basedir}/share/applications
 %dir %{basedir}/share/icons/hicolor/16x16/apps
-%dir %{basedir}/share/dep-checker
 %dir /var/%{basedir}/log/compliance
 
 %{basedir}/bin/*
 %{basedir}/compliance/*
 %{basedir}/share/icons/hicolor/16x16/apps/*
 %{basedir}/share/applications/*
-%{basedir}/share/dep-checker/*
 %doc %{basedir}/doc/%{name}/*
 
 %changelog
+* Fri Jun 25 2010 Jeff Licquia <licquia@linuxfoundation.org>
+- move static checking db into the regular compliance db
+
+* Thu Jun 24 2010 Jeff Licquia <licquia@linuxfoundation.org>
+- switch to git from bzr for version control
+
 * Mon Jun 07 2010 Jeff Licquia <licquia@linuxfoundation.org>
 - add static checking database
 
