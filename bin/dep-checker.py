@@ -45,7 +45,6 @@ def start():
         execute_manager(settings, ["dep-checker", "runserver"])
     else:
         pid_path = os.path.join(get_base_path(), "server.pid")
-        sys.stdout.write(pid_path + "\n")
         pid_file = open(pid_path, "w")
         pid_file.write(str(childpid))
         pid_file.close()
@@ -58,6 +57,7 @@ def stop():
     if os.path.exists(pid_path):
         server_pid = int(open(pid_path).read())
         os.kill(server_pid, signal.SIGTERM)
+        os.unlink(pid_path)
     else:
         sys.stderr.write("no server process found to stop\n")
         sys.exit(1)
