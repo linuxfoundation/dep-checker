@@ -3,15 +3,13 @@ Layout/Concept
 2 part app: cli/gui
 
 The cli command, readelf.py, should be standard python. It does run
-some system commands like readelf, file, and ldd.  It also relies on a
-separate SQLite database called "staticdb".  To create that, type
-"make" in the top-level directory (the directory containing this
-file).
+some system commands like readelf, file, and ldd.
 
 gui all lives under "compliance", uses django so you need python-django or
-  equivalent
+  equivalent.  Recent versions of the cli also rely on django.
 
-database is sqlite - file "compliance". admin tables and data tables are setup 
+By default, typing "make" in the top-level will create the SQLite
+  database both apps need.
  
 linkage: bulk of the gui code
   models.py is the database/form models
@@ -28,8 +26,10 @@ run in-place, but otherwise expects to be called from
 /opt/linuxfoundation/bin.
 
 to run the gui/server (as user compliance for installed package):
-   bin/deps-checker.sh (for running in-place)
-   /opt/linuxfoundation/bin/deps-checker.sh (for running installed)
+   bin/deps-checker.py start (for running in-place)
+   /opt/linuxfoundation/bin/deps-checker.py start (for running installed)
+
+"deps-checker.py stop" will stop the server.
 
 to access the gui: http://127.0.0.1:8000/linkage
 admin interface: http://127/0.0.1:8000/admin 

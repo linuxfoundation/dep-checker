@@ -118,14 +118,14 @@ make
 
 Run the server and the gui should show up in a browser window:
 <pre>
-./bin/dep-checker.sh
+./bin/dep-checker.py start
 </pre>
 
-Ctrl-C will end the wrapper script, but will not kill the server. To kill all the instances 
-of the django server, you can run:
+Ctrl-C will end the wrapper script, but will not kill the server. To kill 
+the django server, you can run:
 
 <pre>
-./bin/dep-server-stop.sh
+./bin/dep-checker.py stop
 </pre>
 </p>
 </div>
@@ -159,18 +159,18 @@ Under the compliance tree, is a typical django project layout:
 <div id="server">
 <b>Running the GUI server:</b>
 
-<p>To run the gui/server (as user compliance for installed package), there is a shell
+<p>To run the gui/server (as user compliance for installed package), there is a 
 script that su's to the compliance user, starts the server and attempts to open a browser
 page to the GUI:
 
 <pre>
-/opt/linuxfoundation/bin/dep-checker.sh
+/opt/linuxfoundation/bin/dep-checker.py start
 </pre>
 
 To stop the server run:
 
 <pre>
-/opt/linuxfoundation/bin/dep-server-stop.sh
+/opt/linuxfoundation/bin/dep-checker.py stop
 </pre>
 </p>
 

@@ -2,10 +2,10 @@
 Name=Linux Foundation Dependency Checker Tool
 GenericName=Deps Checker
 Comment=Analyse linkage dependencies for FOSS software
-Exec=/opt/linuxfoundation/bin/dep-checker.sh
+Exec=/opt/linuxfoundation/bin/dep-checker.py start
 Icon=/opt/linuxfoundation/share/icons/hicolor/16x16/apps/lf_small.png
 Terminal=false
-TryExec=/opt/linuxfoundation/bin/dep-checker.sh
+TryExec=/opt/linuxfoundation/bin/dep-checker.py
 Type=Application
 MimeType=
 Categories=Development
