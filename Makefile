@@ -1,13 +1,19 @@
 # Top-level Makefile for dep-checker.
 # Copyright 2010 The Linux Foundation.  See LICENSE file for licensing.
 
-default: staticdb compliance/media/docs/index.html README.txt
+default: compliance/compliance compliance/media/docs/index.html README.txt
 
 package:
 	cd package && $(MAKE) rpm_package
 
-staticdb:
+compliance/compliance: compliance/linkage/models.py compliance/linkage/fixtures/initial_data.xml
+	rm -f compliance/compliance
+	cd compliance && python manage.py syncdb --noinput
 	compliance/load_static.py
+
+fixture_regen:
+	(cd compliance && python manage.py dumpdata --format xml) | \
+	  xmllint --format - > compliance/linkage/fixtures/initial_data.xml
 
 compliance/media/docs/index.html:
 	cd compliance/media/docs && $(MAKE)
@@ -19,5 +25,6 @@ clean:
 	cd package && $(MAKE) clean
 	cd compliance/media/docs && $(MAKE) clean
 	rm -f README.txt
+	rm -f compliance/compliance
 
-.PHONY: default clean package staticdb
+.PHONY: default clean package fixture_regen
