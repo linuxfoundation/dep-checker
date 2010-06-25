@@ -271,7 +271,25 @@ def documentation(request):
     from site_settings import gui_name, gui_version
 
     # Read the standalone docs, and reformat for the gui
+    docs = ''
+    status = 0
+
     try:
+        f = open(settings.STATIC_DOC_ROOT + "/docs/index.html", 'r')
+
+    except:
+        # docs are created yet, try to do it
+        status = os.system("cd " + settings.STATIC_DOC_ROOT + "/docs && make")
+        if status != 0:
+            status = os.system("cd " + settings.STATIC_DOC_ROOT + "/docs && ./text-docs-to-html > index.html.addons")
+            if status == 0:
+                status = os.system("cd " + settings.STATIC_DOC_ROOT + "/docs && cat index.html.base index.html.addons index.html.footer > index.html")
+            else:
+                docs = "<b>Error, no index.html in compliance/media/docs.</b><br>"
+                docs += "If working with a git checkout or tarball, please type 'make' in the top level directory."
+
+    # something worked above
+    if not docs:
         f = open(settings.STATIC_DOC_ROOT + "/docs/index.html", 'r')
         doc_index = []
         for line in f:
@@ -283,10 +301,6 @@ def documentation(request):
     
         # drop the first 11 lines
         docs = ''.join(doc_index[11:])
-
-    except:
-        docs = "<b>Error, no index.html in compliance/media/docs.</b><br>"
-        docs += "If working with a git checkout or tarball, please type 'make' in the top level directory."
 
     return render_to_response('linkage/documentation.html', 
                               {'name': gui_name, 
