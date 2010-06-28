@@ -15,7 +15,7 @@ linkage: bulk of the gui code
   models.py is the database/form models
   views.py is the data/form processing code
 
-media: css/images
+media: css/images/docs
 
 templates: html pages using django's "template" language for data/form
 	   handling (these also have some javascript glue)
@@ -25,9 +25,13 @@ from /opt/linuxfoundation/compliance.  Similarly, readelf.py can be
 run in-place, but otherwise expects to be called from
 /opt/linuxfoundation/bin.
 
-to run the gui/server (as user compliance for installed package):
-   bin/deps-checker.py start (for running in-place)
+To run the gui/server (as user compliance for installed package):
    /opt/linuxfoundation/bin/deps-checker.py start (for running installed)
+   
+To run the application in place, you *must* first run "make" to create the
+database and docs, as well as populate the db with the static data:
+   make
+   bin/deps-checker.py start (for running in-place)
 
 "deps-checker.py stop" will stop the server.
 

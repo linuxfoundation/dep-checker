@@ -74,7 +74,7 @@ for discussion of the tool.</p>
 <b>System Requirements:</b>
 
 <p>The command-line program and the GUI require python. It also runs the OS commands: 
-<i>file, ldd, readelf</i>, so these should be present on your system.
+<i>file, ldd, objdump and readelf</i>, so these should be present on your system.
 The GUI requires <a href="http://www.djangoproject.com">Django</a>, along with sqlite 
 support for the results database. A web browser is also needed to interact with the GUI.</p>
 
