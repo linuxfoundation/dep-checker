@@ -95,6 +95,9 @@ system does not provide django, or it's named differently, you may need to insta
 rpm -Uvh dep-checker-0.0.5-1.noarch.rpm --nodeps
 </pre>
 
+<p><b>Note:</b> If you had to use --nodeps, then you <em>must</em> make sure django is installed
+and functional on your system. Both the command line program and the gui depend on django.</p>
+ 
 The installation creates a "compliance" user/group and should create a desktop menu entry
 to launch the server and open the GUI in your web browser.</p>
 
