@@ -390,13 +390,13 @@ test data in the system, you can update the license information for current data
 have potential issues. You select the <i>Target License</i> and <i>Library License</i> from the
 drop-downs and then select the relationship, either Static, Dynamic, or both. When a test is
 run, violations of these policy settings will show up the the report detail printed in red with a
-red flag after the License name. Like the other tabs, you can select and delete policues using
+red flag after the License name. Like the other tabs, you can select and delete policies using
 the checkboxes and the <i>Delete Selected Policies</i> button.</p>
 
 <p>In the screenshot below, you can see an example of a flagged policy violation. The application
-<i>myapp</i> has been compiled against <i>libmylib.so</i>. The licenses: L1v2.0 and L2v1.3 have
-been defined in the policy screen as being an issue. When the test data is displayed, this 
-relationship is flagged as being problematic:</p>
+<i>myapp</i> has been compiled against <i>libmylib.so</i>. The licenses: <i>L1 2.0</i> and 
+<i>L2v1.3</i> have been defined in the policy screen as being an issue. When the test data is 
+displayed, this relationship is flagged as being problematic:</p>
 
 <p><img src="policy_flag.png"></p>
 
