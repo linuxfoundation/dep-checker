@@ -43,11 +43,14 @@
 <div id="overview">
 <b>Overview</b>
 <p>
-The Linux Foundation dependency checker is a tool to explore linkage dependencies of binaries
-and libraries built with FOSS components.<br> 
-The system consists of two pieces, a command-line program 
-"readelf.py" and a GUI frontend that runs in a web browser. 
-</p>
+The Linux Foundation Dependency Checker is a tool to explore both dynamic and static linkage 
+dependencies of binaries and libraries built with FOSS components. Once dependencies are 
+identified, the GUI can provide an easy to interpret visual indication of possible license 
+issues, based on in-house license policies.</p> 
+
+<p>The system consists of two pieces, a command-line program "readelf.py" and a GUI frontend that 
+runs in a web browser.</p>
+
 <p>You can view the development source from 
 <a href="http://git.linuxfoundation.org/?p=dep-checker.git;a=summary">git</a>, 
 or check it out using standard git commands:
@@ -73,8 +76,8 @@ for discussion of the tool.</p>
 <p>The command-line program and the GUI require python. It also runs the OS commands: 
 <i>file, ldd, readelf</i>, so these should be present on your system.
 The GUI requires <a href="http://www.djangoproject.com">Django</a>, along with sqlite 
-support for the results database.
-</p>
+support for the results database. A web browser is also needed to interact with the GUI.</p>
+
 </div>
 
 <div id="install">
@@ -89,17 +92,15 @@ system does not provide django, or it's named differently, you may need to insta
 --nodeps:
 
 <pre>
-rpm -Uvh dep-checker-0.0.2-1.noarch.rpm --nodeps
+rpm -Uvh dep-checker-0.0.5-1.noarch.rpm --nodeps
 </pre>
 
 The installation creates a "compliance" user/group and should create a desktop menu entry
-to launch the server and open the GUI in your web browser.
-</p>
+to launch the server and open the GUI in your web browser.</p>
 
-<p>
-In the future we may bundle django with the package to make things simpler, as well as 
-provide .deb packaging.
-</p>
+<p>In the future we may bundle django with the package to make things simpler, as well as 
+provide .deb packaging.</p>
+
 </div>
 
 <div id="from_git">
@@ -112,7 +113,8 @@ git clone http://git.linuxfoundation.org/dep-checker.git
 cd dep-checker
 </pre>
 
-Create the static deps database and the documentation (you will need w3m to create README.txt):
+Create the application database and the documentation, as well as fille the static deps table
+ with symbols from your system (you will need w3m to create README.txt):
 <pre>
 make
 </pre>
@@ -127,8 +129,8 @@ the django server, you can run:
 
 <pre>
 ./bin/dep-checker.py stop
-</pre>
-</p>
+</pre></p>
+
 </div>
 
 <div id="layout">
@@ -152,7 +154,8 @@ Under the compliance tree, is a typical django project layout:
     creation, <i>settings.py</i> does have some configurable settings. None of the others should 
     be altered.</li>
 <li><b>linkage</b> - dep-checker GUI code</li>
-<li><b>media</b> - static html elements such as images, css, javascript files</li>
+<li><b>media</b> - static html elements such as images, css, javascript files. Documentation 
+    is also in this directory.</li>
 <li><b>templates/linkage</b> - the dep-checker html tree</li>
 </ul>
 </div>
@@ -269,6 +272,12 @@ You will note that even though we asked for a recursion level of 4, the test sto
 level 3, as the program detects when no further recursion is possible.
 </p>
 
+<p>Static library dependencies will appear with <i>(static)</i> appended to the SONAME:
+
+<pre>
+libncurses.so.5 (static)
+</pre></p>
+
 <p>The <i>--no-static</i> option suppresses trying to resolve staticly linked dependencies.</p>
 
 <div id="gui">
@@ -383,6 +392,13 @@ drop-downs and then select the relationship, either Static, Dynamic, or both. Wh
 run, violations of these policy settings will show up the the report detail printed in red with a
 red flag after the License name. Like the other tabs, you can select and delete policues using
 the checkboxes and the <i>Delete Selected Policies</i> button.</p>
+
+<p>In the screenshot below, you can see an example of a flagged policy violation. The application
+<i>myapp</i> has been compiled against <i>libmylib.so</i>. The licenses: L1v2.0 and L2v1.3 have
+been defined in the policy screen as being an issue. When the test data is displayed, this 
+relationship is flagged as being problematic:</p>
+
+<p><img src="policy_flag.png"></p>
 
 </div>
 

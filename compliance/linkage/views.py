@@ -296,6 +296,7 @@ def documentation(request):
             #replace the div styles for embedded use
             line = line.replace('<div id="lside">', '<div id="lside_e">')
             line = line.replace('<div id="main">', '<div id="main_e">')
+            line = line.replace('<img src="', '<img src="/site_media/docs/')
             doc_index.append(line)
         f.close()
     
