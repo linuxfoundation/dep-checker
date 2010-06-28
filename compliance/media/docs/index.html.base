@@ -286,16 +286,21 @@ If a browser does not open by launching the menu item, you can access the GUI
 program:
 
 <ul>
-<li><b>Test</b> - Test entry, initiate form</li>
-<li><b>Results</b> - Tabular list of existing test results</li>
-<li><b>Licenses</b> - License entry tab</li>
-<li><b>License Policies</b> - Define sets of target/dependency license policies, to be flagged during testing</li>
-<li><b>Documentation</b> - This documentation</li>
+<li><a href="#Test"><b>Test</b></a> - Test entry, initiate form</li>
+<li><a href="#Results"><b>Results</b></a> - Tabular list of existing test results</li>
+<li><a href="#Licenses"><b>Licenses</b></a> - License entry tab</li>
+<li><a href="#Target Licenses"<b>Target Licenses</b></a> - Define license bindings for targets (test files)</li>
+<li><a href="#Library Licenses"<b>Library Licenses</b></a> - Define license bindings for libraries</li>
+<li><a href="#License Policies"<b>License Policies</b></a> - Define sets of target/dependency license policies, to be flagged during testing</li>
+<li><b>Documentation</b></a> - This documentation</li>
 </ul>
 
 The final page, which isn't visible in the tabs, is the test results detail page, 
 brought up by either running a test, or clicking on the link in the results page.
 </p>
+
+<div id="Test">
+<b>Test:</b>
 
 <p>A test sequence would typical start at the <b>Test</b> page, where you enter the test
 criteria. This setup parallels the operation of the command line program, where you
@@ -308,24 +313,87 @@ tracking tests.</p>
 
 <p>Once you enter the test criteria, click on the <b>Run Test</b> button. After the test
 runs you will be presented with the detailed test results in tabular form. Depending on
-the number of files to be tested and the recusion level, the test can take a few minutes,
+the number of files to be tested and the recursion level, the test can take a few minutes,
 so be patient.</p>
 
-<p>The test results should also be accessible from the <b>Results</b> page. If you want
-to delete test results, you can select and delete them from here</b>
+<p>Until there are licenses and bindings defined, the results detail will show <i>TBD</i> for
+both the target and dependency licenses. Now that there is data in the system, you can go back
+and define these relationships and update the test data.</p>
+
+<p>There is a <i>Print Results</i> button on the detail page that should open the browser print
+dialog to print to a physical printer or to a file. Some parts of the GUI are hidden in the
+printed output so that only the test results show up in the printed report.</p>
+
 </div>
+
+<div id="Results">
+<b>Results:</b>
+
+<p>The test results should also be accessible from the <b>Results</b> page. This is a tabular
+list of all the test runs, sorted by test id/date. The far-right column has the information
+entered from the <b>Test</b> tab. Clicking on the link for the target file or directory will 
+open the detail tab. If you want to delete test results, you can select the checkboxes and 
+delete them from here, using the <i>Delete Selected Tests</i> button.</p>
+</div>
+
+<div id="Licenses">
+<b>Licenses:</b>
+
+<p>The <b>License</b> tab lets you enter license/version info. You enter the license name 
+<i>(example: GPL)</i> in the left-hand field and the version <i>(example: 3.0)</i> in the
+right-hand field. Like the <b>Results</b> tab, you can select and delete licenses using the
+checkboxes and the <i>Delete Selected Licenses</i> button. The license-version combination will
+be concatenated in report to look like: <i>GPL 3.0</i>.</p>
+
+</div>
+
+<div id="Target Licenses">
+<b>Target Licenses:</b>
+
+<p>The <b>Target Licenses</b> tab lets you define the license binding for the <i>target</i> files,
+that is, the files that are being tested for dependencies. The drop down under <i>Target</i>
+will show all files having test data. The drop-down under <i>License</i> will show all the
+licenses defined in the <b>License</b> tab. If there is no test-data or no licenses, the
+drop-downs will be empty.</p>
+
+</div>
+
+<div id="Library Licenses">
+<b>Library Licenses:</b>
+
+<p>The <b>Library Licenses</b> tab lets you define the license binding for the library
+dependencies. The drop down under <i>License</i> will show all libraries in the test data. 
+The drop-down under <i>License</i> will show all the licenses defined in the <b>License</b> 
+tab. If there is no test-data or no licenses, the drop-downs will be empty. The <i>License</i>
+selector does not differentiate between static and dynamic versions, both will be treated the
+same.</p>
+
+</div>
+
+<div id="License Policies">
+<b>License Policies:</b>
+
+<p>The <b>License Policies</b> tab lets you define pairing of target/library licenses that could
+have potential issues. You select the <i>Target License</i> and <i>Library License</i> from the
+drop-downs and then select the relationship, either Static, Dynamic, or both. When a test is
+run, violations of these policy settings will show up the the report detail printed in red with a
+red flag after the License name. Like the other tabs, you can select and delete policues using
+the checkboxes and the <i>Delete Selected Policies</i> button.</p>
+
+</div>
+
+</div> <!-- end of Using the GUI -->
  
 <div id="admin">
 <b>Admin interface:</b>
 
-<p>In the current configuration, the django admin interface is enabled. While
-you can use this interface to directly access the database records, one should
-take care not to alter existing records, except in the case of wishing to add
-license information to records.</p>
+<p>In the current configuration, the django admin interface is enabled. While you can use 
+this interface to directly access the database records, one should take care not to alter 
+existing records, except in the case of wishing to add license information to records.</p>
 
 <p><b>admin interface:</b> <a href="http://127.0.0.1:8000/admin" target="_blank">http://127.0.0.1:8000/admin</a>
 (username compliance, password compliance)
 </p>
 </div>
 
-<!-- content beyond here is generate by the Makefile -->
+<!-- content beyond here is generated by the Makefile -->
