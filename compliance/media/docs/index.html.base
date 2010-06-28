@@ -29,6 +29,7 @@
     <li><a href="#gui">Accessing the GUI</a></li>
     <li><a href="#gui-use">Using the GUI</a></li>
     <li><a href="#admin">Admin Interface</a></li>
+    <li><a href="#database">Database Schema</a></li>
   </ul>
   <ul>
     <li><a href="#authors">Authors</a></li>
@@ -354,7 +355,8 @@ be concatenated in report to look like: <i>GPL 3.0</i>.</p>
 that is, the files that are being tested for dependencies. The drop down under <i>Target</i>
 will show all files having test data. The drop-down under <i>License</i> will show all the
 licenses defined in the <b>License</b> tab. If there is no test-data or no licenses, the
-drop-downs will be empty.</p>
+drop-downs will be empty. If there is test data in the system, you can update the license
+information for current data using the <i>Update Test Data</i> button.</p>
 
 </div>
 
@@ -366,7 +368,9 @@ dependencies. The drop down under <i>License</i> will show all libraries in the 
 The drop-down under <i>License</i> will show all the licenses defined in the <b>License</b> 
 tab. If there is no test-data or no licenses, the drop-downs will be empty. The <i>License</i>
 selector does not differentiate between static and dynamic versions, both will be treated the
-same.</p>
+same. If there is no test-data or no licenses, the drop-downs will be empty. If there is 
+test data in the system, you can update the license information for current data using the 
+<i>Update Test Data</i> button.</p>
 
 </div>
 
@@ -385,7 +389,7 @@ the checkboxes and the <i>Delete Selected Policies</i> button.</p>
 </div> <!-- end of Using the GUI -->
  
 <div id="admin">
-<b>Admin interface:</b>
+<b>Admin Interface:</b>
 
 <p>In the current configuration, the django admin interface is enabled. While you can use 
 this interface to directly access the database records, one should take care not to alter 
@@ -396,4 +400,93 @@ existing records, except in the case of wishing to add license information to re
 </p>
 </div>
 
+<div id="database">
+<b>Database Schema:</b>
+
+<p>The database for the application is in the file <i>compliance</i> in the compliance 
+directory. It is an sqlite3 database file. Tables used by the application are as follows
+(arranged more or less as they are integrated into the application tabs):</p>
+
+<ul>
+<li><b>linkage_test</b> - table containing the information entered from the <b>Test</b> tab. Each
+test has an <i>id</i> used to track the test and the relationships to the file and lib 
+tables, although the id is not shown in the gui, only the date/time.</li>
+  <ul>
+    <li>id - test id, used for linking to the file and lib tables (primary key)</li>
+    <li>do_search - boolean value used to determine whether to search a directory tree 
+                    for a particular filename</li>
+    <li>recursion - recursion level for dependency checking, default is 1</li>
+    <li>target - target file or directory</li>
+    <li>target_dir - target directory when searching for a file by name</li>
+    <li>test_date - test date/time</li>
+    <li>user - username entered on the test form</li>
+    <li>project - project name entered on the test form</li>
+    <li>comments - free-form comments field from the test form</li>
+  </ul>
+<li><b>linkage_file</b> - <i>target</i> files examined during a test run. Linked to the 
+<i>test</i> table via <i>test_id</i>.</li>          
+  <ul>
+    <li>id - record id, not exposed in the gui (primary key)</li>
+    <li>test_id - reference to <i>id</i> from the <i>test</i> table</li>
+    <li>file - file name/path. In the recursive case, can be a library path.</li>
+    <li>license - file license</li>
+    <li>level - recursion level. Top-level file tested would be level 1. True paths to the
+                dependent libraries on the system under test would show up here as higher
+                levels when doing recursive testing (these files are not exposed in the GUI).</li>
+    <li>parent_id - When doing recursion, each <i>child</i> file has a parent. This field
+                    captures that relationship.</li>
+  </ul>
+<li><b>linkage_lib</b> - library dependencies of the files from the <i>files</i> table.</li>           
+  <ul>
+    <li>id - record id, not exposed in the gui (primary key)</li>
+    <li>test_id - reference to <i>id</i> from the <i>test</i> table</li>
+    <li>file_id - reference to <i>id</i> from the <i>file</i> table</li>
+    <li>library - library SONAME</li>
+    <li>license - library license</li>
+    <li>level - recursion level</li>
+    <li>parent_id - When doing recursion, each <i>child</i> library has a parent. This field
+                    captures that relationship.</li>
+  </ul>
+<li><b>linkage_license</b> - This table is not linked to any of the test data tables, but
+is used to populate the target/library licenses and license policy drop-downs, which in turn
+fills in the license data for a test and flags policy issues.</li>
+  <ul>
+    <li>id - record id, not exposed in the gui (primary key)</li>
+    <li>license - license string (e.g. GPL)</li>
+    <li>version - license version number (e.g. 3.0)</li>
+  </ul>
+<li><b>linkage_filelicense</b> - <i>target</i> file/license bindings. These are not linked to
+any other table, but the information, if present, is used to fill in the license field in the
+<i>file</i> table after a test run, or you can manually update the data from the <b>Target 
+Licenses</b> tab.</li>   
+  <ul>
+    <li>id - record id, not exposed in the gui (primary key)</li>
+    <li>file - file name/path, selected from the <i>file</i> table</li>
+    <li>license - selected concatenation of license/version from the <i>license</i> table</li>
+  </ul>
+<li><b>linkage_liblicense</b> - library/license bindings. These are not linked to
+any other table, but the information, if present, is used to fill in the license field in the
+<i>lib</i> table after a test run, or you can manually update the data from the <b>Library 
+Licenses</b> tab.</li>    
+  <ul>
+    <li>id - record id, not exposed in the gui (primary key)</li>
+    <li>library - library SONAME, selected from the <i>lib</i> table</li>
+    <li>license - selected concatenation of license/version from the <i>license</i> table</li>
+  </ul>
+<li><b>linkage_policy</b></li>
+  <ul>
+    <li>id - record id, not exposed in the gui (primary key)</li>
+    <li>tlicense - target license selected from the concatenation of license/version from the <i>license</i> table</li>
+    <li>dlicense - library license selected from the concatenation of license/version from the <i>license</i> table</li>
+    <li>relationship - relationship string, either 'Static', 'Dynamic', or 'Both'</li>
+    <li>rank - problem ranking - currently not used</li>
+    <li>edit_date - date/time the policy was entered</li>
+  </ul>
+<li><b>linkage_staticsymbol</b></li>
+  <ul>
+    <li>id - record id, not exposed in the gui (primary key)</li>
+    <li>symbol - symbol name. Target under test will be queried for the presence of this symbol</li>
+    <li>libraryname - Library SONAME that provides this symbol</li>
+  </ul>
+</ul>
 <!-- content beyond here is generated by the Makefile -->
