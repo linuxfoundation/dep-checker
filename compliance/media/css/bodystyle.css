@@ -1,12 +1,12 @@
 #lmargin {
     float: left; 
-    width: 3%;
+    width: 1%;
 }
 #main {
     float: left; 
-    width: 94%; 
+    width: 98%; 
 }
 #rmargin {
     float: left; 
-    width: 3%;
+    width: 1%;
 }

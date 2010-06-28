@@ -10,7 +10,7 @@
 
 {% block content %}
 
-<br><b>Create Test:</b>
+<b>Create Dependency Checker Test:</b>
 
 {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
 
@@ -19,42 +19,54 @@
 <div class="container" id="entry_form">
 <table halign="left">
   <tr align="left">
-    <td align="right"><b>{{ testform.do_search.label }}:</b></td>
+    <!-- testform.do_search.label is too long -->  
+    <td align="right"><b>Identify dependencies for a specific target file in a<br>target directory</b> (search for the file)<b>:</b></td>
     <td><input type="checkbox" name="do_search" onclick="toggledisabled()" /></td>
   </tr>
   <tr>   
-    <td align="right"><b>{{ testform.target_dir.label }}:</b></td>
+    <td align="right">
+      <b>{{ testform.target_dir.label }}:</b>
+      <br>(Top-level directory to start file search)
+    </td>
     <td>{{ testform.target_dir }}</td>
     <td><input type="button" name="targetdirname" value="Select Dir" 
-            onclick="toggle_visibility('target_select')"/></td>
+               onclick="toggle_visibility('target_select')"/></td>
   </tr>
   <tr>
-    <td align="right"><b>{{ testform.recursion.label }}:</b></td>
+    <td align="right"><b>{{ testform.recursion.label }}:</b>
+      <br>(How deep to drill into the library dependencies)
+    </td>
     <td>{{ testform.recursion }}</td>
   </tr>      
   <tr>
-    <td align="right"><b>{{ testform.target.label }}:</b></td>
+    <td align="right"><b>{{ testform.target.label }}:</b>
+      <br>(File or top-level directory to test)
+    </td>
     <td>{{ testform.target }}</td>
-    <td><input type="button" name="targetfilename" value="Select File"
-            onclick="toggle_visibility('target_select')"/></td>
+    <td><input type="button" name="targetfilename" value="Select File" 
+               onclick="toggle_visibility('target_select')"/></td>
   </tr>      
   <tr>
     <td align="right"><b>{{ testform.user.label }}:</b></td>
     <td>{{ testform.user }}</td>
   </tr>      
   <tr>
-    <td align="right"><b>{{ testform.project.label }}:</b></td>
+    <td align="right"><b>{{ testform.project.label }}:</b>
+      <br>(Optional name of the project being tested)
+    </td>
     <td>{{ testform.project }}</td>
   </tr>      
   <tr>
-    <td align="right"><b>{{ testform.comments.label }}:</b></td>
+    <td align="right"><b>{{ testform.comments.label }}:</b>
+      <br>(Freeform field for any test comments for reporting)
+    </td>
     <td>{{ testform.comments }}</td>
   </tr>      
 
   <tr>
+    <td></td> 
+    <td align="center"><input type="submit" name="submit" value="Run Dependency Check" /></td>
     <td></td>
-    <td></td>
-    <td><input type="submit" name="submit" value="Run Test" /></td>
   </tr>
 </table>
 </div>

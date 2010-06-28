@@ -52,15 +52,15 @@ def file_choices():
     return choices
 
 class Test(models.Model):
-    do_search = models.BooleanField('Search for target file in target directory')
-    recursion = models.IntegerField('Recursion level for analysis', 
+    do_search = models.BooleanField('Identify dependencies for a specific target file in a target directory')
+    recursion = models.IntegerField('Recursion level for dependency checking analysis', 
                                     default = '1', choices = RECURSION_CHOICES)
-    target = models.CharField('File/Path to test', max_length=200)
+    target = models.CharField('File/Path to run through the dependency check', max_length=200)
     target_dir = models.CharField('Target Directory', max_length=200, blank=True)
-    test_date = models.DateTimeField('test date', auto_now=True)
-    user = models.CharField(max_length=200, blank=True, default = DEFAULT_USER)
-    project = models.CharField(max_length=200, blank=True)
-    comments = models.CharField(max_length=200, blank=True)
+    test_date = models.DateTimeField('Test Date', auto_now=True)
+    user = models.CharField('User Name (optional)', max_length=200, blank=True, default = DEFAULT_USER)
+    project = models.CharField('Project Name (optional)', max_length=200, blank=True)
+    comments = models.CharField('Comments (optional)', max_length=200, blank=True)
     def __unicode__(self):
         return self.target
 

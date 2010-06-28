@@ -1,10 +1,11 @@
 .container {
     float: left;
-    margin: 15px;
+    margin: 5px;
+    padding: 5px;
 }
 			
 .browser {
-    width: 250px;
+    width: 220px;
     height: 300px;
     border-top: solid 1px #BBB;
     border-left: solid 1px #BBB;

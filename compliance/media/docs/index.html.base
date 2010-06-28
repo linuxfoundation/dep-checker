@@ -302,8 +302,8 @@ If a browser does not open by launching the menu item, you can access the GUI
 program:
 
 <ul>
-<li><a href="#Test"><b>Test</b></a> - Test entry, initiate form</li>
-<li><a href="#Results"><b>Results</b></a> - Tabular list of existing test results</li>
+<li><a href="#Test"><b>Check Dependencies</b></a> - Test entry, initiate form</li>
+<li><a href="#Results"><b>Review Results</b></a> - Tabular list of existing test results</li>
 <li><a href="#Licenses"><b>Licenses</b></a> - License entry tab</li>
 <li><a href="#Target Licenses"><b>Target Licenses</b></a> - Define license bindings for targets (test files)</li>
 <li><a href="#Library Licenses"><b>Library Licenses</b></a> - Define license bindings for libraries</li>
@@ -316,10 +316,10 @@ brought up by either running a test, or clicking on the link in the results page
 </p>
 
 <div id="Test">
-<b>Test:</b>
+<b>Check Dependencies:</b>
 
-<p>A test sequence would typical start at the <b>Test</b> page, where you enter the test
-criteria. This setup parallels the operation of the command line program, where you
+<p>A test sequence would typical start at the <b>Check Dependencies</b> page, where you enter 
+the test criteria. This setup parallels the operation of the command line program, where you
 select whether to search for a file under a directory, test a whole directory, or just 
 a single file. There is also a drop-down to select the recursion level.</p>
 
@@ -327,7 +327,7 @@ a single file. There is also a drop-down to select the recursion level.</p>
 overridden. The <i>project</i> and <i>comments</i> fields are optional for your use in
 tracking tests.</p>
 
-<p>Once you enter the test criteria, click on the <b>Run Test</b> button. After the test
+<p>Once you enter the test criteria, click on the <b>Run Dependency Check</b> button. After the test
 runs you will be presented with the detailed test results in tabular form. Depending on
 the number of files to be tested and the recursion level, the test can take a few minutes,
 so be patient.</p>
@@ -343,11 +343,11 @@ printed output so that only the test results show up in the printed report.</p>
 </div>
 
 <div id="Results">
-<b>Results:</b>
+<b>Review Results:</b>
 
-<p>The test results should also be accessible from the <b>Results</b> page. This is a tabular
+<p>The test results should also be accessible from the <b>Review Results</b> page. This is a tabular
 list of all the test runs, sorted by test id/date. The far-right column has the information
-entered from the <b>Test</b> tab. Clicking on the link for the target file or directory will 
+entered from the <b>Check Dependencies</b> tab. Clicking on the link for the target file or directory will 
 open the detail tab. If you want to delete test results, you can select the checkboxes and 
 delete them from here, using the <i>Delete Selected Tests</i> button.</p>
 </div>
@@ -357,9 +357,9 @@ delete them from here, using the <i>Delete Selected Tests</i> button.</p>
 
 <p>The <b>License</b> tab lets you enter license/version info. You enter the license name 
 <i>(example: GPL)</i> in the left-hand field and the version <i>(example: 3.0)</i> in the
-right-hand field. Like the <b>Results</b> tab, you can select and delete licenses using the
-checkboxes and the <i>Delete Selected Licenses</i> button. The license-version combination will
-be concatenated in report to look like: <i>GPL 3.0</i>.</p>
+right-hand field. Like the <b>Review Results</b> tab, you can select and delete licenses using 
+the checkboxes and the <i>Delete Selected Licenses</i> button. The license-version combination 
+will be concatenated in the report to look like: <i>GPL 3.0</i>.</p>
 
 </div>
 
@@ -401,7 +401,7 @@ the checkboxes and the <i>Delete Selected Policies</i> button.</p>
 
 <p>In the screenshot below, you can see an example of a flagged policy violation. The application
 <i>myapp</i> has been compiled against <i>libmylib.so</i>. The licenses: <i>L1 2.0</i> and 
-<i>L2v1.3</i> have been defined in the policy screen as being an issue. When the test data is 
+<i>L2 1.3</i> have been defined in the policy screen as being an issue. When the test data is 
 displayed, this relationship is flagged as being problematic:</p>
 
 <p><img src="policy_flag.png" height="51px" width="805px" alt="policy_flag.png"></p>
