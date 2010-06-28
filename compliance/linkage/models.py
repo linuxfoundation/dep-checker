@@ -108,12 +108,6 @@ class Policy(models.Model):
     def __unicode__(self):
         return self.tlicense
 
-class Dep(models.Model):
-    file = models.ForeignKey(File)
-    lib = models.ForeignKey(Lib)
-    #def __unicode__(self):
-    #    return self.lib
-
 class TestForm(ModelForm):   
     class Meta:
         model = Test
