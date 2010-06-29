@@ -286,7 +286,8 @@ def documentation(request):
                 status = os.system("cd " + settings.STATIC_DOC_ROOT + "/docs && cat index.html.base index.html.addons index.html.footer > index.html")
             else:
                 docs = "<b>Error, no index.html in compliance/media/docs.</b><br>"
-                docs += "If working with a git checkout or tarball, please type 'make' in the top level directory."
+                docs += "If working with a git checkout or tarball, please type 'make' in the top level directory.<br>"
+                docs += "</body>"
 
     # something worked above
     if not docs:
@@ -375,7 +376,7 @@ def check_policy(flicense, llicense, library, issue):
 def flag_policy_issue(value):
     # to highlight the issues
     tag_red = '<font color="red">'
-    tag_end = '</font><img src="/site_media/images/red_flag.png">'
+    tag_end = '</font><img src="/site_media/images/red_flag.png" width="16" height="16" alt="red_flag.png">'
     value = tag_red + value + tag_end
     return value
 
