@@ -332,7 +332,8 @@ brought up by either running a test, or clicking on the link in the results page
 <p>A test sequence would typical start at the <b>Check Dependencies</b> page, where you enter 
 the test criteria. This setup parallels the operation of the command line program, where you
 select whether to search for a file under a directory, test a whole directory, or just 
-a single file. There is also a drop-down to select the recursion level.</p>
+a single file. There is also a drop-down to select the recursion level. You can disable
+checking for static dependencies via a checkbox.</p>
 
 <p>The <i>user</i> field is pre-populated with the <i>compliance</i> user, but can be
 overridden. The <i>project</i> and <i>comments</i> fields are optional for your use in

@@ -33,14 +33,10 @@
         <td align="center"><input type="checkbox" name="testcheck" value="{{ test.id }}" /></td>
         <td><a href="/linkage/{{ test.id }}/detail">{{ test.target }}</a></td>
         <td>{{ test.test_date|date:"M d, Y H:i:s" }}</td>
-        <td><i>Target Directory:</i>
-            {% if test.target_dir %}
-                {{ test.target_dir }}
-            {% else %}
-                N/A
-            {% endif %}
-            <br>
-            <i>Recursion Level:</i> {{ test.recursion }}<br>
+        <td>
+            <i>Target Directory:</i>{% if test.target_dir %}{{ test.target_dir }}{% else %}N/A{% endif %}<br>
+            <i>Recursion Level:</i> {{ test.recursion }}&nbsp;&nbsp;
+            <i>Check Static Deps:</i> {% if test.disable_static %}No{% else %}Yes{% endif %}<br>
             <i>User:</i> {{ test.user }}<br>
             <i>Project:</i> {{ test.project }}<br>
             <i>Comments:</i> {{ test.comments }}

@@ -167,6 +167,9 @@ def test(request):
         testform = TestForm(request.POST) # A form bound to the POST data
         if testform.is_valid(): # All validation rules pass
             target = testform.cleaned_data['target']
+            disable_static = testform.cleaned_data['disable_static']
+            if disable_static:
+                cli_command += " --no-static "
             do_search = testform.cleaned_data['do_search']
             if do_search:
                 target_dir = testform.cleaned_data['target_dir']

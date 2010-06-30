@@ -53,6 +53,7 @@ def file_choices():
 
 class Test(models.Model):
     do_search = models.BooleanField('Identify dependencies for a specific target file in a target directory')
+    disable_static = models.BooleanField('Disable checking for static dependencies')
     recursion = models.IntegerField('Recursion level for dependency checking analysis', 
                                     default = '1', choices = RECURSION_CHOICES)
     target = models.CharField('File/Path to run through the dependency check', max_length=200)
