@@ -69,7 +69,9 @@ def start(run_browser):
         pid_file.close()
 
         if run_browser:
+            sys.stdout.write("Waiting for the server to start...\n")
             time.sleep(10)
+            sys.stdout.write("Starting a web browser.\n")
             os.execlp("xdg-open", "xdg-open", "http://127.0.0.1:8000/linkage")
         else:
             sys.exit(0)
@@ -78,10 +80,11 @@ def stop():
     pid_path = os.path.join(get_base_path(), "server.pid")
     if os.path.exists(pid_path):
         server_pid = int(open(pid_path).read())
+        sys.stdout.write("Killing process %d...\n" % server_pid)
         os.kill(server_pid, signal.SIGTERM)
         os.unlink(pid_path)
     else:
-        sys.stderr.write("no server process found to stop\n")
+        sys.stderr.write("No server process found to stop.\n")
         sys.exit(1)
 
 def main():
