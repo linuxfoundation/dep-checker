@@ -77,7 +77,9 @@ for discussion of the tool.</p>
 <p>The command-line program and the GUI require python. It also runs the OS commands: 
 <i>file, ldd, objdump and readelf</i>, so these should be present on your system.
 The GUI requires <a href="http://www.djangoproject.com">Django</a>, along with sqlite 
-support for the results database. A web browser is also needed to interact with the GUI.</p>
+support for the results database. A web browser is also needed to interact with the GUI.
+If your distribution does not provide Django, you can follow these 
+<a href="http://docs.djangoproject.com/en/dev/intro/install/">installation instructions</a>.</p>
 
 </div>
 
@@ -117,8 +119,19 @@ git clone http://git.linuxfoundation.org/dep-checker.git
 cd dep-checker
 </pre>
 
+Alternately, you can get the latest tarball from the 
+<a href="http://git.linuxfoundation.org/?p=dep-checker.git;a=summary">git</a> web page by
+clicking on the <i>snapshot</i> link in the upper right-hand part of the page.</p>
+
+<p>Once you have the tarball, unpack it (example, the numbers of your download may differ):</p>
+<pre>
+tar -xf dep-checker-3af829ae0cc5aba33192c000ef0365ef6bced843.tar.gz
+cd dep-checker
+</pre>
+
 Create the application database and the documentation, as well as fille the static deps table
- with symbols from your system (you will need w3m to create README.txt):
+ with symbols from your system (you will need w3m to create README.txt, and objdump to to
+create the static symbol database):
 <pre>
 make
 </pre>
@@ -128,9 +141,7 @@ Run the server and the gui should show up in a browser window:
 ./bin/dep-checker.py start
 </pre>
 
-Ctrl-C will end the wrapper script, but will not kill the server. To kill 
-the django server, you can run:
-
+To kill the django server, you can run:
 <pre>
 ./bin/dep-checker.py stop
 </pre></p>
