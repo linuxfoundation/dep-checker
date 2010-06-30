@@ -13,10 +13,14 @@ import optparse
 
 from django.core.management import execute_manager
 
-command_line_usage = "%prog start | stop"
+command_line_usage = "%prog [options] start | stop"
 command_line_options = [
     optparse.make_option("--force-root", action="store_true", 
-                         dest="force_root", default=False)
+                         dest="force_root", default=False,
+                         help="allow running as root"),
+    optparse.make_option("--server-only", action="store_true",
+                         dest="server_only", default=False,
+                         help="don't open a browser"),
     ]
 
 def get_base_path():
@@ -36,7 +40,7 @@ def check_current_user():
 
         os.setuid(compliance_user.pw_uid)
 
-def start():
+def start(run_browser):
     childpid = os.fork()
     if childpid == 0:
         os.setsid()
@@ -49,8 +53,11 @@ def start():
         pid_file.write(str(childpid))
         pid_file.close()
 
-        time.sleep(10)
-        os.execlp("xdg-open", "xdg-open", "http://127.0.0.1:8000/linkage")
+        if run_browser:
+            time.sleep(10)
+            os.execlp("xdg-open", "xdg-open", "http://127.0.0.1:8000/linkage")
+        else:
+            sys.exit(0)
 
 def stop():
     pid_path = os.path.join(get_base_path(), "server.pid")
@@ -74,7 +81,7 @@ def main():
     if args[0] == "start":
         if not options.force_root:
             check_current_user()
-        start()
+        start(not options.server_only)
     else:
         stop()
 
