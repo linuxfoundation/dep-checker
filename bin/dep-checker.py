@@ -44,8 +44,23 @@ def start(run_browser):
     childpid = os.fork()
     if childpid == 0:
         os.setsid()
+
         set_import_path()
         import settings
+
+        log_fn = os.path.join(get_base_path(), "server.log")
+        try:
+            log_fd = os.open(log_fn, os.O_WRONLY | os.O_APPEND | os.O_CREAT)
+        except OSError:
+            log_fd = -1
+        if log_fd < 0:
+            sys.stderr.write("Could not open log file; logging to stdout.\n")
+        else:
+            os.dup2(log_fd, 1)
+            os.dup2(log_fd, 2)
+
+        os.close(0)
+
         execute_manager(settings, ["dep-checker", "runserver"])
     else:
         pid_path = os.path.join(get_base_path(), "server.pid")
