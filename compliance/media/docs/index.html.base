@@ -315,7 +315,7 @@ program:
 <ul>
 <li><a href="#Test"><b>Check Dependencies</b></a> - Test entry, initiate form</li>
 <li><a href="#Results"><b>Review Results</b></a> - Tabular list of existing test results</li>
-<li><a href="#Licenses"><b>Licenses</b></a> - License entry tab</li>
+<li><a href="#Licenses"><b>Licenses</b></a> - License/alias entry tab</li>
 <li><a href="#Target Licenses"><b>Target Licenses</b></a> - Define license bindings for targets (test files)</li>
 <li><a href="#Library Licenses"><b>Library Licenses</b></a> - Define license bindings for libraries</li>
 <li><a href="#License Policies"><b>License Policies</b></a> - Define sets of target/dependency license policies, to be flagged during testing</li>
@@ -372,6 +372,10 @@ delete them from here, using the <i>Delete Selected Tests</i> button.</p>
 right-hand field. Like the <b>Review Results</b> tab, you can select and delete licenses using 
 the checkboxes and the <i>Delete Selected Licenses</i> button. The license-version combination 
 will be concatenated in the report to look like: <i>GPL 3.0</i>.</p>
+<p>This tab also contains the entry form to map the license/version info used by the application
+to any possible string variations provided by imported data from other sources. You can 
+select a license/version from the system and then provide up to 9 alternate names (aliases)
+that will be considered equivalent when examining test results for policy violations.</p>
 
 </div>
 
@@ -417,6 +421,14 @@ the checkboxes and the <i>Delete Selected Policies</i> button.</p>
 displayed, this relationship is flagged as being problematic:</p>
 
 <p><img src="policy_flag.png" height="51px" width="805px" alt="policy_flag.png"></p>
+
+<p>If the target (file) or library is using a license naming convention that is not defined
+in the application licenses tab, but has a naming convention defined as equivalent in the 
+aliases table, the license violation will look like:</p>
+
+<pre>
+alias name (real name) graphical flag
+</pre>
 
 </div>
 
@@ -488,6 +500,14 @@ fills in the license data for a test and flags policy issues.</li>
     <li>id - record id, not exposed in the gui (primary key)</li>
     <li>license - license string (e.g. GPL)</li>
     <li>version - license version number (e.g. 3.0)</li>
+  </ul>
+<li><b>linkage_aliases</b> - This table is not linked to any of the test data tables, but
+is used to map possible license string variations from outside sources to the names defined
+in the license policies.</li>
+  <ul>
+    <li>id - record id, not exposed in the gui (primary key)</li>
+    <li>license - license string + version from the application (e.g. GPL 3.0)</li>
+    <li>alias - any acceptable variation that is considered equivalent (e.g. GPLv3, GPL3)</li>
   </ul>
 <li><b>linkage_filelicense</b> - <i>target</i> file/license bindings. These are not linked to
 any other table, but the information, if present, is used to fill in the license field in the

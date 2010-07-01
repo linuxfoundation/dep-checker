@@ -1,7 +1,9 @@
 # Create your views here.
 from django.template import Context, loader
 from django.shortcuts import render_to_response, get_object_or_404
-from compliance.linkage.models import Test, File, Lib, License, LibLicense, FileLicense, Policy, TestForm, LicenseForm, PolicyForm, LibLicenseForm, FileLicenseForm
+from compliance.linkage.models import Test, File, Lib, License, Aliases, LibLicense, \
+                                      FileLicense, Policy, TestForm, LicenseForm, PolicyForm, \
+                                      LibLicenseForm, FileLicenseForm, AliasesForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 from django.conf import settings
@@ -50,25 +52,72 @@ def results(request):
 def licenses(request):
     if request.method == 'POST': # If the form has been submitted...
         mode = urllib.unquote(request.POST.get('submit'))
+        print mode
 
-        if re.search("^Add", mode):   
+        if re.search("^Add License", mode):   
             licenseform = LicenseForm(request.POST) # A form bound to the POST data
             # request to add data
             if licenseform.is_valid(): # All validation rules pass
                 licenseform.save()
+            else:
+                print licenseform.errors
 
-        else:
+        if re.search("^Add", mode) and re.search("Aliases", mode):
+            aliasesform = AliasesForm(request.POST) # A form bound to the POST data
+            # request to add data - we may have multiple aliases to add
+            if aliasesform.is_valid(): # All validation rules pass
+                license = aliasesform.cleaned_data['license']
+                for i in range(1,10):
+                    ainput = request.POST.get('alinput' + str(i), '')
+                    if ainput:
+                        aliasdata = Aliases(license = license, alias = ainput)
+                        aliasdata.save()
+                        print ainput
+
+        if re.search("^Delete Selected Licenses", mode): 
             # delete request
             licenselist = request.POST.get('licenselist', '')
             if licenselist != '':
                 delete_records(License, licenselist)
 
+        if re.search("^Delete Selected Aliases", mode): 
+            # delete request
+            aliaslist = request.POST.get('aliaslist', '')
+            if aliaslist != '':
+                # not by id here, so don't call delete_records
+                records = aliaslist.split(",")
+
+                for record in records:
+                    if record != '':
+                        q = Aliases.objects.filter(license = record)
+                        q.delete()
+
     licenseform = LicenseForm() # An unbound form
+    aliasesform = AliasesForm() # An unbound form
 
     latest_license_list = License.objects.all().order_by('license')
+    # we represent this one differently in the gui, pre-arrange things here
+    aliases_list = Aliases.objects.values('license').distinct()
+    
+    for l in aliases_list:
+        alias_list = Aliases.objects.values('alias').filter(license = l['license'])
+        aliases = ''
+        for a in alias_list:
+            aliases += a['alias'] + ' | '
+        # chomp the last "or" off
+        l['alias'] = aliases[:-3]
+
+    # we want multiple input boxes to enter a number of aliases per license, at once
+    al_input = []
+    for i in range(1,10):
+        al_input.append('<input type="text" size="6" name="alinput' + str(i) + '">')
+
     return render_to_response('linkage/licenses.html', {
-                              'latest_license_list': latest_license_list, 
+                              'latest_license_list': latest_license_list,
+                              'latest_aliases_list': aliases_list, 
                               'licenseform': licenseform,
+                              'aliasesform': aliasesform,
+                              'input_list': al_input,
                               'tab_licenses': True })
 
 # policy list page - this is also a form, for policy deletions/updates
@@ -362,18 +411,48 @@ def update_file_bindings():
     for fl in flist:
         File.objects.filter(file = fl.file).update(license = fl.license)
 
+# list of aliases for a license
+def get_license_aliases(license):
+    alias_list = Aliases.objects.values('alias').filter(license = license)
+    alist = []
+    for a in alias_list:
+        alist.append(a['alias'])
+    return alist
+
 # check a target/library pair for policy violations
 def check_policy(flicense, llicense, library, issue):
+    # is the lib dynamic or static?
     ltype = 'Dynamic'
     if re.search(is_static, library):
         ltype = 'Static'
-    policyset = Policy.objects.filter(tlicense = flicense, dlicense = llicense)
+
+    # it's possible that the license assigned to the target or library is one of
+    # the aliases, in which case we need the 'official' name for the policy check
+    pllicense = llicense # we want to display both names in the report, if present
+    pflicense = flicense
+
+    llicenseset = Aliases.objects.filter(alias = llicense)
+    if llicenseset:
+       # can only be one match
+       pllicense = llicenseset[0].license
+
+    flicenseset = Aliases.objects.filter(alias = flicense)
+    if flicenseset:
+       # can only be one match
+       pflicense = flicenseset[0].license
+      
+    policyset = Policy.objects.filter(tlicense = pflicense, dlicense = pllicense)
     policyset = policyset.filter(Q(relationship = ltype) | Q(relationship = 'Both'))
     if policyset:
         issue = issue or True
+        if llicense != pllicense:
+            llicense = llicense + ' (' + pllicense + ')'
         llicense = flag_policy_issue(llicense)
+        if flicense != pflicense:
+            flicense = flicense + ' (' + pflicense + ')'
+        flicense = flag_policy_issue(flicense)
 
-    return issue, llicense
+    return issue, llicense, flicense
         
 # flag a policy issue for the test results rendering
 def flag_policy_issue(value):
@@ -418,20 +497,21 @@ def render_detail(test_id):
         # we don't use this at the moment
         parent = lib.parent_id
         if lib.license:
-            policy_issue, llicense = check_policy(llist[counter], lib.license, lib.library, policy_issue)
+            policy_issue, llicense, flicense = check_policy(llist[counter], lib.license, lib.library, policy_issue)
         else:
             llicense = 'TBD'
         if fileid != lastid:
             if liblist != '':
                 if policy_issue:
-                    llist[counter] = flag_policy_issue(llist[counter]) 
+                    llist[counter] = flicense
+                    #llist[counter] = flag_policy_issue(llist[counter]) 
                 masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'licenses': liclist})
             liblist = lib.library
             counter += 1
             # reset and check against the new binary, if we have a license
             policy_issue = False
             if lib.license:
-                policy_issue, llicense = check_policy(llist[counter], lib.license, lib.library, policy_issue)
+                policy_issue, llicense, flicense = check_policy(llist[counter], lib.license, lib.library, policy_issue)
             liclist = llicense
         else:
             liblist += '<BR>' + spacer * level + lib.library
@@ -440,7 +520,8 @@ def render_detail(test_id):
 
     # add the last record
     if policy_issue:
-        llist[counter] = flag_policy_issue(llist[counter]) 
+        llist[counter] = flicense
+        #llist[counter] = flag_policy_issue(llist[counter]) 
     masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'licenses': liclist})
     
     return t, masterlist

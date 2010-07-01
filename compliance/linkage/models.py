@@ -90,6 +90,12 @@ class License(models.Model):
     def __unicode__(self):
         return self.license
 
+class Aliases(models.Model):
+    license = models.CharField('License', max_length=200)
+    alias = models.CharField('Alias', max_length=20, unique=True)
+    def __unicode__(self):
+        return self.license
+
 class LibLicense(models.Model):
     library = models.CharField('Library', max_length=200, unique=True)
     license = models.CharField('License', max_length=200)
@@ -160,6 +166,16 @@ class FileLicenseForm(ModelForm):
         super(FileLicenseForm, self).__init__(*args, **kwargs)
         self.fields['license'].choices = license_choices()
         self.fields['file'].choices = file_choices()
+
+class AliasesForm(ModelForm):
+    class Meta:
+        model = Aliases
+
+    license = forms.ChoiceField()
+ 
+    def __init__(self, *args, **kwargs):
+        super(AliasesForm, self).__init__(*args, **kwargs)
+        self.fields['license'].choices = license_choices()
 
 class StaticSymbol(models.Model):
     symbol = models.CharField('Symbol', max_length=200, db_index=True)

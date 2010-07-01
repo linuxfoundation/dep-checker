@@ -24,4 +24,4 @@
     Insert file/library bindings into test data after run
     Add policy violation flagging to test results
     Expose --no-static in the GUI
-
+    Add license<-->alias mapping/reporting capability (bug 459)

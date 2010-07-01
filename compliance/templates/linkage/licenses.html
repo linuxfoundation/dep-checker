@@ -1,15 +1,24 @@
 {% extends "linkage/base.html" %}
 {% block header %}
-<script type="text/javascript" src="/site_media/js/checklist.js"></script>
+  <!-- container div for 2 tables side-by-side -->
+  <style type="text/css">@import "/site_media/css/containers.css";</style>
+  <script type="text/javascript" src="/site_media/js/checklist.js"></script>
 </head>
 {% endblock %}
 
 {% block content %}
+<p>In this page, users create references to the various licenses used in 
+their products to allow them to define policies around linkages made between 
+binaries and libraries available under licenses.  Because license lists may
+be imported from different sources with different naming conventions, one can
+create a list of possible equivalent strings (aliases) for a particular license.</p>
+<div class="container" id="license_form">
 <form name="licenseform" method="post" action="" enctype="multipart/form-data">   
-  <p>In this page, users create references to the various licenses used in 
-     their products to allow them to define policies around linkages made between 
-     binaries and libraries available under licenses.</p>
-  <table width = "100%" border="1">
+  <table border="1" width=450 style='table-layout:fixed'>
+    <col width=30>
+    <col width=120>
+    <col width=120>
+    <col width=80>
     <tr align="center">
       <td></td>
       <th>License</th>
@@ -18,19 +27,19 @@
     </tr>
     <tr align="center">
       <td></td>
-      <td>{{ licenseform.license }}</td>
-      <td>{{ licenseform.version }}</td>
+      <!-- did not have enough style control just dropping the form fields in -->
+      <td><input type="text" name="license" size="14"></td>
+      <td><input type="text" name="version" size="14"></td>
       <td><input type="submit" name="submit" value="Add License" /></td>
     </tr>
     <tr align="center">
       <td><input type="checkbox" name="selectall" 
                  onclick="toggleall(this.form,'licensecheck','selectall')" />
       </td>
-      <td>
+      <td colspan="2">
         <input type="submit" name="submit" value="Delete Selected Licenses" 
                onclick="buildlist(this.form,'licensecheck','licenselist')" />
       </td>
-      <td></td>
       <td></td>
     </tr>
 
@@ -45,10 +54,66 @@
   </table>
   <input type="hidden", name="licenselist", value="" />
 </form>
-
 {% if not latest_license_list %}
   <br>
   <b>No licenses are available.</b>
 {% endif %}
+</div>
+<div class="container" id="aliases_form">
+<form name="aliasesform" method="post" action="" enctype="multipart/form-data">
+  <!-- license aliases -->
+  <table border="1" width=450 style='table-layout:fixed' cellpadding="0">
+    <col width=30>
+    <col width=70>
+    <col width=140>
+    <col width=50>
+    <tr align="center">
+      <td></td>
+      <th>License</th>
+      <th>Aliases</th>
+      <td></td>
+    </tr>
+    <tr align="center">
+      <td></td>
+      <td>{{ aliasesform.license }}</td>
+      <td>
+          {% autoescape off %}
+          {% for input in input_list %}
+            {{ input }}
+          {% endfor %}
+          {% endautoescape %}
+      </td>
+      <!-- forced line break in this button -->
+      <td><input type="submit" name="submit" value="Add 
+Aliases" /></td>
+    </tr>
+    <tr align="center">
+      <td><input type="checkbox" name="selectall" 
+                 onclick="toggleall(this.form,'aliascheck','selectall')" />
+      </td>
+      <td colspan="2">
+        <input type="submit" name="submit" value="Delete Selected Aliases" 
+               onclick="buildlist(this.form,'aliascheck','aliaslist')" />
+      </td>
+      <td></td>
+    </tr>
+
+    {% for alias in latest_aliases_list %}
+    <tr>
+      <td align="center"><input type="checkbox" name="aliascheck" value="{{ alias.license }}" /></td>
+      <td>{{ alias.license }}</td>
+      <td colspan="2">{{ alias.alias }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  <!-- we don't actually use this input, but the form validation will complain -->
+  <input type="hidden", name="alias", value="FILLME" />
+  <input type="hidden", name="aliaslist", value="" />
+</form>
+{% if not latest_aliases_list %}
+  <br>
+  <b>No aliases are available.</b>
+{% endif %}
+</div>
 
 {% endblock %}
