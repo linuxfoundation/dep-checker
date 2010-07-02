@@ -30,6 +30,7 @@
     <li><a href="#gui-use">Using the GUI</a></li>
     <li><a href="#admin">Admin Interface</a></li>
     <li><a href="#database">Database Schema</a></li>
+    <li><a href="#backend">How it Works</a></li>
     <li><a href="#limitations">Limitations</a></li>
   </ul>
   <ul>
@@ -427,7 +428,7 @@ in the application licenses tab, but has a naming convention defined as equivale
 aliases table, the license violation will look like:</p>
 
 <pre>
-alias name (real name) graphical flag
+alias name (real name) [graphical flag]
 </pre>
 
 </div>
@@ -503,10 +504,11 @@ fills in the license data for a test and flags policy issues.</li>
   </ul>
 <li><b>linkage_aliases</b> - This table is not linked to any of the test data tables, but
 is used to map possible license string variations from outside sources to the names defined
-in the license policies.</li>
+in the license policies. There is a many-to-one relationship between license and alias, with
+each alias entry needing to be unique.</li>
   <ul>
     <li>id - record id, not exposed in the gui (primary key)</li>
-    <li>license - license string + version from the application (e.g. GPL 3.0)</li>
+    <li>license - concatenation of license/version in the same form generated from the <i>license</i> table</li>
     <li>alias - any acceptable variation that is considered equivalent (e.g. GPLv3, GPL3)</li>
   </ul>
 <li><b>linkage_filelicense</b> - <i>target</i> file/license bindings. These are not linked to
@@ -539,15 +541,53 @@ Licenses</b> tab.</li>
 <li><b>linkage_staticsymbol</b></li>
   <ul>
     <li>id - record id, not exposed in the gui (primary key)</li>
-    <li>symbol - symbol name. Target under test will be queried for the presence of this symbol</li>
+    <li>symbol - symbol name. symbols extracted from the target under test will match this entry to get possible library sources</li>
     <li>libraryname - Library SONAME that provides this symbol</li>
   </ul>
 </ul>
 
-<p>Because <i>linkage_license</i>, <i>linkage_filelicense</i>, <i>linkage_liblicense</i>, and
+<p>Because <i>linkage_license</i>, <i>linkage_aliases</i>, <i>linkage_filelicense</i>, <i>linkage_liblicense</i>, and
 <i>linkage_policy</i> are more or less independent of the test data, one could easily load these
 tables from other data sources, using sqlite3, as long as the existing table schemas are honored.</p>
 
+</div>
+
+<div id="backend">
+<b>How it Works:</b>
+
+<p>As mentioned earlier, the command line program, readelf.py does all the actual file search and
+analysis. For discovering dependencies, it uses <i>readelf</i>, <i>ldd</i>, and <i>file</i>, using the
+following methodology:
+
+<ul>
+  <li>Search for file?</li>
+    <ul>
+      <li>Yes - start search at top of directory tree specified, for the file name in question</li>
+      <li>No - start processing specified file or walk the whole specified directory tree</li>
+    </ul>
+  <li>File found - elf file? (using "file")</li>
+    <ul>
+      <li>No - return "not an elf file", continue processing more files or exit</li>
+      <li>Yes - check whether static or dynamically linked</li>
+        <ul>
+          <li>Dynamic - run "readelf -d" on the file and capture all the SONAMES tagged as NEEDED, followup with static analysis</li>            
+            <ul>
+              <li>Recursive analysis?</li>
+                <ul>
+                  <li>Yes - run "ldd" on the test file to get the paths to the libraries associated with the SONAME, repeat the analysis on each of these libraries, and in turn their dependencies, stopping when we either reach the desired recursion level or glibc/ld-linux and no further recursion is possible</li>
+                  <li>No - output the results and exit or process the next file</li>
+                </ul>
+            </ul>
+          <li>Static</li>
+            <ul>
+              <li>run "readelf -s" on the file and capture all the functions from the symbol list</li>
+              <li>run "readelf -wi" on the file and capture all the functions from the debug info</li>
+              <li>isolate the functions that have no debug info, these are considered as coming from another library</li>
+              <li>look up possible sources of the function from the database and report</li>
+            </ul>            
+        </ul>
+    </ul>
+</ul>
 </div>
 
 <div id="limitations">
