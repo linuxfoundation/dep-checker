@@ -27,6 +27,7 @@
       {% if show_rank %}
       <th>Rank</th>
       {% endif %}
+      <th>Status</th>
       <th>Date</th>
     </tr>
     <tr align="center">
@@ -38,6 +39,7 @@
       {% if show_rank %}
       <td>{{ policyform.rank }}</td>
       {% endif %}
+      <td>{{ policyform.status }}</td>
       <td><input type="submit" name="submit" value="Add Policy" /></td>
     </tr>
     <tr align="center">
@@ -55,6 +57,7 @@
       <td></td>
       {% endif %}
       <td></td>
+      <td></td>
     </tr>
   {% for pol in latest_policy_list %}
     <tr>
@@ -66,6 +69,7 @@
       {% if show_rank %}
       <td>{{ pol.rank }}</td>
       {% endif %}
+      <td>{{ pol.status }}</td>
       <td>{{ pol.edit_date|date:"M d, Y H:i:s" }}</td>
     </tr>
   {% endfor %}

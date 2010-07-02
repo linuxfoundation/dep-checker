@@ -450,23 +450,36 @@ def check_policy(flicense, llicense, library, issue):
       
     policyset = Policy.objects.filter(tlicense = pflicense, dlicense = pllicense)
     policyset = policyset.filter(Q(relationship = ltype) | Q(relationship = 'Both'))
-    if policyset:
-        issue = issue or True
+    # if we got multiple matches, just return - bad policies
+    if policyset and policyset.count() < 2:
+        status = policyset[0].status
+        if status == 'D':
+            issue = issue or True
         if llicense != pllicense:
+            # plug in the alias (real name)
             llicense = llicense + ' (' + pllicense + ')'
-        llicense = flag_policy_issue(llicense)
+        llicense = flag_policy_issue(llicense, status)
         if flicense != pflicense:
             flicense = flicense + ' (' + pflicense + ')'
-        flicense = flag_policy_issue(flicense)
+        # only modify the target when there's a problem
+        if issue:
+            flicense = flag_policy_issue(flicense, status)
 
     return issue, llicense, flicense
         
 # flag a policy issue for the test results rendering
-def flag_policy_issue(value):
+def flag_policy_issue(value, status):
     # to highlight the issues
-    tag_red = '<font color="red">'
-    tag_end = '</font><img src="/site_media/images/red_flag.png" width="16" height="16" alt="red_flag.png">'
-    value = tag_red + value + tag_end
+    tag_start = '<font color="'
+    tag_mid = '">'
+    tag_end = '</font>'
+    tcolor = "yellow"
+    if status == 'A':
+        tcolor = "green"
+    if status == 'D':
+        tcolor = "red"
+        tag_end += '<img src="/site_media/images/red_flag.png" width="16" height="16" alt="red_flag.png">'
+    value = tag_start + tcolor + tag_mid + value + tag_end
     return value
 
 # pre-render the table data for the detail page
@@ -511,13 +524,12 @@ def render_detail(test_id):
             if liblist != '':
                 if policy_issue:
                     llist[counter] = flicense
-                    #llist[counter] = flag_policy_issue(llist[counter]) 
                 masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'licenses': liclist})
             liblist = lib.library
             counter += 1
             # reset and check against the new binary, if we have a license
             policy_issue = False
-            if lib.license:
+            if lib.license and lastid:
                 policy_issue, llicense, flicense = check_policy(llist[counter], lib.license, lib.library, policy_issue)
             liclist = llicense
         else:
@@ -528,7 +540,7 @@ def render_detail(test_id):
     # add the last record
     if policy_issue:
         llist[counter] = flicense
-        #llist[counter] = flag_policy_issue(llist[counter]) 
+
     masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'licenses': liclist})
     
     return t, masterlist
