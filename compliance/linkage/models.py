@@ -183,3 +183,6 @@ class AliasesForm(ModelForm):
 class StaticSymbol(models.Model):
     symbol = models.CharField('Symbol', max_length=200, db_index=True)
     libraryname = models.CharField('Library', max_length=80)
+
+class StaticLibSearchPath(models.Model):
+    path = models.CharField(max_length=100, primary_key=True)

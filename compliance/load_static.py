@@ -15,11 +15,12 @@ import re
 
 from django.db import transaction
 
-from compliance.linkage.models import StaticSymbol
+from compliance.linkage.models import StaticSymbol, StaticLibSearchPath
 
 def get_library_list():
     lib_list = []
-    for libpath in ("/lib", "/usr/lib"):
+    search_paths = [x.path for x in StaticLibSearchPath.objects.all()]
+    for libpath in search_paths:
         for libfile in os.listdir(libpath):
             if re.search(r'\.so\.\d+$', libfile):
                 lib_list.append(os.path.join(libpath, libfile))
