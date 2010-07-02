@@ -284,77 +284,16 @@ def test(request):
             testdata.save()
             testid = testdata.id
 
-            # capture the output and push to the database
-            lastdepth = 1
-            lastfile = ''
-            errmsg = ''
-            dbdata = ''           
-            for dbdata in os.popen(cli_command).readlines():
-                # check for no result - these are known exit messages from the cli
-                if not re.search("(does not|was not found|not an ELF)", dbdata):
-                    dbdata = dbdata.rstrip("\r\n")
-                    # format for level 1 is: depth, parent, dep
-                    # format for level 1 + N is: depth, child path, child, dep, dep...
-                    deps = dbdata.split(",")
-
-                    # write the file record
-                    depth = int(deps[0])
-                    testfile = deps[1]
-                    # the top level file may show multiple times, only get the first one
-                    if depth == 1 and testfile != lastfile:
-                        filedata = File(test_id = testid, file = testfile, level = depth, parent_id = 0)
-                        filedata.save()
-                        fileid = filedata.id
-                        lastfile = testfile
-                        parentid = fileid
-                        filedata.parent_id = parentid
-                        filedata.save()
-                    elif depth != 1:
-                        # FIXME - right now we're not really doing anything with these
-                        filedata = File(test_id = testid, file = testfile, level = depth, parent_id = 0)
-                        filedata.save()
-                        fileid = filedata.id
-                        # the 'child' files get the parent's id
-                        filedata.parent_id = parentid
-                        filedata.save()
-                   
-                    # now the lib records
-                    offset = 2
-                    # child records have the lib path and the parent dep
-                    if depth > 1:
-                        offset = 3
-                    for lib in deps[offset:len(deps)]:
-                        # we link file_id to parent_id of the file for recursion
-                        libdata = Lib(test_id = testid, file_id = parentid, library = lib, level = depth, parent_id = 0)
-                        libdata.save()
-                        libid = libdata.id
-                        
-                        # the 'child' libs get the parent's id
-                        if depth == 1:
-                            parentlibid = libid
-                        libdata.parent_id = parentlibid
-                        libdata.save()
-                        
-                else:
-                    # do feedback in the gui from here
-                    errmsg += dbdata
-
-            # cli didn't return anything
-            if not dbdata:
-                errmsg = "no result..."
-
+            errmsg = do_dep_check(cli_command, testid)
+     
             # if we got an error, delete the test entry
             if errmsg:
-                    q = Test.objects.filter(id = testid)
-                    q.delete()
-                    t = []
-                    masterlist = []
-
+                q = Test.objects.filter(id = testid)
+                q.delete()
+                t = []
+                masterlist = []            
+            
             else:
-                # update the license bindings
-                update_file_bindings()
-                update_lib_bindings()
-             
                 # render the results
                 t, masterlist = render_detail(testid)
 
@@ -441,6 +380,74 @@ def dirlist(request):
 
 ### utility functions
 
+# run the back end with given parameters and push the data into the database
+def do_dep_check(cli_command, testid):
+    # capture the output and push to the database
+    lastdepth = 1
+    lastfile = ''
+    errmsg = ''
+    dbdata = ''           
+    for dbdata in os.popen(cli_command).readlines():
+        # check for no result - these are known exit messages from the cli
+        if not re.search("(does not|was not found|not an ELF)", dbdata):
+            dbdata = dbdata.rstrip("\r\n")
+            # format for level 1 is: depth, parent, dep
+            # format for level 1 + N is: depth, child path, child, dep, dep...
+            deps = dbdata.split(",")
+
+            # write the file record
+            depth = int(deps[0])
+            testfile = deps[1]
+            # the top level file may show multiple times, only get the first one
+            if depth == 1 and testfile != lastfile:
+                filedata = File(test_id = testid, file = testfile, level = depth, parent_id = 0)
+                filedata.save()
+                fileid = filedata.id
+                lastfile = testfile
+                parentid = fileid
+                filedata.parent_id = parentid
+                filedata.save()
+            elif depth != 1:
+                # FIXME - right now we're not really doing anything with these
+                filedata = File(test_id = testid, file = testfile, level = depth, parent_id = 0)
+                filedata.save()
+                fileid = filedata.id
+                # the 'child' files get the parent's id
+                filedata.parent_id = parentid
+                filedata.save()
+                  
+            # now the lib records
+            offset = 2
+            # child records have the lib path and the parent dep
+            if depth > 1:
+                offset = 3
+            for lib in deps[offset:len(deps)]:
+                # we link file_id to parent_id of the file for recursion
+                libdata = Lib(test_id = testid, file_id = parentid, library = lib, level = depth, parent_id = 0)
+                libdata.save()
+                libid = libdata.id
+                       
+                # the 'child' libs get the parent's id
+                if depth == 1:
+                    parentlibid = libid
+                libdata.parent_id = parentlibid
+                libdata.save()
+                        
+        else:
+            # do feedback in the gui from here
+            errmsg += dbdata
+
+    # cli didn't return anything
+    if not dbdata:
+        errmsg = "no result..."
+
+    if not errmsg:
+        # update the license bindings
+        update_file_bindings()
+        update_lib_bindings()
+
+    return errmsg
+
 # delete table records requested by id from one of the input forms
 def delete_records(table, rlist):
             
@@ -496,23 +503,36 @@ def check_policy(flicense, llicense, library, issue):
       
     policyset = Policy.objects.filter(tlicense = pflicense, dlicense = pllicense)
     policyset = policyset.filter(Q(relationship = ltype) | Q(relationship = 'Both'))
-    if policyset:
-        issue = issue or True
+    # if we got multiple matches, just return - bad policies
+    if policyset and policyset.count() < 2:
+        status = policyset[0].status
+        if status == 'D':
+            issue = issue or True
         if llicense != pllicense:
+            # plug in the alias (real name)
             llicense = llicense + ' (' + pllicense + ')'
-        llicense = flag_policy_issue(llicense)
+        llicense = flag_policy_issue(llicense, status)
         if flicense != pflicense:
             flicense = flicense + ' (' + pflicense + ')'
-        flicense = flag_policy_issue(flicense)
+        # only modify the target when there's a problem
+        if issue:
+            flicense = flag_policy_issue(flicense, status)
 
     return issue, llicense, flicense
         
 # flag a policy issue for the test results rendering
-def flag_policy_issue(value):
+def flag_policy_issue(value, status):
     # to highlight the issues
-    tag_red = '<font color="red">'
-    tag_end = '</font><img src="/site_media/images/red_flag.png" width="16" height="16" alt="red_flag.png">'
-    value = tag_red + value + tag_end
+    tag_start = '<font color="'
+    tag_mid = '">'
+    tag_end = '</font>'
+    tcolor = "yellow"
+    if status == 'A':
+        tcolor = "green"
+    if status == 'D':
+        tcolor = "red"
+        tag_end += '<img src="/site_media/images/red_flag.png" width="16" height="16" alt="red_flag.png">'
+    value = tag_start + tcolor + tag_mid + value + tag_end
     return value
 
 # pre-render the table data for the detail page
@@ -557,13 +577,12 @@ def render_detail(test_id):
             if liblist != '':
                 if policy_issue:
                     llist[counter] = flicense
-                    #llist[counter] = flag_policy_issue(llist[counter]) 
                 masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'licenses': liclist})
             liblist = lib.library
             counter += 1
             # reset and check against the new binary, if we have a license
             policy_issue = False
-            if lib.license:
+            if lib.license and lastid:
                 policy_issue, llicense, flicense = check_policy(llist[counter], lib.license, lib.library, policy_issue)
             liclist = llicense
         else:
@@ -574,7 +593,7 @@ def render_detail(test_id):
     # add the last record
     if policy_issue:
         llist[counter] = flicense
-        #llist[counter] = flag_policy_issue(llist[counter]) 
+
     masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'licenses': liclist})
     
     return t, masterlist
