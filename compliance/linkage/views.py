@@ -3,18 +3,25 @@ from django.template import Context, loader
 from django.shortcuts import render_to_response, get_object_or_404
 from compliance.linkage.models import Test, File, Lib, License, Aliases, LibLicense, \
                                       FileLicense, Policy, TestForm, LicenseForm, PolicyForm, \
-                                      LibLicenseForm, FileLicenseForm, AliasesForm
+                                      LibLicenseForm, FileLicenseForm, AliasesForm, \
+                                      StaticSymbol
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 from django.conf import settings
 from django.db.models import Q
 
+from compliance import load_static
+
+import sys
 import os
 import re
 import urllib
 
 # used for binding and policy
 is_static = '(static)'
+
+# used for holding the process ID of the static data reloader
+static_reload_pid = -1
 
 ### each of these views has a corresponding html page in ../templates/linkage
 
@@ -208,6 +215,36 @@ def targetlicense(request):
                               'latest_targetlicense_list': latest_targetlicense_list, 
                               'targetlicenseform': targetlicenseform, 
                               'tab_targetlicense': True })
+
+# settings - miscellaneous things to set, used for static db reloading
+def settings_form(request):
+    global static_reload_pid
+
+    infomsg = None
+
+    if request.method == 'POST':
+        # Static data reload: are we already loading static data?
+        if static_reload_pid > 0:
+            (pid, status) = os.waitpid(static_reload_pid, os.WNOHANG)
+            if pid == 0 or os.WIFSIGNALED(status) or os.WIFEXITED(status):
+                static_reload_pid = -1
+                infomsg = "The static database is already being reloaded."
+
+        # Do the database reload in the background.
+        if static_reload_pid < 0:
+            static_reload_pid = os.fork()
+            if static_reload_pid == 0:
+                try:
+                    StaticSymbol.objects.all().delete()
+                    for lib in load_static.get_library_list():
+                        load_static.load_symbols(lib)
+                finally:
+                    sys.exit(0)
+            else:
+                infomsg = "Reloading static database.  This may take a while."
+
+    return render_to_response('linkage/settings.html', 
+                              { 'info_message': infomsg })
 
 # process test form - this is where the real work happens
 def test(request):

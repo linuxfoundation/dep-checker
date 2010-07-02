@@ -5,7 +5,8 @@
 # Jeff Licquia <licquia@linuxfoundation.org>
 
 import os
-os.environ["DJANGO_SETTINGS_MODULE"] = "compliance.settings"
+if __name__ == "__main__":
+    os.environ["DJANGO_SETTINGS_MODULE"] = "compliance.settings"
 
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

@@ -9,7 +9,6 @@ package:
 compliance/compliance: compliance/linkage/models.py compliance/linkage/fixtures/initial_data.xml
 	rm -f compliance/compliance
 	cd compliance && python manage.py syncdb --noinput
-	compliance/load_static.py
 
 fixture_regen:
 	(cd compliance && python manage.py dumpdata --format xml) | \

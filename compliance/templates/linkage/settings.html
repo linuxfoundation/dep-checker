@@ -1,0 +1,17 @@
+{% extends "linkage/base.html" %}
+
+{% block content %}
+
+{% if info_message %}<p><strong>{{ info_message }}</strong></p>{% endif %}
+
+<p>
+In order to detect statically-linked libraries, the application needs
+to collect data from the installed libraries on your test system.
+Press the button below to clear out and reload the static symbol data.
+</p>
+
+<form action="" method="post">
+  <input type="submit" name="reload_static" value="Reload Static Data" />
+</form>
+
+{% endblock %}
