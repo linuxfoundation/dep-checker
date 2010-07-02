@@ -30,6 +30,9 @@
     <li><a href="#gui-use">Using the GUI</a></li>
     <li><a href="#admin">Admin Interface</a></li>
     <li><a href="#database">Database Schema</a></li>
+      <ul>
+        <li><a href="#data_import">Importing License Data</a></li>
+      </ul>
     <li><a href="#backend">How it Works</a></li>
     <li><a href="#limitations">Limitations</a></li>
   </ul>
@@ -546,9 +549,70 @@ Licenses</b> tab.</li>
   </ul>
 </ul>
 
+</div>
+
+<div id="data_import">
+<b>Importing License Data:</b>
+
 <p>Because <i>linkage_license</i>, <i>linkage_aliases</i>, <i>linkage_filelicense</i>, <i>linkage_liblicense</i>, and
 <i>linkage_policy</i> are more or less independent of the test data, one could easily load these
-tables from other data sources, using sqlite3, as long as the existing table schemas are honored.</p>
+tables from other data sources, using sqlite3, as long as the existing table schemas are honored.
+To illustrate, let's walk through an example of importing a file library/license mappings from
+another source.</p>
+
+<p>Say have a csv file of library,license data like this:
+
+<pre>
+libfoo.so.6,LPGLv3
+libbar.so.2,BSD1
+libbaz.so.4,APACHE 2
+</pre>
+
+We can easily process this into SQL statements we can load into dep-checker using whatever
+script language you're comfortable with. With the shell and awk, perhaps something like this:
+
+<pre>
+awk -F,  '{print "INSERT INTO linkage_liblicense (library, license) VALUES (\"" $1 "\",\"" $2 "\");"}' < liblicenses.csv > liblicenses.sql
+cd dep-checker compliance
+sqlite3 compliance < liblicenses.sql
+</pre>
+
+And if we look at the database now:
+
+<pre>
+sqlite3 compliance 
+SQLite version 3.6.23.1
+Enter ".help" for instructions
+Enter SQL statements terminated with a ";"
+sqlite> select * from linkage_liblicense;
+1|libfoo.so.6|LPGLv3
+2|libbar.so.2|BSD1
+3|libbaz.so.4|APACHE 2
+</pre>
+
+So our data is loaded, but we have a slight problem in that the license naming conventions from
+our data file don't match the format used in dep-checker to feed into our license polices. In 
+dep-checker, <tt>"LGPLv3"</tt> would be <tt>"LGPL 3.0"</tt>, <tt>"BSD1"</tt> would be 
+<tt>"BSD 1.0"</tt> and <tt>"APACHE 2"</tt> might be <tt>"Apache 2.0"</tt>. We can correct
+this either by define alias mappings in the <b>Licenses</b> tab or with some additional SQL
+(assuming we know the "correct" naming defined in dep-checker):
+
+<pre>
+INSERT INTO linkage_aliases (license, alias) VALUES ('LGPL 3.0', 'LGPLv3');
+INSERT INTO linkage_aliases (license, alias) VALUES ('BSD 1.0', 'BSD1');
+INSERT INTO linkage_aliases (license, alias) VALUES ('Apache 2.0', 'APACHE 2');
+</pre>
+
+If you have a large number of alias mappings to perform, SQL may be the way to go, otherwise they
+can be assigned under <b>Aliases</b> in the <b>Licenses</b> tab where you'l be assured of the
+correct mappings, as only "known" licenses will be available in the drop-down.</p>
+
+<p>A similar process could be used to load license associations for target files.</p>
+
+<p>Once the license data is loaded, the functions <tt>update_file_bindings()</tt> and 
+<tt>update_lib_bindings()</tt> in views.py would apply this information to existing test data,
+which can also be done from the gui <b>Target Licenses</b> and <b>Library Licenses</b> tabs by
+clicking the <b>Update Test Data</b> button.</p>
 
 </div>
 
