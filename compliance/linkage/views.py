@@ -231,77 +231,16 @@ def test(request):
             testdata.save()
             testid = testdata.id
 
-            # capture the output and push to the database
-            lastdepth = 1
-            lastfile = ''
-            errmsg = ''
-            dbdata = ''           
-            for dbdata in os.popen(cli_command).readlines():
-                # check for no result - these are known exit messages from the cli
-                if not re.search("(does not|was not found|not an ELF)", dbdata):
-                    dbdata = dbdata.rstrip("\r\n")
-                    # format for level 1 is: depth, parent, dep
-                    # format for level 1 + N is: depth, child path, child, dep, dep...
-                    deps = dbdata.split(",")
-
-                    # write the file record
-                    depth = int(deps[0])
-                    testfile = deps[1]
-                    # the top level file may show multiple times, only get the first one
-                    if depth == 1 and testfile != lastfile:
-                        filedata = File(test_id = testid, file = testfile, level = depth, parent_id = 0)
-                        filedata.save()
-                        fileid = filedata.id
-                        lastfile = testfile
-                        parentid = fileid
-                        filedata.parent_id = parentid
-                        filedata.save()
-                    elif depth != 1:
-                        # FIXME - right now we're not really doing anything with these
-                        filedata = File(test_id = testid, file = testfile, level = depth, parent_id = 0)
-                        filedata.save()
-                        fileid = filedata.id
-                        # the 'child' files get the parent's id
-                        filedata.parent_id = parentid
-                        filedata.save()
-                   
-                    # now the lib records
-                    offset = 2
-                    # child records have the lib path and the parent dep
-                    if depth > 1:
-                        offset = 3
-                    for lib in deps[offset:len(deps)]:
-                        # we link file_id to parent_id of the file for recursion
-                        libdata = Lib(test_id = testid, file_id = parentid, library = lib, level = depth, parent_id = 0)
-                        libdata.save()
-                        libid = libdata.id
-                        
-                        # the 'child' libs get the parent's id
-                        if depth == 1:
-                            parentlibid = libid
-                        libdata.parent_id = parentlibid
-                        libdata.save()
-                        
-                else:
-                    # do feedback in the gui from here
-                    errmsg += dbdata
-
-            # cli didn't return anything
-            if not dbdata:
-                errmsg = "no result..."
-
+            errmsg = do_dep_check(cli_command, testid)
+     
             # if we got an error, delete the test entry
             if errmsg:
-                    q = Test.objects.filter(id = testid)
-                    q.delete()
-                    t = []
-                    masterlist = []
-
+                q = Test.objects.filter(id = testid)
+                q.delete()
+                t = []
+                masterlist = []            
+            
             else:
-                # update the license bindings
-                update_file_bindings()
-                update_lib_bindings()
-             
                 # render the results
                 t, masterlist = render_detail(testid)
 
@@ -387,6 +326,74 @@ def dirlist(request):
     return HttpResponse(''.join(r))
 
 ### utility functions
+
+# run the back end with given parameters and push the data into the database
+def do_dep_check(cli_command, testid):
+    # capture the output and push to the database
+    lastdepth = 1
+    lastfile = ''
+    errmsg = ''
+    dbdata = ''           
+    for dbdata in os.popen(cli_command).readlines():
+        # check for no result - these are known exit messages from the cli
+        if not re.search("(does not|was not found|not an ELF)", dbdata):
+            dbdata = dbdata.rstrip("\r\n")
+            # format for level 1 is: depth, parent, dep
+            # format for level 1 + N is: depth, child path, child, dep, dep...
+            deps = dbdata.split(",")
+
+            # write the file record
+            depth = int(deps[0])
+            testfile = deps[1]
+            # the top level file may show multiple times, only get the first one
+            if depth == 1 and testfile != lastfile:
+                filedata = File(test_id = testid, file = testfile, level = depth, parent_id = 0)
+                filedata.save()
+                fileid = filedata.id
+                lastfile = testfile
+                parentid = fileid
+                filedata.parent_id = parentid
+                filedata.save()
+            elif depth != 1:
+                # FIXME - right now we're not really doing anything with these
+                filedata = File(test_id = testid, file = testfile, level = depth, parent_id = 0)
+                filedata.save()
+                fileid = filedata.id
+                # the 'child' files get the parent's id
+                filedata.parent_id = parentid
+                filedata.save()
+                  
+            # now the lib records
+            offset = 2
+            # child records have the lib path and the parent dep
+            if depth > 1:
+                offset = 3
+            for lib in deps[offset:len(deps)]:
+                # we link file_id to parent_id of the file for recursion
+                libdata = Lib(test_id = testid, file_id = parentid, library = lib, level = depth, parent_id = 0)
+                libdata.save()
+                libid = libdata.id
+                       
+                # the 'child' libs get the parent's id
+                if depth == 1:
+                    parentlibid = libid
+                libdata.parent_id = parentlibid
+                libdata.save()
+                        
+        else:
+            # do feedback in the gui from here
+            errmsg += dbdata
+
+    # cli didn't return anything
+    if not dbdata:
+        errmsg = "no result..."
+
+    if not errmsg:
+        # update the license bindings
+        update_file_bindings()
+        update_lib_bindings()
+
+    return errmsg
 
 # delete table records requested by id from one of the input forms
 def delete_records(table, rlist):
