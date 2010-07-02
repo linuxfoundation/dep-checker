@@ -20,9 +20,6 @@ import urllib
 # used for binding and policy
 is_static = '(static)'
 
-# used for holding the process ID of the static data reloader
-static_reload_pid = -1
-
 ### each of these views has a corresponding html page in ../templates/linkage
 
 # main page
@@ -218,30 +215,48 @@ def targetlicense(request):
 
 # settings - miscellaneous things to set, used for static db reloading
 def settings_form(request):
-    global static_reload_pid
-
     infomsg = None
 
-    # Check the status of any possibly running reload jobs.
-    if static_reload_pid > 0:
-        (pid, status) = os.waitpid(static_reload_pid, os.WNOHANG)
-        if pid == 0 or os.WIFSIGNALED(status) or os.WIFEXITED(status):
-            static_reload_pid = -1
-            infomsg = "The static database is already being reloaded."
+    # Look for PID file for previously-running reload job.
+    static_reload_pid_path = os.path.join(settings.PROJECT_ROOT, 
+                                          "compliance/reload.pid")
+    if os.path.exists(static_reload_pid_path):
+        static_reload_pid = int(open(static_reload_pid_path).read())
+    else:
+        static_reload_pid = -1
+
+    # Check the status of any previous reload jobs.
+    if static_reload_pid > 0 and \
+            not os.path.exists("/proc/%d" % static_reload_pid):
+        static_reload_pid = -1
+        if os.path.exists(static_reload_pid_path):
+            os.unlink(static_reload_pid_path)
 
     if request.method == 'POST':
-        # Do the database reload in the background.
+        # Do the database reload in the background.  We use the
+        # double-fork trick to avoid zombies.
         if static_reload_pid < 0:
             static_reload_pid = os.fork()
             if static_reload_pid == 0:
-                try:
-                    StaticSymbol.objects.all().delete()
-                    for lib in load_static.get_library_list():
-                        load_static.load_symbols(lib)
-                finally:
+                static_reload_pid = os.fork()
+                if static_reload_pid == 0:
+                    os.setsid()
+                    try:
+                        StaticSymbol.objects.all().delete()
+                        for lib in load_static.get_library_list():
+                            load_static.load_symbols(lib)
+                    finally:
+                        os._exit(0)
+                else:
+                    pid_file = open(static_reload_pid_path, "w")
+                    pid_file.write(str(static_reload_pid))
+                    pid_file.close()
                     os._exit(0)
             else:
+                os.waitpid(static_reload_pid, 0)
                 infomsg = "Reloading static database.  This may take a while."
+        else:
+            infomsg = "The static database is already being reloaded."
 
     return render_to_response('linkage/settings.html', 
                               { 'info_message': infomsg, 
