@@ -222,14 +222,14 @@ def settings_form(request):
 
     infomsg = None
 
-    if request.method == 'POST':
-        # Static data reload: are we already loading static data?
-        if static_reload_pid > 0:
-            (pid, status) = os.waitpid(static_reload_pid, os.WNOHANG)
-            if pid == 0 or os.WIFSIGNALED(status) or os.WIFEXITED(status):
-                static_reload_pid = -1
-                infomsg = "The static database is already being reloaded."
+    # Check the status of any possibly running reload jobs.
+    if static_reload_pid > 0:
+        (pid, status) = os.waitpid(static_reload_pid, os.WNOHANG)
+        if pid == 0 or os.WIFSIGNALED(status) or os.WIFEXITED(status):
+            static_reload_pid = -1
+            infomsg = "The static database is already being reloaded."
 
+    if request.method == 'POST':
         # Do the database reload in the background.
         if static_reload_pid < 0:
             static_reload_pid = os.fork()
@@ -239,12 +239,13 @@ def settings_form(request):
                     for lib in load_static.get_library_list():
                         load_static.load_symbols(lib)
                 finally:
-                    sys.exit(0)
+                    os._exit(0)
             else:
                 infomsg = "Reloading static database.  This may take a while."
 
     return render_to_response('linkage/settings.html', 
-                              { 'info_message': infomsg })
+                              { 'info_message': infomsg, 
+                                'reload_running': static_reload_pid > 0 })
 
 # process test form - this is where the real work happens
 def test(request):

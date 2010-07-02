@@ -10,8 +10,12 @@ to collect data from the installed libraries on your test system.
 Press the button below to clear out and reload the static symbol data.
 </p>
 
+{% if reload_running %}
+<p>The data is currently being reloaded.</p>
+{% else %}
 <form action="" method="post">
   <input type="submit" name="reload_static" value="Reload Static Data" />
 </form>
+{% endif %}
 
 {% endblock %}
