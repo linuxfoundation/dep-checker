@@ -25,3 +25,5 @@
     Add policy violation flagging to test results
     Expose --no-static in the GUI
     Add license<-->alias mapping/reporting capability (bug 459)
+    Add approved/disapproved policy highlighting (bug 475)
+    Pre-load with license/alias data (bug 478)
