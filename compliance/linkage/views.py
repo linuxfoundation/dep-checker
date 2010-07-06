@@ -506,6 +506,7 @@ def check_policy(flicense, llicense, library, issue):
     # if we got multiple matches, just return - bad policies
     if policyset and policyset.count() < 2:
         status = policyset[0].status
+        # only set the issue flag for the target coloring for the disallowed case
         if status == 'D':
             issue = issue or True
         if llicense != pllicense:
@@ -514,9 +515,10 @@ def check_policy(flicense, llicense, library, issue):
         llicense = flag_policy_issue(llicense, status)
         if flicense != pflicense:
             flicense = flicense + ' (' + pflicense + ')'
-        # only modify the target when there's a problem
-        if issue:
-            flicense = flag_policy_issue(flicense, status)
+        
+    # modify the target when there's been a problem somewhere in the whole license set
+    if issue:
+        flicense = flag_policy_issue(flicense, 'D')
 
     return issue, llicense, flicense
         
@@ -581,7 +583,8 @@ def render_detail(test_id):
             liblist = lib.library
             counter += 1
             # reset and check against the new binary, if we have a license
-            policy_issue = False
+            if lastid:            
+                policy_issue = False
             if lib.license and lastid:
                 policy_issue, llicense, flicense = check_policy(llist[counter], lib.license, lib.library, policy_issue)
             liclist = llicense

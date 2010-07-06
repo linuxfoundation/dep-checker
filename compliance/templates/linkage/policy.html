@@ -69,7 +69,7 @@
       {% if show_rank %}
       <td>{{ pol.rank }}</td>
       {% endif %}
-      <td>{{ pol.status }}</td>
+      <td>{% if pol.status %}{{ pol.status }}{% else %}U{% endif %}</td>
       <td>{{ pol.edit_date|date:"M d, Y H:i:s" }}</td>
     </tr>
   {% endfor %}
