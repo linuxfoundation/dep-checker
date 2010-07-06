@@ -16,13 +16,15 @@ STAT_CHOICES = (('', 'Unknown'), ('A', 'Approve'), ('D','Disapprove'))
 
 def license_choices():
     # get the available licenses to populated the form drop-downs
-    licenses = License.objects.all().order_by('license')
+    licenses = License.objects.all().order_by('longname')
     # need a tuple for the drop-down
     choices = []
     # no default
     choices.append(('',''))
     for lic in licenses:
-        selector = lic.license + " " + lic.version
+        selector = lic.license
+        if lic.version:
+            selector += " " + lic.version
         choices.append((selector, selector))
 
     return choices
@@ -86,8 +88,9 @@ class Lib(models.Model):
         return self.library
 
 class License(models.Model):
+    longname = models.CharField('License', max_length=200)
     license = models.CharField('License', max_length=200)
-    version = models.CharField('Version', max_length=20)
+    version = models.CharField('Version', max_length=20, blank=True)
     def __unicode__(self):
         return self.license
 

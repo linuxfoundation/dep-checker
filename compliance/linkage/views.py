@@ -99,7 +99,7 @@ def licenses(request):
     licenseform = LicenseForm() # An unbound form
     aliasesform = AliasesForm() # An unbound form
 
-    latest_license_list = License.objects.all().order_by('license')
+    latest_license_list = License.objects.all().order_by('longname')
     # we represent this one differently in the gui, pre-arrange things here
     aliases_list = Aliases.objects.values('license').distinct()
     
