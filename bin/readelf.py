@@ -51,6 +51,7 @@ def bad_depth():
 def dep_path(target, dep):
     # readelf gives us the lib, but not the path to check during recursion
     ldcall = "ldd " + target
+
     for lddata in os.popen(ldcall).readlines():
         if re.search("statically linked", lddata):
             return "NONE"
@@ -205,8 +206,11 @@ def dep_loop(parent, soname, dep, level):
         print_path_dep(parent, soname, dep, level)
         print_dep(dep, level)
 
-    target = dep_path(parent, dep)
-    childdeps = deps_check(target)
+    if not re.search('(static)', dep):
+        target = dep_path(parent, dep)
+        childdeps = deps_check(target)
+    else:
+        childdeps = []
 
     if len(childdeps) > 0:
         for childdep in childdeps:
