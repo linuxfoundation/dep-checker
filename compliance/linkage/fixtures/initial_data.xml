@@ -131,7 +131,7 @@
   </object>
   <object pk="9" model="linkage.license">
     <field type="CharField" name="longname">Boost Software License</field>
-    <field type="CharField" name="license"> BSL</field>
+    <field type="CharField" name="license">BSL</field>
     <field type="CharField" name="version">1.0</field>
   </object>
   <object pk="10" model="linkage.license">
@@ -187,7 +187,7 @@
   <object pk="20" model="linkage.license">
     <field type="CharField" name="longname">Frameworx License</field>
     <field type="CharField" name="license">Frameworx</field>
-    <field type="CharField" name="version">  </field>
+    <field type="CharField" name="version"/>
   </object>
   <object pk="21" model="linkage.license">
     <field type="CharField" name="longname">GNU General Public License (GPL)</field>
@@ -346,7 +346,7 @@
   </object>
   <object pk="52" model="linkage.license">
     <field type="CharField" name="longname">RealNetworks Public Source License V1.0</field>
-    <field type="CharField" name="license"> RealNW</field>
+    <field type="CharField" name="license">RealNW</field>
     <field type="CharField" name="version">1.0</field>
   </object>
   <object pk="53" model="linkage.license">
@@ -415,11 +415,11 @@
     <field type="CharField" name="version"/>
   </object>
   <object pk="1" model="linkage.aliases">
-    <field type="CharField" name="license"> BSL 1.0</field>
+    <field type="CharField" name="license">BSL 1.0</field>
     <field type="CharField" name="alias">BSLv1</field>
   </object>
   <object pk="2" model="linkage.aliases">
-    <field type="CharField" name="license"> BSL 1.0</field>
+    <field type="CharField" name="license">BSL 1.0</field>
     <field type="CharField" name="alias">BSL1</field>
   </object>
   <object pk="4" model="linkage.aliases">
@@ -551,11 +551,11 @@
     <field type="CharField" name="alias">OSLv3</field>
   </object>
   <object pk="36" model="linkage.aliases">
-    <field type="CharField" name="license"> RealNW 1.0</field>
+    <field type="CharField" name="license">RealNW 1.0</field>
     <field type="CharField" name="alias">Real1</field>
   </object>
   <object pk="37" model="linkage.aliases">
-    <field type="CharField" name="license"> RealNW 1.0</field>
+    <field type="CharField" name="license">RealNW 1.0</field>
     <field type="CharField" name="alias">Realv1</field>
   </object>
   <object pk="38" model="linkage.aliases">

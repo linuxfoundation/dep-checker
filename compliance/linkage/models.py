@@ -81,6 +81,7 @@ class Lib(models.Model):
     test = models.ForeignKey(Test)
     file = models.ForeignKey(File)
     library = models.CharField(max_length=200)
+    static = models.BooleanField(default=False)
     license = models.CharField(max_length=200, blank=True)
     level = models.IntegerField()
     parent_id = models.IntegerField()

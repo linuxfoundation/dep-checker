@@ -422,8 +422,12 @@ def do_dep_check(cli_command, testid):
             if depth > 1:
                 offset = 3
             for lib in deps[offset:len(deps)]:
+                static = False
+                if re.search(is_static, lib):
+                    lib = lib.split()[0]
+                    static = True
                 # we link file_id to parent_id of the file for recursion
-                libdata = Lib(test_id = testid, file_id = parentid, library = lib, level = depth, parent_id = 0)
+                libdata = Lib(test_id = testid, file_id = parentid, library = lib, static = static, level = depth, parent_id = 0)
                 libdata.save()
                 libid = libdata.id
                        
@@ -463,7 +467,7 @@ def update_lib_bindings():
     llist = LibLicense.objects.all().order_by('library')
     # bind both the dynamic and static version
     for ll in llist:
-        Lib.objects.filter(Q(library = ll.library) | Q(library = ll.library + is_static)).update(license = ll.license)
+        Lib.objects.filter(library = ll.library).update(license = ll.license)
 
 # update File records for license bindings
 def update_file_bindings():
@@ -480,10 +484,10 @@ def get_license_aliases(license):
     return alist
 
 # check a target/library pair for policy violations
-def check_policy(flicense, llicense, library, issue):
+def check_policy(flicense, llicense, library, static, issue):
     # is the lib dynamic or static?
     ltype = 'Dynamic'
-    if re.search(is_static, library):
+    if static:
         ltype = 'Static'
 
     # it's possible that the license assigned to the target or library is one of
@@ -572,24 +576,30 @@ def render_detail(test_id):
         # we don't use this at the moment
         parent = lib.parent_id
         if lib.license:
-            policy_issue, llicense, flicense = check_policy(llist[counter], lib.license, lib.library, policy_issue)
+            policy_issue, llicense, flicense = check_policy(llist[counter], lib.license, lib.library, lib.static, policy_issue)
         else:
             llicense = 'TBD'
         if fileid != lastid:
             if liblist != '':
                 if policy_issue:
                     llist[counter] = flicense
-                masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'licenses': liclist})
+                masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'statics': staticlist, 'licenses': liclist})
             liblist = lib.library
             counter += 1
             # reset and check against the new binary, if we have a license
             if lastid:            
                 policy_issue = False
             if lib.license and lastid:
-                policy_issue, llicense, flicense = check_policy(llist[counter], lib.license, lib.library, policy_issue)
+                policy_issue, llicense, flicense = check_policy(llist[counter], lib.license, lib.library, lib.static, policy_issue)
+            staticlist = ''
+            if lib.static:
+                staticlist = 'x'           
             liclist = llicense
         else:
             liblist += '<BR>' + spacer * level + lib.library
+            staticlist += '<BR>'
+            if lib.static:
+                staticlist += 'x'
             liclist += '<BR>' + llicense
         lastid = fileid
 
@@ -597,7 +607,7 @@ def render_detail(test_id):
     if policy_issue:
         llist[counter] = flicense
 
-    masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'licenses': liclist})
+    masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'statics': staticlist, 'licenses': liclist})
     
     return t, masterlist
 
