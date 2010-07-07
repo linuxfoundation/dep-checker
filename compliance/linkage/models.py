@@ -193,3 +193,12 @@ class StaticLibSearchPath(models.Model):
 
 class SearchPathForm(Form):
     dirlist = forms.CharField(widget=forms.Textarea)
+
+    def clean_dirlist(self):
+        dl = self.cleaned_data['dirlist']
+        paths = dl.split("\n")
+        for path in paths:
+            if not os.path.isdir(path.strip()):
+                raise forms.ValidationError('Path %s cannot be found.' 
+                                            % path.strip())
+        return dl

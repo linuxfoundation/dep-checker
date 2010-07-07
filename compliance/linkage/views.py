@@ -256,6 +256,8 @@ def settings_form(request):
                 for path_str in path_list:
                     path = StaticLibSearchPath(path=path_str)
                     path.save()
+            else:
+                infomsg = "One of the directory paths could not be found."
         else:
             infomsg = "Could not understand the form request."
 

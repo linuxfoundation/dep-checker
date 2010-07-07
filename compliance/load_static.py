@@ -21,9 +21,10 @@ def get_library_list():
     lib_list = []
     search_paths = [x.path for x in StaticLibSearchPath.objects.all()]
     for libpath in search_paths:
-        for libfile in os.listdir(libpath):
-            if re.search(r'\.so\.\d+$', libfile):
-                lib_list.append(os.path.join(libpath, libfile))
+        if os.path.isdir(libpath):
+            for libfile in os.listdir(libpath):
+                if re.search(r'\.so\.\d+$', libfile):
+                    lib_list.append(os.path.join(libpath, libfile))
 
     return lib_list
 
