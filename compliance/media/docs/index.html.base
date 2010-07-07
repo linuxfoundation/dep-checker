@@ -320,8 +320,7 @@ program:
 <li><a href="#Test"><b>Check Dependencies</b></a> - Test entry, initiate form</li>
 <li><a href="#Results"><b>Review Results</b></a> - Tabular list of existing test results</li>
 <li><a href="#Licenses"><b>Licenses</b></a> - License/alias entry tab</li>
-<li><a href="#Target Licenses"><b>Target Licenses</b></a> - Define license bindings for targets (test files)</li>
-<li><a href="#Library Licenses"><b>Library Licenses</b></a> - Define license bindings for libraries</li>
+<li><a href="#License Bindings"><b>License Bindings</b></a> - Define license bindings for targets (test files) and libraries</li>
 <li><a href="#License Policies"><b>License Policies</b></a> - Define sets of target/dependency license policies, to be flagged during testing</li>
 <li><a href="#Settings"><b>Settings</b></a> - View and change other settings, and reload the static database</li>
 <li><b>Documentation</b> - This documentation</li>
@@ -380,33 +379,31 @@ will be concatenated in the report to look like: <i>GPL 3.0</i>.</p>
 <p>This tab also contains the entry form to map the license/version info used by the application
 to any possible string variations provided by imported data from other sources. You can 
 select a license/version from the system and then provide up to 9 alternate names (aliases)
-that will be considered equivalent when examining test results for policy violations.</p>
+that will be considered equivalent when examining test results for policy violations. Additional
+aliases can be added to an existing list by simply selecting the license, entering just the new
+alias and clicking "Add" again.</p>
 
 </div>
 
-<div id="Target Licenses">
-<b>Target Licenses:</b>
+<div id="License Bindings">
+<b>License Bindings:</b>
 
-<p>The <b>Target Licenses</b> tab lets you define the license binding for the <i>target</i> files,
-that is, the files that are being tested for dependencies. The drop down under <i>Target</i>
-will show all files having test data. The drop-down under <i>License</i> will show all the
-licenses defined in the <b>License</b> tab. If there is no test-data or no licenses, the
-drop-downs will be empty. If there is test data in the system, you can update the license
-information for current data using the <i>Update Test Data</i> button.</p>
+<p>The <b>License Bindings</b> tab lets you define the license binding for the <i>target</i> files,
+that is, the files that are being tested for dependencies. The same type of bindings can be done
+for the dependency libraries.</p>
 
-</div>
+<p>The drop down under <i>Target</i> will show all files having test data. The drop-down 
+under <i>License</i> will show all the licenses defined in the <b>License</b> tab. If there 
+is no test-data or no licenses, the drop-downs will be empty. If there is test data in the 
+system, you can update the license information for current data using the 
+<i>Update Target Test Data</i> button.</p>
 
-<div id="Library Licenses">
-<b>Library Licenses:</b>
-
-<p>The <b>Library Licenses</b> tab lets you define the license binding for the library
-dependencies. The drop down under <i>License</i> will show all libraries in the test data. 
+<p>The drop down under <i>Library</i> will show all libraries in the test data. 
 The drop-down under <i>License</i> will show all the licenses defined in the <b>License</b> 
-tab. If there is no test-data or no licenses, the drop-downs will be empty. The <i>License</i>
-selector does not differentiate between static and dynamic versions, both will be treated the
-same. If there is no test-data or no licenses, the drop-downs will be empty. If there is 
-test data in the system, you can update the license information for current data using the 
-<i>Update Test Data</i> button.</p>
+tab. The <i>License</i> selector does not differentiate between static and dynamic versions, 
+both will be treated the same. If there is no test-data or no licenses, the drop-downs will 
+be empty. If there is test data in the system, you can update the license information for 
+current data using the <i>Update Library Test Data</i> button.</p>
 
 </div>
 
