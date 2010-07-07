@@ -153,65 +153,54 @@ def policy(request):
                               'policyform': policyform, 
                               'tab_policy': True })
 
-# library/license binding page
-def liblicense(request):
+# target/library/license binding page
+def lbindings(request):
 
     if request.method == 'POST': # If the form has been submitted...
         mode = urllib.unquote(request.POST.get('submit'))
 
-        if re.search("^Add", mode):
-            liblicenseform = LibLicenseForm(request.POST) # A form bound to the POST data
-            # request to add data
-            if liblicenseform.is_valid(): # All validation rules pass
-                liblicenseform.save()
-       
-        elif re.search("^Update", mode):
-            update_lib_bindings()
-
-        else:
-            # delete request       
-            liblicenselist = request.POST.get('liblicenselist', '')
-            if liblicenselist != '':
-                delete_records(LibLicense, liblicenselist)
-
-    liblicenseform = LibLicenseForm() # An unbound form
-
-    latest_liblicense_list = LibLicense.objects.all().order_by('library')
-
-    return render_to_response('linkage/liblicense.html', {
-                              'latest_liblicense_list': latest_liblicense_list, 
-                              'liblicenseform': liblicenseform, 
-                              'tab_liblicense': True })
-
-# target/license binding page
-def targetlicense(request):
-
-    if request.method == 'POST': # If the form has been submitted...
-        mode = urllib.unquote(request.POST.get('submit'))
-
-        if re.search("^Add", mode):
+        if re.search("^Add Target", mode):
             targetlicenseform = FileLicenseForm(request.POST) # A form bound to the POST data
             # request to add data
             if targetlicenseform.is_valid(): # All validation rules pass
                 targetlicenseform.save()
-       
-        elif re.search("^Update", mode):
+
+        if re.search("^Add Library", mode):
+            liblicenseform = LibLicenseForm(request.POST) # A form bound to the POST data
+            # request to add data
+            if liblicenseform.is_valid(): # All validation rules pass
+                liblicenseform.save()       
+
+        if re.search("^Update Target", mode):
             update_file_bindings()
 
-        else:
+        if re.search("^Update Library", mode):
+            update_lib_bindings()
+
+        if re.search("^Delete Selected", mode) and re.search("Target Bindings", mode):
             # delete request       
             targetlicenselist = request.POST.get('targetlicenselist', '')
             if targetlicenselist != '':
                 delete_records(FileLicense, targetlicenselist)
 
+        if re.search("^Delete Selected", mode) and re.search("Library Bindings", mode):
+            # delete request       
+            liblicenselist = request.POST.get('liblicenselist', '')
+            if liblicenselist != '':
+                delete_records(LibLicense, liblicenselist)
+
     targetlicenseform = FileLicenseForm() # An unbound form
+    liblicenseform = LibLicenseForm() # An unbound form
 
     latest_targetlicense_list = FileLicense.objects.all().order_by('file')
+    latest_liblicense_list = LibLicense.objects.all().order_by('library')
 
-    return render_to_response('linkage/targetlicense.html', {
+    return render_to_response('linkage/lbindings.html', {
                               'latest_targetlicense_list': latest_targetlicense_list, 
+                              'latest_liblicense_list': latest_liblicense_list, 
                               'targetlicenseform': targetlicenseform, 
-                              'tab_targetlicense': True })
+                              'liblicenseform': liblicenseform, 
+                              'tab_lbindings': True })
 
 # settings - miscellaneous things to set, used for static db reloading
 def settings_form(request):
