@@ -30,7 +30,8 @@
       <td><b>Target</b></td>
       <td><b>Target License</b></td>
       <td><b>Dependency</b></td>
-      <td><b>Dependency License</b></td>  
+      <td><b>Static<BR>Linkage</b></td>
+      <td><b>Dependency License</b></td>
     </tr>
 
     {% for row in master %}
@@ -39,6 +40,7 @@
         {% autoescape off %}
         <td>{{ row.license }}</td>
         <td>{{ row.libs }}</td>
+        <td>{{ row.statics }}</td>
         <td>{{ row.licenses }}</td>
         {% endautoescape %}
       </tr>

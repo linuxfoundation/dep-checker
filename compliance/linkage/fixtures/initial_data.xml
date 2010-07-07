@@ -1,5 +1,595 @@
 <?xml version="1.0" encoding="utf-8"?>
 <django-objects version="1.0">
+  <object pk="13" model="contenttypes.contenttype">
+    <field type="CharField" name="name">aliases</field>
+    <field type="CharField" name="app_label">linkage</field>
+    <field type="CharField" name="model">aliases</field>
+  </object>
+  <object pk="5" model="contenttypes.contenttype">
+    <field type="CharField" name="name">content type</field>
+    <field type="CharField" name="app_label">contenttypes</field>
+    <field type="CharField" name="model">contenttype</field>
+  </object>
+  <object pk="10" model="contenttypes.contenttype">
+    <field type="CharField" name="name">file</field>
+    <field type="CharField" name="app_label">linkage</field>
+    <field type="CharField" name="model">file</field>
+  </object>
+  <object pk="15" model="contenttypes.contenttype">
+    <field type="CharField" name="name">file license</field>
+    <field type="CharField" name="app_label">linkage</field>
+    <field type="CharField" name="model">filelicense</field>
+  </object>
+  <object pk="2" model="contenttypes.contenttype">
+    <field type="CharField" name="name">group</field>
+    <field type="CharField" name="app_label">auth</field>
+    <field type="CharField" name="model">group</field>
+  </object>
+  <object pk="11" model="contenttypes.contenttype">
+    <field type="CharField" name="name">lib</field>
+    <field type="CharField" name="app_label">linkage</field>
+    <field type="CharField" name="model">lib</field>
+  </object>
+  <object pk="14" model="contenttypes.contenttype">
+    <field type="CharField" name="name">lib license</field>
+    <field type="CharField" name="app_label">linkage</field>
+    <field type="CharField" name="model">liblicense</field>
+  </object>
+  <object pk="12" model="contenttypes.contenttype">
+    <field type="CharField" name="name">license</field>
+    <field type="CharField" name="app_label">linkage</field>
+    <field type="CharField" name="model">license</field>
+  </object>
+  <object pk="8" model="contenttypes.contenttype">
+    <field type="CharField" name="name">log entry</field>
+    <field type="CharField" name="app_label">admin</field>
+    <field type="CharField" name="model">logentry</field>
+  </object>
+  <object pk="4" model="contenttypes.contenttype">
+    <field type="CharField" name="name">message</field>
+    <field type="CharField" name="app_label">auth</field>
+    <field type="CharField" name="model">message</field>
+  </object>
+  <object pk="1" model="contenttypes.contenttype">
+    <field type="CharField" name="name">permission</field>
+    <field type="CharField" name="app_label">auth</field>
+    <field type="CharField" name="model">permission</field>
+  </object>
+  <object pk="16" model="contenttypes.contenttype">
+    <field type="CharField" name="name">policy</field>
+    <field type="CharField" name="app_label">linkage</field>
+    <field type="CharField" name="model">policy</field>
+  </object>
+  <object pk="6" model="contenttypes.contenttype">
+    <field type="CharField" name="name">session</field>
+    <field type="CharField" name="app_label">sessions</field>
+    <field type="CharField" name="model">session</field>
+  </object>
+  <object pk="7" model="contenttypes.contenttype">
+    <field type="CharField" name="name">site</field>
+    <field type="CharField" name="app_label">sites</field>
+    <field type="CharField" name="model">site</field>
+  </object>
+  <object pk="17" model="contenttypes.contenttype">
+    <field type="CharField" name="name">static symbol</field>
+    <field type="CharField" name="app_label">linkage</field>
+    <field type="CharField" name="model">staticsymbol</field>
+  </object>
+  <object pk="9" model="contenttypes.contenttype">
+    <field type="CharField" name="name">test</field>
+    <field type="CharField" name="app_label">linkage</field>
+    <field type="CharField" name="model">test</field>
+  </object>
+  <object pk="3" model="contenttypes.contenttype">
+    <field type="CharField" name="name">user</field>
+    <field type="CharField" name="app_label">auth</field>
+    <field type="CharField" name="model">user</field>
+  </object>
+  <object pk="1" model="sites.site">
+    <field type="CharField" name="domain">example.com</field>
+    <field type="CharField" name="name">example.com</field>
+  </object>
+  <object pk="1" model="linkage.license">
+    <field type="CharField" name="longname">Academic Free License 3.0</field>
+    <field type="CharField" name="license">AFL</field>
+    <field type="CharField" name="version">3.0</field>
+  </object>
+  <object pk="2" model="linkage.license">
+    <field type="CharField" name="longname">Affero GNU Public License</field>
+    <field type="CharField" name="license">AGPL</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="3" model="linkage.license">
+    <field type="CharField" name="longname">Adaptive Public License</field>
+    <field type="CharField" name="license">APL</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="4" model="linkage.license">
+    <field type="CharField" name="longname">Apache License</field>
+    <field type="CharField" name="license">Apache</field>
+    <field type="CharField" name="version">2.0</field>
+  </object>
+  <object pk="5" model="linkage.license">
+    <field type="CharField" name="longname">Apple Public Source License</field>
+    <field type="CharField" name="license">Apple</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="6" model="linkage.license">
+    <field type="CharField" name="longname">Artistic license 2.0</field>
+    <field type="CharField" name="license">Artistic</field>
+    <field type="CharField" name="version">2.0</field>
+  </object>
+  <object pk="7" model="linkage.license">
+    <field type="CharField" name="longname">Attribution Assurance Licenses</field>
+    <field type="CharField" name="license">AAL</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="8" model="linkage.license">
+    <field type="CharField" name="longname">New and Simplified BSD licenses</field>
+    <field type="CharField" name="license">BSD</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="9" model="linkage.license">
+    <field type="CharField" name="longname">Boost Software License</field>
+    <field type="CharField" name="license">BSL</field>
+    <field type="CharField" name="version">1.0</field>
+  </object>
+  <object pk="10" model="linkage.license">
+    <field type="CharField" name="longname">Computer Associates Trusted Open Source License</field>
+    <field type="CharField" name="license">CATOSL</field>
+    <field type="CharField" name="version">1.1</field>
+  </object>
+  <object pk="11" model="linkage.license">
+    <field type="CharField" name="longname">Common Development and Distribution License</field>
+    <field type="CharField" name="license">CDDL</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="12" model="linkage.license">
+    <field type="CharField" name="longname">Common Public Attribution License 1.0</field>
+    <field type="CharField" name="license">CPAL</field>
+    <field type="CharField" name="version">1.0</field>
+  </object>
+  <object pk="13" model="linkage.license">
+    <field type="CharField" name="longname">CUA Office Public License Version 1.0</field>
+    <field type="CharField" name="license">CUAOPL</field>
+    <field type="CharField" name="version">1.0</field>
+  </object>
+  <object pk="14" model="linkage.license">
+    <field type="CharField" name="longname">EU DataGrid Software License</field>
+    <field type="CharField" name="license">EUDSL</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="15" model="linkage.license">
+    <field type="CharField" name="longname">Eclipse Public License</field>
+    <field type="CharField" name="license">EPL</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="16" model="linkage.license">
+    <field type="CharField" name="longname">Educational Community License Version 2.0</field>
+    <field type="CharField" name="license">ECL</field>
+    <field type="CharField" name="version">2.0</field>
+  </object>
+  <object pk="17" model="linkage.license">
+    <field type="CharField" name="longname">Eiffel Forum License V2.0</field>
+    <field type="CharField" name="license">EFL</field>
+    <field type="CharField" name="version">2.0</field>
+  </object>
+  <object pk="18" model="linkage.license">
+    <field type="CharField" name="longname">Entessa Public License</field>
+    <field type="CharField" name="license">EPL</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="19" model="linkage.license">
+    <field type="CharField" name="longname">Fair License</field>
+    <field type="CharField" name="license">Fair</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="20" model="linkage.license">
+    <field type="CharField" name="longname">Frameworx License</field>
+    <field type="CharField" name="license">Frameworx</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="21" model="linkage.license">
+    <field type="CharField" name="longname">GNU General Public License (GPL)</field>
+    <field type="CharField" name="license">GPL</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="22" model="linkage.license">
+    <field type="CharField" name="longname">GNU General Public License version 3.0 (GPLv3)</field>
+    <field type="CharField" name="license">GPL</field>
+    <field type="CharField" name="version">3.0</field>
+  </object>
+  <object pk="23" model="linkage.license">
+    <field type="CharField" name="longname">GNU Library or 'Lesser' General Public License (LGPL)</field>
+    <field type="CharField" name="license">LGPL</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="24" model="linkage.license">
+    <field type="CharField" name="longname">GNU Library or 'Lesser' General Public License version 3.0 (LGPLv3)</field>
+    <field type="CharField" name="license">LGPL</field>
+    <field type="CharField" name="version">3.0</field>
+  </object>
+  <object pk="25" model="linkage.license">
+    <field type="CharField" name="longname">Historical Permission Notice and Disclaimer</field>
+    <field type="CharField" name="license">Historical</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="26" model="linkage.license">
+    <field type="CharField" name="longname">IBM Public License</field>
+    <field type="CharField" name="license">IBM</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="27" model="linkage.license">
+    <field type="CharField" name="longname">IPA Font License</field>
+    <field type="CharField" name="license">IPA</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="28" model="linkage.license">
+    <field type="CharField" name="longname">ISC License</field>
+    <field type="CharField" name="license">ISC</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="29" model="linkage.license">
+    <field type="CharField" name="longname">Lucent Public License Version 1.02</field>
+    <field type="CharField" name="license">Lucent</field>
+    <field type="CharField" name="version">1.02</field>
+  </object>
+  <object pk="30" model="linkage.license">
+    <field type="CharField" name="longname">MirOS Licence</field>
+    <field type="CharField" name="license">MirOS</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="31" model="linkage.license">
+    <field type="CharField" name="longname">Microsoft Public License (Ms-PL)</field>
+    <field type="CharField" name="license">Ms-PL</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="32" model="linkage.license">
+    <field type="CharField" name="longname">Microsoft Reciprocal License (Ms-RL)</field>
+    <field type="CharField" name="license">Ms-RL</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="33" model="linkage.license">
+    <field type="CharField" name="longname">MIT license</field>
+    <field type="CharField" name="license">MIT</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="34" model="linkage.license">
+    <field type="CharField" name="longname">Motosoto License</field>
+    <field type="CharField" name="license">Motosoto</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="35" model="linkage.license">
+    <field type="CharField" name="longname">Mozilla Public License 1.1 (MPL)</field>
+    <field type="CharField" name="license">MPL</field>
+    <field type="CharField" name="version">1.1</field>
+  </object>
+  <object pk="36" model="linkage.license">
+    <field type="CharField" name="longname">Multics License</field>
+    <field type="CharField" name="license">Multics</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="37" model="linkage.license">
+    <field type="CharField" name="longname">NASA Open Source Agreement 1.3</field>
+    <field type="CharField" name="license">NASA</field>
+    <field type="CharField" name="version">1.3</field>
+  </object>
+  <object pk="38" model="linkage.license">
+    <field type="CharField" name="longname">NTP License</field>
+    <field type="CharField" name="license">NTP</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="39" model="linkage.license">
+    <field type="CharField" name="longname">Naumen Public License</field>
+    <field type="CharField" name="license">Naumen</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="40" model="linkage.license">
+    <field type="CharField" name="longname">Nethack General Public License</field>
+    <field type="CharField" name="license">Nethack</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="41" model="linkage.license">
+    <field type="CharField" name="longname">Nokia Open Source License</field>
+    <field type="CharField" name="license">Nokia</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="42" model="linkage.license">
+    <field type="CharField" name="longname">Non-Profit Open Software License 3.0 (Non-Profit OSL 3.0)</field>
+    <field type="CharField" name="license">NP OSL</field>
+    <field type="CharField" name="version">3.0</field>
+  </object>
+  <object pk="43" model="linkage.license">
+    <field type="CharField" name="longname">OCLC Research Public License 2.0</field>
+    <field type="CharField" name="license">OSLC</field>
+    <field type="CharField" name="version">2.0</field>
+  </object>
+  <object pk="44" model="linkage.license">
+    <field type="CharField" name="longname">Open Font License 1.1 (OFL 1.1)</field>
+    <field type="CharField" name="license">OFL</field>
+    <field type="CharField" name="version">1.1</field>
+  </object>
+  <object pk="45" model="linkage.license">
+    <field type="CharField" name="longname">Open Group Test Suite License</field>
+    <field type="CharField" name="license">OGTSL</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="46" model="linkage.license">
+    <field type="CharField" name="longname">Open Software License 3.0 (OSL 3.0)</field>
+    <field type="CharField" name="license">OSL</field>
+    <field type="CharField" name="version">3.0</field>
+  </object>
+  <object pk="47" model="linkage.license">
+    <field type="CharField" name="longname">PHP License</field>
+    <field type="CharField" name="license">PHP</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="48" model="linkage.license">
+    <field type="CharField" name="longname">The PostgreSQL License</field>
+    <field type="CharField" name="license">PostgreSQL</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="49" model="linkage.license">
+    <field type="CharField" name="longname">Python license (CNRI Python License)</field>
+    <field type="CharField" name="license">CNRI Python</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="50" model="linkage.license">
+    <field type="CharField" name="longname">Python Software Foundation License</field>
+    <field type="CharField" name="license">Python</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="51" model="linkage.license">
+    <field type="CharField" name="longname">Qt Public License (QPL)</field>
+    <field type="CharField" name="license">QPL</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="52" model="linkage.license">
+    <field type="CharField" name="longname">RealNetworks Public Source License V1.0</field>
+    <field type="CharField" name="license">RealNW</field>
+    <field type="CharField" name="version">1.0</field>
+  </object>
+  <object pk="53" model="linkage.license">
+    <field type="CharField" name="longname">Reciprocal Public License 1.5 (RPL1.5)</field>
+    <field type="CharField" name="license">RPL</field>
+    <field type="CharField" name="version">1.5</field>
+  </object>
+  <object pk="54" model="linkage.license">
+    <field type="CharField" name="longname">Ricoh Source Code Public License</field>
+    <field type="CharField" name="license">Ricoh</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="55" model="linkage.license">
+    <field type="CharField" name="longname">Simple Public License 2.0</field>
+    <field type="CharField" name="license">Simple</field>
+    <field type="CharField" name="version">2.0</field>
+  </object>
+  <object pk="56" model="linkage.license">
+    <field type="CharField" name="longname">Sleepycat License</field>
+    <field type="CharField" name="license">Sleepycat</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="57" model="linkage.license">
+    <field type="CharField" name="longname">Sun Public License</field>
+    <field type="CharField" name="license">Sun</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="58" model="linkage.license">
+    <field type="CharField" name="longname">Sybase Open Watcom Public License 1.0</field>
+    <field type="CharField" name="license">Sybase</field>
+    <field type="CharField" name="version">1.0</field>
+  </object>
+  <object pk="59" model="linkage.license">
+    <field type="CharField" name="longname">University of Illinois/NCSA Open Source License</field>
+    <field type="CharField" name="license">UI/NCSA</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="60" model="linkage.license">
+    <field type="CharField" name="longname">Vovida Software License v. 1.0</field>
+    <field type="CharField" name="license">Vovida</field>
+    <field type="CharField" name="version">1.0</field>
+  </object>
+  <object pk="61" model="linkage.license">
+    <field type="CharField" name="longname">W3C License</field>
+    <field type="CharField" name="license">W3C</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="62" model="linkage.license">
+    <field type="CharField" name="longname">wxWindows Library License</field>
+    <field type="CharField" name="license">wxWindows</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="63" model="linkage.license">
+    <field type="CharField" name="longname">X.Net License</field>
+    <field type="CharField" name="license">X.Net</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="64" model="linkage.license">
+    <field type="CharField" name="longname">Zope Public License</field>
+    <field type="CharField" name="license">Zope</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="65" model="linkage.license">
+    <field type="CharField" name="longname">zlib/libpng license</field>
+    <field type="CharField" name="license">zlib/libpng</field>
+    <field type="CharField" name="version"/>
+  </object>
+  <object pk="1" model="linkage.aliases">
+    <field type="CharField" name="license">BSL 1.0</field>
+    <field type="CharField" name="alias">BSLv1</field>
+  </object>
+  <object pk="2" model="linkage.aliases">
+    <field type="CharField" name="license">BSL 1.0</field>
+    <field type="CharField" name="alias">BSL1</field>
+  </object>
+  <object pk="4" model="linkage.aliases">
+    <field type="CharField" name="license">AFL 3.0</field>
+    <field type="CharField" name="alias">AFL3</field>
+  </object>
+  <object pk="5" model="linkage.aliases">
+    <field type="CharField" name="license">AFL 3.0</field>
+    <field type="CharField" name="alias">AFLv3</field>
+  </object>
+  <object pk="6" model="linkage.aliases">
+    <field type="CharField" name="license">Apache 2.0</field>
+    <field type="CharField" name="alias">Apachev2</field>
+  </object>
+  <object pk="7" model="linkage.aliases">
+    <field type="CharField" name="license">Apache 2.0</field>
+    <field type="CharField" name="alias">Apache2</field>
+  </object>
+  <object pk="8" model="linkage.aliases">
+    <field type="CharField" name="license">Artistic 2.0</field>
+    <field type="CharField" name="alias">Artistic2</field>
+  </object>
+  <object pk="9" model="linkage.aliases">
+    <field type="CharField" name="license">Artistic 2.0</field>
+    <field type="CharField" name="alias">Artisticv2</field>
+  </object>
+  <object pk="10" model="linkage.aliases">
+    <field type="CharField" name="license">CUAOPL 1.0</field>
+    <field type="CharField" name="alias">CUAOPL1</field>
+  </object>
+  <object pk="11" model="linkage.aliases">
+    <field type="CharField" name="license">CUAOPL 1.0</field>
+    <field type="CharField" name="alias">CUAOPLv1</field>
+  </object>
+  <object pk="12" model="linkage.aliases">
+    <field type="CharField" name="license">CPAL 1.0</field>
+    <field type="CharField" name="alias">CPAL1</field>
+  </object>
+  <object pk="13" model="linkage.aliases">
+    <field type="CharField" name="license">CPAL 1.0</field>
+    <field type="CharField" name="alias">CPALv1</field>
+  </object>
+  <object pk="14" model="linkage.aliases">
+    <field type="CharField" name="license">CATOSL 1.1</field>
+    <field type="CharField" name="alias">CATOSL1</field>
+  </object>
+  <object pk="15" model="linkage.aliases">
+    <field type="CharField" name="license">CATOSL 1.1</field>
+    <field type="CharField" name="alias">CATOSLv1</field>
+  </object>
+  <object pk="16" model="linkage.aliases">
+    <field type="CharField" name="license">ECL 2.0</field>
+    <field type="CharField" name="alias">ECL2</field>
+  </object>
+  <object pk="17" model="linkage.aliases">
+    <field type="CharField" name="license">ECL 2.0</field>
+    <field type="CharField" name="alias">ECLv2</field>
+  </object>
+  <object pk="18" model="linkage.aliases">
+    <field type="CharField" name="license">EFL 2.0</field>
+    <field type="CharField" name="alias">EFL2</field>
+  </object>
+  <object pk="19" model="linkage.aliases">
+    <field type="CharField" name="license">EFL 2.0</field>
+    <field type="CharField" name="alias">EFLv2</field>
+  </object>
+  <object pk="20" model="linkage.aliases">
+    <field type="CharField" name="license">GPL 3.0</field>
+    <field type="CharField" name="alias">GPL3</field>
+  </object>
+  <object pk="21" model="linkage.aliases">
+    <field type="CharField" name="license">GPL 3.0</field>
+    <field type="CharField" name="alias">GPLv3</field>
+  </object>
+  <object pk="22" model="linkage.aliases">
+    <field type="CharField" name="license">LGPL 3.0</field>
+    <field type="CharField" name="alias">LGPL3</field>
+  </object>
+  <object pk="23" model="linkage.aliases">
+    <field type="CharField" name="license">LGPL 3.0</field>
+    <field type="CharField" name="alias">LGPLv3</field>
+  </object>
+  <object pk="24" model="linkage.aliases">
+    <field type="CharField" name="license">Lucent 1.02</field>
+    <field type="CharField" name="alias">Lucent1.02</field>
+  </object>
+  <object pk="25" model="linkage.aliases">
+    <field type="CharField" name="license">Lucent 1.02</field>
+    <field type="CharField" name="alias">Lucentv1.02</field>
+  </object>
+  <object pk="26" model="linkage.aliases">
+    <field type="CharField" name="license">MPL 1.1</field>
+    <field type="CharField" name="alias">MPL1.1</field>
+  </object>
+  <object pk="27" model="linkage.aliases">
+    <field type="CharField" name="license">MPL 1.1</field>
+    <field type="CharField" name="alias">MPLv1.1</field>
+  </object>
+  <object pk="28" model="linkage.aliases">
+    <field type="CharField" name="license">NP OSL 3.0</field>
+    <field type="CharField" name="alias">NPOSL3</field>
+  </object>
+  <object pk="29" model="linkage.aliases">
+    <field type="CharField" name="license">NP OSL 3.0</field>
+    <field type="CharField" name="alias">NPOSLv3</field>
+  </object>
+  <object pk="30" model="linkage.aliases">
+    <field type="CharField" name="license">OSLC 2.0</field>
+    <field type="CharField" name="alias">OSLC2</field>
+  </object>
+  <object pk="31" model="linkage.aliases">
+    <field type="CharField" name="license">OSLC 2.0</field>
+    <field type="CharField" name="alias">OSLCv2</field>
+  </object>
+  <object pk="32" model="linkage.aliases">
+    <field type="CharField" name="license">OFL 1.1</field>
+    <field type="CharField" name="alias">OFL1.1</field>
+  </object>
+  <object pk="33" model="linkage.aliases">
+    <field type="CharField" name="license">OFL 1.1</field>
+    <field type="CharField" name="alias">OFLv1.1</field>
+  </object>
+  <object pk="34" model="linkage.aliases">
+    <field type="CharField" name="license">OSL 3.0</field>
+    <field type="CharField" name="alias">OSL3</field>
+  </object>
+  <object pk="35" model="linkage.aliases">
+    <field type="CharField" name="license">OSL 3.0</field>
+    <field type="CharField" name="alias">OSLv3</field>
+  </object>
+  <object pk="36" model="linkage.aliases">
+    <field type="CharField" name="license">RealNW 1.0</field>
+    <field type="CharField" name="alias">Real1</field>
+  </object>
+  <object pk="37" model="linkage.aliases">
+    <field type="CharField" name="license">RealNW 1.0</field>
+    <field type="CharField" name="alias">Realv1</field>
+  </object>
+  <object pk="38" model="linkage.aliases">
+    <field type="CharField" name="license">RPL 1.5</field>
+    <field type="CharField" name="alias">RPL1.5</field>
+  </object>
+  <object pk="39" model="linkage.aliases">
+    <field type="CharField" name="license">RPL 1.5</field>
+    <field type="CharField" name="alias">RPLv1.5</field>
+  </object>
+  <object pk="40" model="linkage.aliases">
+    <field type="CharField" name="license">Simple 2.0</field>
+    <field type="CharField" name="alias">Simple2</field>
+  </object>
+  <object pk="41" model="linkage.aliases">
+    <field type="CharField" name="license">Simple 2.0</field>
+    <field type="CharField" name="alias">Simplev2</field>
+  </object>
+  <object pk="42" model="linkage.aliases">
+    <field type="CharField" name="license">Sybase 1.0</field>
+    <field type="CharField" name="alias">Sybase1</field>
+  </object>
+  <object pk="43" model="linkage.aliases">
+    <field type="CharField" name="license">Sybase 1.0</field>
+    <field type="CharField" name="alias">Sybasev1</field>
+  </object>
+  <object pk="44" model="linkage.aliases">
+    <field type="CharField" name="license">Vovida 1.0</field>
+    <field type="CharField" name="alias">Vovida1</field>
+  </object>
+  <object pk="45" model="linkage.aliases">
+    <field type="CharField" name="license">Vovida 1.0</field>
+    <field type="CharField" name="alias">Vovidav1</field>
+  </object>
   <object pk="22" model="auth.permission">
     <field type="CharField" name="name">Can add log entry</field>
     <field to="contenttypes.contenttype" name="content_type" rel="ManyToOneRel">8</field>

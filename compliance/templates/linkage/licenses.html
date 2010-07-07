@@ -21,16 +21,19 @@ create a list of possible equivalent strings (aliases) for a particular license.
     <col width=80>
     <tr align="center">
       <td></td>
-      <th>License</th>
+      <th>Long Name</th>
+      <th>Abbreviation</th>
       <th>Version</th>
       <td></td>
     </tr>
     <tr align="center">
       <td></td>
       <!-- did not have enough style control just dropping the form fields in -->
-      <td><input type="text" name="license" size="14"></td>
-      <td><input type="text" name="version" size="14"></td>
-      <td><input type="submit" name="submit" value="Add License" /></td>
+      <td><input type="text" name="license" size="12"></td>
+      <td><input type="text" name="license" size="12"></td>
+      <td><input type="text" name="version" size="6"></td>
+      <td><input type="submit" name="submit" value="Add
+License" /></td>
     </tr>
     <tr align="center">
       <td><input type="checkbox" name="selectall" 
@@ -41,11 +44,13 @@ create a list of possible equivalent strings (aliases) for a particular license.
                onclick="buildlist(this.form,'licensecheck','licenselist')" />
       </td>
       <td></td>
+      <td></td>
     </tr>
 
     {% for lic in latest_license_list %}
     <tr>
       <td align="center"><input type="checkbox" name="licensecheck" value="{{ lic.id }}" /></td>
+      <td>{{ lic.longname }}</td>
       <td>{{ lic.license }}</td>
       <td>{{ lic.version }}</td>
       <td></td>
