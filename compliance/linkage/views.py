@@ -277,6 +277,7 @@ def settings_form(request):
 
     return render_to_response('linkage/settings.html', 
                               { 'info_message': infomsg, 
+                                'tab_settings': True,
                                 'reload_running': static_reload_pid > 0,
                                 'search_path_form': search_path_form })
 
