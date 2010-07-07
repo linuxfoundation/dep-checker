@@ -323,6 +323,7 @@ program:
 <li><a href="#Target Licenses"><b>Target Licenses</b></a> - Define license bindings for targets (test files)</li>
 <li><a href="#Library Licenses"><b>Library Licenses</b></a> - Define license bindings for libraries</li>
 <li><a href="#License Policies"><b>License Policies</b></a> - Define sets of target/dependency license policies, to be flagged during testing</li>
+<li><a href="#Settings"><b>Settings</b></a> - View and change other settings, and reload the static database</li>
 <li><b>Documentation</b> - This documentation</li>
 </ul>
 
@@ -433,6 +434,24 @@ aliases table, the license violation will look like:</p>
 <pre>
 alias name (real name) [graphical flag]
 </pre>
+
+</div>
+
+<div id="Settings">
+<b>Settings:</b>
+
+<p>The <b>Settings</b> tab lets you change the static data used to
+detect static libraries in use by the program being tested.</p>
+
+<p>The symbol data used for static detection is based on the libraries 
+currently installed on the test system.  You can reload the data by 
+activating the <i>Reload Static Data</i> button at the top of the page.</p>
+
+<p>By default, system libraries from the normal system paths are loaded
+into the database for static symbol detection.  The list of paths to search
+is provided in a large edit box, one per line; you can add or remove paths
+from this list, and activate the <i>Save Changes</i> button to save those
+search paths.</p>
 
 </div>
 
