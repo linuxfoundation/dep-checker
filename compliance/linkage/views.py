@@ -597,7 +597,7 @@ def render_detail(test_id):
             # reset and check against the new binary, if we have a license
             if lastid:            
                 policy_issue = False
-            if lib.license and lastid:
+            if lib.license:
                 policy_issue, llicense, flicense = check_policy(llist[counter], lib.license, lib.library, lib.static, policy_issue)
             staticlist = ''
             if lib.static:
