@@ -76,10 +76,18 @@ def start(run_browser, interface=None):
         pid_file.close()
 
         if run_browser:
+            if interface:
+                if interface.find(":") != -1:
+                    (ipaddr, port) = interface.split(":")
+                    if ipaddr == "0.0.0.0":
+                        interface = "127.0.0.1:" + port
+                app_url = "http://%s/linkage" % interface
+            else:
+                app_url = "http://127.0.0.1:8000/linkage"
             sys.stdout.write("Waiting for the server to start...\n")
             time.sleep(10)
             sys.stdout.write("Starting a web browser.\n")
-            os.execlp("xdg-open", "xdg-open", "http://127.0.0.1:8000/linkage")
+            os.execlp("xdg-open", "xdg-open", app_url)
         else:
             sys.exit(0)
 
