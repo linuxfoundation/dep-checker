@@ -1,5 +1,5 @@
 from django.db import models
-from django.forms import ModelForm, forms
+from django.forms import ModelForm, forms, Form
 from django import forms
 import os
 import re
@@ -186,3 +186,6 @@ class StaticSymbol(models.Model):
 
 class StaticLibSearchPath(models.Model):
     path = models.CharField(max_length=100, primary_key=True)
+
+class SearchPathForm(Form):
+    dirlist = forms.CharField(widget=forms.Textarea)

@@ -4,7 +4,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from compliance.linkage.models import Test, File, Lib, License, Aliases, LibLicense, \
                                       FileLicense, Policy, TestForm, LicenseForm, PolicyForm, \
                                       LibLicenseForm, FileLicenseForm, AliasesForm, \
-                                      StaticSymbol
+                                      StaticSymbol, StaticLibSearchPath, SearchPathForm
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import Http404
 from django.conf import settings
@@ -233,34 +233,52 @@ def settings_form(request):
             os.unlink(static_reload_pid_path)
 
     if request.method == 'POST':
-        # Do the database reload in the background.  We use the
-        # double-fork trick to avoid zombies.
-        if static_reload_pid < 0:
-            static_reload_pid = os.fork()
-            if static_reload_pid == 0:
+        if 'reload_static' in request.POST:
+            # Do the database reload in the background.  We use the
+            # double-fork trick to avoid zombies.
+            if static_reload_pid < 0:
                 static_reload_pid = os.fork()
                 if static_reload_pid == 0:
-                    os.setsid()
-                    try:
-                        StaticSymbol.objects.all().delete()
-                        for lib in load_static.get_library_list():
-                            load_static.load_symbols(lib)
-                    finally:
+                    static_reload_pid = os.fork()
+                    if static_reload_pid == 0:
+                        os.setsid()
+                        try:
+                            StaticSymbol.objects.all().delete()
+                            for lib in load_static.get_library_list():
+                                load_static.load_symbols(lib)
+                        finally:
+                            os._exit(0)
+                    else:
+                        pid_file = open(static_reload_pid_path, "w")
+                        pid_file.write(str(static_reload_pid))
+                        pid_file.close()
                         os._exit(0)
                 else:
-                    pid_file = open(static_reload_pid_path, "w")
-                    pid_file.write(str(static_reload_pid))
-                    pid_file.close()
-                    os._exit(0)
+                    os.waitpid(static_reload_pid, 0)
+                    infomsg = "Reloading static database.  This may take a while."
             else:
-                os.waitpid(static_reload_pid, 0)
-                infomsg = "Reloading static database.  This may take a while."
+                infomsg = "The static database is already being reloaded."
+        elif 'change_search_paths' in request.POST:
+            search_path_form = SearchPathForm(request.POST)
+            if search_path_form.is_valid():
+                path_list = search_path_form.cleaned_data['dirlist'].split("\n")
+                path_list = [x.strip() for x in path_list]
+                StaticLibSearchPath.objects.all().delete()
+                for path_str in path_list:
+                    path = StaticLibSearchPath(path=path_str)
+                    path.save()
         else:
-            infomsg = "The static database is already being reloaded."
+            infomsg = "Could not understand the form request."
+
+    # Load the current search paths, and create the form.
+    search_paths = [x.path for x in StaticLibSearchPath.objects.all()]
+    search_path_str = "\n".join(search_paths)
+    search_path_form = SearchPathForm({ 'dirlist': search_path_str })
 
     return render_to_response('linkage/settings.html', 
                               { 'info_message': infomsg, 
-                                'reload_running': static_reload_pid > 0 })
+                                'reload_running': static_reload_pid > 0,
+                                'search_path_form': search_path_form })
 
 # process test form - this is where the real work happens
 def test(request):

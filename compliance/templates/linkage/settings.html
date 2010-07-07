@@ -18,4 +18,14 @@ Press the button below to clear out and reload the static symbol data.
 </form>
 {% endif %}
 
+<p>
+When reloading data, the paths listed below will be search for libraries
+to read.  You can add or remove paths from the list, one per line.
+</p>
+
+<form action="" method="post">
+  {{ search_path_form.dirlist }}
+  <br /><input type="submit" name="change_search_paths", value="Save Changes" />
+</form>
+
 {% endblock %}
