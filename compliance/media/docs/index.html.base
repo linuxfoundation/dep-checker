@@ -133,9 +133,9 @@ tar -xf dep-checker-3af829ae0cc5aba33192c000ef0365ef6bced843.tar.gz
 cd dep-checker
 </pre>
 
-Create the application database and the documentation, as well as fille the static deps table
- with symbols from your system (you will need w3m to create README.txt, and objdump to to
-create the static symbol database):
+Create the application database and the documentation (you will need w3m to create 
+README.txt).
+
 <pre>
 make
 </pre>
