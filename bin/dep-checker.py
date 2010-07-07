@@ -21,6 +21,9 @@ command_line_options = [
     optparse.make_option("--server-only", action="store_true",
                          dest="server_only", default=False,
                          help="don't open a browser"),
+    optparse.make_option("--interface", action="store",
+                         dest="interface", default=None,
+                         help="listen on network interface (port or ip:port)"),
     ]
 
 def get_base_path():
@@ -40,7 +43,7 @@ def check_current_user():
 
         os.setuid(compliance_user.pw_uid)
 
-def start(run_browser):
+def start(run_browser, interface=None):
     childpid = os.fork()
     if childpid == 0:
         os.setsid()
@@ -61,7 +64,11 @@ def start(run_browser):
 
         os.close(0)
 
-        execute_manager(settings, ["dep-checker", "runserver"])
+        manager_args = ["dep-checker", "runserver"]
+        if interface:
+            manager_args.append(interface)
+
+        execute_manager(settings, manager_args)
     else:
         pid_path = os.path.join(get_base_path(), "server.pid")
         pid_file = open(pid_path, "w")
@@ -99,7 +106,7 @@ def main():
     if args[0] == "start":
         if not options.force_root:
             check_current_user()
-        start(not options.server_only)
+        start(not options.server_only, options.interface)
     else:
         stop()
 
