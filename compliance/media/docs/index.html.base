@@ -48,7 +48,7 @@
 <div id="overview">
 <b>Overview</b>
 <p>
-The Linux Foundation Dependency Checker is a tool to explore both dynamic and static linkage 
+The Dependency Checker is a tool to explore both dynamic and static linkage 
 dependencies of binaries and libraries built with FOSS components. Once dependencies are 
 identified, the GUI can provide an easy to interpret visual indication of possible license 
 issues, based on in-house license policies.</p> 
@@ -679,7 +679,7 @@ following methodology:
 <p>There are certain limitations in the analysis of binaries/libraries for static/dynamic
 dependencies.</p>
 
-<p>In the static case, the symbol table is created either on the Linux Foundation build server
+<p>In the static case, the symbol table is created either on the build server
 (packaged version), or the user's machine (run in-place from git). The content of the table
 will be largely driven by the libraries present on the system, and may not completely reflect
 the system where the target files have been built.</p>

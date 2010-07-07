@@ -4,7 +4,7 @@
 %define basedir /opt/linuxfoundation
  
 # %{version}, %{rel} are provided by the Makefile
-Summary: Linux Foundation dependency checker tool
+Summary: Dependency Checker Tool
 Name: dep-checker
 Version: %{ver}
 Release: %{rel}

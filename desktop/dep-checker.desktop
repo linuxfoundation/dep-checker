@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Linux Foundation Dependency Checker Tool
+Name=Dependency Checker Tool
 GenericName=Deps Checker
 Comment=Analyse linkage dependencies for FOSS software
 Exec=/opt/linuxfoundation/bin/dep-checker.py start
