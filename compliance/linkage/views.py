@@ -457,8 +457,7 @@ def do_dep_check(cli_command, testid):
 
     if not errmsg:
         # update the license bindings
-        update_file_bindings()
-        update_lib_bindings()
+        update_license_bindings()
 
     return errmsg
 
@@ -471,6 +470,11 @@ def delete_records(table, rlist):
         if record != '':
             q = table.objects.filter(id = record)
             q.delete()
+
+# update both file and library bindings
+def update_license_bindings():
+    update_lib_bindings()
+    update_file_bindings()
 
 # update Lib records for license bindings
 def update_lib_bindings():
@@ -554,6 +558,8 @@ def flag_policy_issue(value, status):
 # pre-render the table data for the detail page
 def render_detail(test_id):
     t = get_object_or_404(Test, pk=test_id)
+    # update any new bindings
+    update_license_bindings()
     # all we want is the level 1 files
     fileset = t.file_set.filter(level = 1)
     libset = t.lib_set.all()

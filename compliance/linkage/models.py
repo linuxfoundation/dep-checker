@@ -12,7 +12,7 @@ RECURSION_CHOICES = rchoices[1:]
 DEFAULT_USER = os.environ['USER']
 REL_CHOICES = (('Static','Static'), ('Dynamic','Dynamic'), ('Both', 'Both'))
 RANK_CHOICES = (('Low','Low'), ('Normal','Normal'), ('Critical', 'Critical'))
-STAT_CHOICES = (('', 'Unknown'), ('A', 'Approve'), ('D','Disapprove'))
+STAT_CHOICES = (('A', 'Approve'), ('D','Disapprove'))
 
 def license_choices():
     # get the available licenses to populated the form drop-downs
@@ -113,11 +113,11 @@ class Policy(models.Model):
     tlicense = models.CharField('Target License', max_length=200)
     dlicense = models.CharField('Dependency License', max_length=200)
     relationship = models.CharField('Relationship', max_length=20,
-                                    default = 'Static', choices = REL_CHOICES)
+                                    default = 'Both', choices = REL_CHOICES)
     rank = models.CharField('Rank', max_length=20,
                             default = 'Low', choices = RANK_CHOICES)
     status = models.CharField('Status', max_length=1,
-                            blank = True, choices = STAT_CHOICES)
+                            default = 'A', choices = STAT_CHOICES)
     edit_date = models.DateTimeField('test date', auto_now=True)
     def __unicode__(self):
         return self.tlicense
