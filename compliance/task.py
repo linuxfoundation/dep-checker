@@ -69,24 +69,39 @@ class TaskManager:
         if not self.is_running():
             return None
         else:
+            jobdesc = None
             total = 0
             running_count = 0
             current = ""
+            message = None
+            status_str = ""
             data = self._get_status_file().read()
             data_as_file = StringIO.StringIO(data)
             for line in data_as_file:
                 if line.find(":") != -1:
                     (tag, detail) = line.split(":", 1)
-                    if tag == "COUNT":
+                    if tag == "JOBDESC":
+                        jobdesc = detail.strip()
+                    elif tag == "MESSAGE":
+                        message = detail.strip()
+                    elif tag == "COUNT":
                         total = int(detail.strip())
                     elif tag == "ITEM":
                         running_count = running_count + 1
                         current = detail.strip()
-            if total:
-                status_str = "Processing %d of %d items..." \
-                    % (running_count, total)
+                        message = None
+            if jobdesc:
+                status_str = status_str + jobdesc
+            if message:
+                status_str = "%s<br />%s<br />" % (status_str, message)
             else:
-                status_str = "Processed %d items..." % (running_count - 1)
-            if current:
-                status_str = status_str + "<br />Processing file " + current
+                if total:
+                    status_str = status_str \
+                        + "<br />Processed %d of %d items.<br />" \
+                        % (running_count - 1, total)
+                else:
+                    status_str = "<br />Processed %d items.<br />" \
+                        % (running_count - 1)
+                if current:
+                    status_str = status_str + "Processing file " + current
             return status_str

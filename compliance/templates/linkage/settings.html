@@ -41,7 +41,7 @@ function setdefaults()
 {
 {% if reload_running %}
   document.getElementById("reload_form").style.visibility = 'hidden';
-  document.getElementById("job_status").innerHTML = "Getting job status...";
+  document.getElementById("job_status").innerHTML = "Getting job status...<br /><br />";
   setTimeout("reload_status();", 5000);
 {% else %}
   reload_status();

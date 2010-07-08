@@ -213,7 +213,9 @@ def settings_form(request):
     # This is the task to be executed.
     def static_reload_task():
         lib_list = load_static.get_library_list()
+        sys.stdout.write("JOBDESC: Reloading static symbol data.\n")
         sys.stdout.write("COUNT: %d\n" % len(lib_list))
+        sys.stdout.write("MESSAGE: Deleting old data...\n")
         sys.stdout.flush()
         StaticSymbol.objects.all().delete()
         for lib in lib_list:
@@ -228,7 +230,7 @@ def settings_form(request):
         if 'reload_static' in request.POST:
             if not tm.is_running():
                 tm.start(static_reload_task)
-                infomsg = "Reloading static database.  This may take a while."
+                return HttpResponseRedirect('/linkage/settings/')
             else:
                 infomsg = "The static database is already being reloaded."
         elif 'change_search_paths' in request.POST:
