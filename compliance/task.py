@@ -2,6 +2,41 @@
 # Copyright 2010 Linux Foundation.
 # Jeff Licquia <licquia@linuxfoundation.org>
 
+# This task manager was originally created for the Dependency Checker
+# and Code Janitor projects of the Linux Foundation.  It's fairly
+# simple to use; just create a function containing the task you need
+# done asynchronously, create a TaskManager object, and call its
+# start() function, passing in the task function you created.  Since
+# only one task at a time can be run, it's a good idea to check if
+# one's already running with is_running().  Any problems (including
+# trying to start a task if one's already running) cause the manager
+# to throw a TaskError, so you can catch those if you need.
+
+# Once a task is running, you can ask the manager to give you some
+# simple HTML to report the task's status with read_status().  It will
+# return a None object if no task is running, or a single HTML string
+# suitable for embedding into a <div>.  This is designed to be
+# embedded into a simple status URL that can be called with
+# XMLHttpRequest and dynamically updated with JavaScript in some other
+# page.
+
+# As for reporting status, your task function can write
+# specially-formatted lines to stdout or stderr.  These take the
+# form:
+#   TYPE: Data
+# It currently supports four types: JOBDESC, MESSAGE, COUNT, and
+# ITEM.  JOBDESC is a short description of the job.  COUNT and ITEM
+# work together; the job is assumed to consist of COUNT items, each of
+# which is reported as it is done with an ITEM line.  MESSAGE is for
+# reporting the job's status when it's a little more complicated than
+# "x of y items".  A MESSAGE overrides the reporting of COUNT/ITEM
+# until another ITEM is received, at which point the MESSAGE is
+# suppressed.
+
+# Your task's reporting of these statuses makes its way to the
+# manager's read_status() function, and is used to generate the HTML
+# that function returns.
+
 import os
 try:
     import cStringIO as StringIO
