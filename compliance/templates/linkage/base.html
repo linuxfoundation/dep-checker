@@ -5,7 +5,7 @@
 
 {% block header %} {% endblock %}
 
-{% if tab_test %}<body onload="setdefaults();">{% else %}<body>{% endif %}
+<body onload="setdefaults();">
 
 <div id="header">
   {% include "linkage/banner.html" %}
@@ -28,4 +28,12 @@
 
 </body>
 
-{% block scripts %} {% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+
+function setdefaults()
+{
+}
+
+</script>
+{% endblock %}

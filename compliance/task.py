@@ -3,6 +3,10 @@
 # Jeff Licquia <licquia@linuxfoundation.org>
 
 import os
+try:
+    import cStringIO as StringIO
+except:
+    import StringIO
 from django.conf import settings
 
 # Exceptions
@@ -16,7 +20,7 @@ class TaskManager:
                                          "compliance/task.log")
         self._task_log_file = None
 
-    def _status_file(self):
+    def _get_status_file(self):
         if not self.is_running():
             raise TaskError, "no task is running"
 
@@ -60,3 +64,29 @@ class TaskManager:
                 os._exit(0)
         else:
             os.waitpid(pid, 0)
+
+    def read_status(self):
+        if not self.is_running():
+            return None
+        else:
+            total = 0
+            running_count = 0
+            current = ""
+            data = self._get_status_file().read()
+            data_as_file = StringIO.StringIO(data)
+            for line in data_as_file:
+                if line.find(":") != -1:
+                    (tag, detail) = line.split(":", 1)
+                    if tag == "COUNT":
+                        total = int(detail.strip())
+                    elif tag == "ITEM":
+                        running_count = running_count + 1
+                        current = detail.strip()
+            if total:
+                status_str = "Processing %d of %d items..." \
+                    % (running_count, total)
+            else:
+                status_str = "Processed %d items..." % (running_count - 1)
+            if current:
+                status_str = status_str + "<br />Processing file " + current
+            return status_str

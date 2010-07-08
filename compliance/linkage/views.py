@@ -22,6 +22,11 @@ is_static = '(static)'
 
 ### each of these views has a corresponding html page in ../templates/linkage
 
+# task status page - intended for calling in javascript
+def taskstatus(request):
+    tm = task.TaskManager()
+    return HttpResponse(tm.read_status())
+
 # main page
 def index(request):
     from site_settings import gui_name, gui_version

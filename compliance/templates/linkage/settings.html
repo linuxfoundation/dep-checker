@@ -7,16 +7,19 @@
 <p>
 In order to detect statically-linked libraries, the application needs
 to collect data from the installed libraries on your test system.
-Press the button below to clear out and reload the static symbol data.
+If a button appears below, you can activate it to clear out and reload the 
+static symbol data.  If no button appears, there is a job in progress; its
+status should be displayed and updated.
 </p>
 
-{% if reload_running %}
-<p>The data is currently being reloaded.</p>
-{% else %}
+<div id="job_status">
+</div>
+
+<div id="reload_form">
 <form action="" method="post">
   <input type="submit" name="reload_static" value="Reload Static Data" />
 </form>
-{% endif %}
+</div>
 
 <p>
 When reloading data, the paths listed below will be search for libraries
@@ -27,5 +30,39 @@ to read.  You can add or remove paths from the list, one per line.
   {{ search_path_form.dirlist }}
   <br /><input type="submit" name="change_search_paths", value="Save Changes" />
 </form>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script type="text/javascript">
+
+function setdefaults()
+{
+{% if reload_running %}
+  document.getElementById("reload_form").style.visibility = 'hidden';
+  document.getElementById("job_status").innerHTML = "Getting job status...";
+  setTimeout("reload_status();", 5000);
+{% else %}
+  reload_status();
+{% endif %}
+}
+
+function reload_status()
+{
+  xmlhttp = new XMLHttpRequest();
+  xmlhttp.open("GET", "/linkage/taskstatus/", false);
+  xmlhttp.send();
+  if (xmlhttp.responseText == "None") {
+    document.getElementById("reload_form").style.visibility = 'visible';
+    document.getElementById("job_status").innerHTML = "";
+  } else {
+    document.getElementById("reload_form").style.visibility = 'hidden';
+    document.getElementById("job_status").innerHTML = xmlhttp.responseText;
+    setTimeout("reload_status();", 1000);
+  }
+}
+
+</script>
 
 {% endblock %}
