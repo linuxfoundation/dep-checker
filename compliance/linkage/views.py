@@ -511,13 +511,18 @@ def check_policy(flicense, llicense, library, static, issue):
 
     llicenseset = Aliases.objects.filter(alias = llicense)
     if llicenseset:
-       # can only be one match
-       pllicense = llicenseset[0].license
+        # can only be one match
+        pllicense = llicenseset[0].license
+    if  llicense != pllicense:
+        # plug in the alias (real name)
+        llicense = llicense + ' (' + pllicense + ')'
 
     flicenseset = Aliases.objects.filter(alias = flicense)
     if flicenseset:
-       # can only be one match
-       pflicense = flicenseset[0].license
+        # can only be one match
+        pflicense = flicenseset[0].license
+    if flicense != pflicense:
+        flicense = flicense + ' (' + pflicense + ')'
       
     policyset = Policy.objects.filter(tlicense = pflicense, dlicense = pllicense)
     policyset = policyset.filter(Q(relationship = ltype) | Q(relationship = 'Both'))
@@ -527,13 +532,12 @@ def check_policy(flicense, llicense, library, static, issue):
         # only set the issue flag for the target coloring for the disallowed case
         if status == 'D':
             issue = issue or True
-        if llicense != pllicense:
-            # plug in the alias (real name)
-            llicense = llicense + ' (' + pllicense + ')'
         llicense = flag_policy_issue(llicense, status)
-        if flicense != pflicense:
-            flicense = flicense + ' (' + pflicense + ')'
-        
+
+    # highlight if there is no policy defined      
+    if not policyset and flicense != 'TBD':
+        llicense = flag_policy_issue(llicense, 'U')
+
     # modify the target when there's been a problem somewhere in the whole license set
     if issue:
         flicense = flag_policy_issue(flicense, 'D')
@@ -543,9 +547,9 @@ def check_policy(flicense, llicense, library, static, issue):
 # flag a policy issue for the test results rendering
 def flag_policy_issue(value, status):
     # to highlight the issues
-    tag_start = '<font color="'
+    tag_start = '<span class="'
     tag_mid = '">'
-    tag_end = '</font>'
+    tag_end = '</span>'
     tcolor = "yellow"
     if status == 'A':
         tcolor = "green"
