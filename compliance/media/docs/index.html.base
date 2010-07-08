@@ -220,11 +220,14 @@ You can terminate the server from this console by hitting ctrl-C
 Usage: readelf.py [options] &lt;file/dir tree to examine&gt; [recursion depth]
 
 Options:
-  -c           output in csv format
-  -s DIR       directory tree to search
-  --no-static  don't look for static deps
-  --version    show program's version number and exit
-  -h, --help   show this help message and exit
+  -c                   output in csv format
+  -d                   write the output into the results database
+  -s DIR               directory tree to search
+  --comments=COMMENTS  test comments (when writing to database)
+  --project=PROJECT    project name (when writing to database)
+  --no-static          don't look for static deps
+  --version            show program's version number and exit
+  -h, --help           show this help message and exit
 </pre>
 
 The <i>-c</i> option is primarily used to pass data to the GUI. The format without this
@@ -298,6 +301,20 @@ libncurses.so.5 (static)
 </pre></p>
 
 <p>The <i>--no-static</i> option suppresses trying to resolve staticly linked dependencies.</p>
+
+<p>The <i>-d</i>, <i>--project</i>, and <i>--comments</i> are for using the command line program
+to feed results into the database used by the gui. Setting <i>-d</i> forces <i>-c</i> and
+compiles the collected results into a list that is fed to the compliance database, where it
+will show up with the results of tests executed from the gui. The <i>--project</i> and 
+<i>--comments</i> are optional, as they are from the <b>Check Dependencies</b> tab. Multi-word
+strings should be enclosed in quotes. Here is an example:</p>
+
+<pre>
+/opt/linuxfoundation/bin/readelf.py -d --project=test --comments='this is a test' /usr/bin/foo
+</pre>
+
+<p>All the other options, such as searching, recursion, and disabling static checking are also
+available in this mode, and the program will still output error conditions and the data to stdout.</p>
 
 </div>
 
@@ -412,10 +429,12 @@ current data using the <i>Update Library Test Data</i> button.</p>
 
 <p>The <b>License Policies</b> tab lets you define pairing of target/library licenses that could
 have potential issues. You select the <i>Target License</i> and <i>Library License</i> from the
-drop-downs and then select the relationship, either Static, Dynamic, or both. When a test is
-run, violations of these policy settings will show up the the report detail printed in red with a
-red flag after the License name. Like the other tabs, you can select and delete policies using
-the checkboxes and the <i>Delete Selected Policies</i> button.</p>
+drop-downs and then select the relationship, either Static, Dynamic, or both. You can also
+set the state or either <i>Approve</i> or <i>Disapprove</i>. When a test is run, violations of 
+these policy settings will show up the the report detail printed in red with a red flag after 
+the License name. License pairings that are approved will have green text, and unknown/undefined
+pairings will be highlighted in yellow. Like the other tabs, you can select and delete policies 
+using the checkboxes and the <i>Delete Selected Policies</i> button.</p>
 
 <p>In the screenshot below, you can see an example of a flagged policy violation. The application
 <i>myapp</i> has been compiled against <i>libmylib.so</i>. The licenses: <i>L1 2.0</i> and 

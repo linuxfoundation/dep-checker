@@ -10,7 +10,7 @@ import re
 import string
 import sqlite3
 import optparse
-version = '0.0.7'
+version = '0.0.8'
 
 # Get Django loaded.  This has to be done outside a function so
 # the setup is only done once and the modules are globally available.
@@ -21,6 +21,7 @@ django_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(django_path)
 
 from compliance.linkage.models import StaticSymbol
+from compliance.linkage.views import create_test_record, delete_test_record, process_results
 
 # Custom exceptions.
 
@@ -34,8 +35,14 @@ usage_line = "usage: %prog [options] <file/dir tree to examine> [recursion depth
 command_line_options = [
     optparse.make_option("-c", action="store_true", dest="do_csv", 
                          default=False, help="output in csv format"),
+    optparse.make_option("-d", action="store_true", dest="do_db", 
+                         default=False, help="write the output into the results database"),
     optparse.make_option("-s", action="store", type="string", dest="target",
                          metavar="DIR", help="directory tree to search"),
+    optparse.make_option("--comments", action="store", type="string", dest="comments",
+                         default = '', help="test comments (when writing to database)"),
+    optparse.make_option("--project", action="store", type="string", dest="project",
+                         default = '', help="project name (when writing to database)"),
     optparse.make_option("--no-static", action="store_false", dest="do_static",
                          default=True, help="don't look for static deps")
 ]
@@ -43,9 +50,28 @@ command_line_options = [
 depth = 1
 do_csv = False
 do_static = True
+do_db = False
+project = ''
+comments = ''
+
+class ResultsBuffer(object):
+    def __init__(self):  #OnInit
+        self._buffered = []
+    def write(self, text):
+        # always send to stdout, but buffer for the db write
+        if do_db:
+            self._buffered.append(text + "\n")
+        print text
+    def flush(self):
+        self._buffered = []
+    def dump(self):
+        return self._buffered
+
+# initialize the results buffer
+rbuff = ResultsBuffer()
 
 def bad_depth():
-    print "Recursion depth must be a positive number"
+    rbuff.write("Recursion depth must be a positive number")
     sys.exit(1)
 
 def dep_path(target, dep):
@@ -158,6 +184,7 @@ def deps_check(target):
 
 # non-recursive case
 def print_deps(target, deps):
+    global rbuff
     csvstring = ''
     spacer = ''
 
@@ -168,32 +195,32 @@ def print_deps(target, deps):
         csvstring += str(1) + "," + target
         for dep in deps:
             csvstring += "," + dep
-        print csvstring
+        rbuff.write(csvstring)
 
     else:
-        print spacer + "[" + str(1) + "]" + target + ":"
+        rbuff.write(spacer + "[" + str(1) + "]" + target + ":")
         spacer += "  "
         for dep in deps:
-            print spacer + dep
+            rbuff.write(spacer + dep)
 
 def print_dep(dep, indent):
     spacer = 2 * indent * " "
     if not do_csv:
-        print spacer + dep
+        rbuff.write(spacer + dep)
 
 def print_path_dep(parent, soname, dep, indent):
     csvstring = ''
     spacer = (indent - 1) * "  "
     token = "[" + str(indent) + "]"
     if not do_csv:
-        print spacer + token + parent + ":"
+        rbuff.write(spacer + token + parent + ":")
     else:
         csvstring += str(indent) + "," + parent + ","
         # indent = level, treat level 1 slightly differently
         if indent != 1 and soname:
             csvstring += soname + ","
         csvstring += dep
-        print csvstring
+        rbuff.write(csvstring)
 
 def dep_loop(parent, soname, dep, level):
     if level > depth:
@@ -215,7 +242,23 @@ def dep_loop(parent, soname, dep, level):
     if len(childdeps) > 0:
         for childdep in childdeps:
             dep_loop(target, dep, childdep, level + 1)
-        
+
+def results_to_db(do_search, target, target_dir, project, comments):
+    errmsg = ''
+    testid = 0
+    user = os.environ["USER"]
+    testid = create_test_record(do_search, not(do_static), depth, target, target_dir, user, project, comments)
+
+    if testid:
+        errmsg = process_results(rbuff.dump(), testid)
+
+    if errmsg:
+        print errmsg
+        delete_test_record(testid)
+        sys.exit(1)
+    else:
+        rbuff.flush()
+       
 def main():
     opt_parser = optparse.OptionParser(usage=usage_line, 
                                        version="%prog version " + version,
@@ -228,24 +271,32 @@ def main():
     # prog_ndx_start is the offset in argv for the file/dir and recursion
     prog_ndx_start = 1
     found = 0
-    parent = ""
-    global do_csv, depth, do_static
+    parent = ''
+    target_dir = ''
+    global do_csv, depth, do_static, do_db, project, comments
 
     do_static = options.do_static
-
     do_csv = options.do_csv
+    do_db = options.do_db
+    # force csv in this case
+    if do_db:
+        do_csv = True
+    project = options.project
+    comments = options.comments
+
     if options.target:
         do_search = True
         target = options.target
         target_file = args[0]
+        target_dir = target
         if not os.path.isdir(target):
-            print target + " does not appear to be a directory..."
+            rbuff.write(target + " does not appear to be a directory...")
     	    sys.exit(1)
     else:
         do_search = False
         target = args[0]
         if not(os.path.isdir(target) or os.path.isfile(target)):
-            print target + " does not appear to be a directory or file..."
+            rbuff.write(target + " does not appear to be a directory or file...")
     	    sys.exit(1)
 
     # sanity check on recursion level
@@ -286,18 +337,20 @@ def main():
                         break
 
         if do_search and not found:
-            print target_file + " was not found in " + target + " ..."
+            rbuff.write(target_file + " was not found in " + target + " ...")
             sys.exit(1)
 
     else:
 	    # single file, just check it and exit
         # top level deps
         parent = target
+        target_file = target
+        target_dir = ''
 
         try:
             deps = deps_check(target)
         except NotELFError:
-            print "not an ELF file..."
+            rbuff.write("not an ELF file...")
             sys.exit(1)
 
         if depth == 1:
@@ -307,8 +360,12 @@ def main():
         else:
             for dep in deps:
                 dep_loop(parent, None, dep, 1)
-        
-        sys.exit(0)
+
+    # print results and exit
+    if do_db:        
+        results_to_db(do_search, target, target_dir, project, comments)
+
+    sys.exit(0)
 
 if __name__=='__main__':
     main()

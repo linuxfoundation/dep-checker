@@ -27,3 +27,4 @@
     Add license<-->alias mapping/reporting capability (bug 459)
     Add approved/disapproved policy highlighting (bug 475)
     Pre-load with license/alias data (bug 478)
+    Enable data collection from the command line (bug 472)
