@@ -284,8 +284,7 @@ def test(request):
      
             # if we got an error, delete the test entry
             if errmsg:
-                q = Test.objects.filter(id = testid)
-                q.delete()
+                delete_test_record(testid)
                 t = []
                 masterlist = []            
             
@@ -376,14 +375,38 @@ def dirlist(request):
 
 ### utility functions
 
+# open up a test record (used for automated testing)
+def create_test_record(do_search, disable_static, recursion, target, target_dir, user, project, comments):
+    testdata = Test(do_search = do_search, disable_static = disable_static,
+                    recursion = recursion, target = target, target_dir = target_dir,
+                    user = user, project = project, comments = comments)
+    testdata.save()
+    return testdata.id
+
+# to remove a test record
+def delete_test_record(testid):
+    q = Test.objects.filter(id = testid)
+    q.delete()
+
 # run the back end with given parameters and push the data into the database
 def do_dep_check(cli_command, testid):
-    # capture the output and push to the database
+    rbuff = []
+    errmsg = ''
+    for data in os.popen(cli_command).readlines():
+        rbuff.append(data)
+    if rbuff:
+        errmsg = process_results(rbuff, testid)
+    else:
+        errmsg = "No results"    
+    return errmsg
+
+# we have the data, either from the cli or gui, process and load if ok
+def process_results(rbuff, testid):
     lastdepth = 1
     lastfile = ''
     errmsg = ''
     dbdata = ''           
-    for dbdata in os.popen(cli_command).readlines():
+    for dbdata in rbuff:
         # check for no result - these are known exit messages from the cli
         if not re.search("(does not|was not found|not an ELF)", dbdata):
             dbdata = dbdata.rstrip("\r\n")
@@ -613,7 +636,9 @@ def render_detail(test_id):
     if policy_issue:
         llist[counter] = flicense
 
-    masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'statics': staticlist, 'licenses': liclist})
+    # might not be any data if this was run outside the gui and something went wrong
+    if counter > -1:
+        masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'statics': staticlist, 'licenses': liclist})
     
     return t, masterlist
 
