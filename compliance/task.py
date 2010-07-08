@@ -130,13 +130,15 @@ class TaskManager:
             if message:
                 status_str = "%s<br />%s<br />" % (status_str, message)
             else:
+                status_str = status_str + "<br />"
+                if current:
+                    status_str = status_str + current
                 if total:
-                    status_str = status_str \
-                        + "<br />Processed %d of %d items.<br />" \
-                        % (running_count - 1, total)
+                    percent = int(float(running_count) / float(total) * 100)
+                    status_str = status_str + \
+"<br /><div class='bar'><div class='completed' style='width:%d%%;'></div></div>" \
+                        % percent
                 else:
                     status_str = "<br />Processed %d items.<br />" \
                         % (running_count - 1)
-                if current:
-                    status_str = status_str + "Processing file " + current
             return status_str

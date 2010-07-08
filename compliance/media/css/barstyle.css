@@ -1,0 +1,18 @@
+div.bar {
+  display: block;
+  float: left;
+  width: 500px;
+  height: 12px;
+  margin: 0 0 2px;
+  border: 2px solid gray;
+  background: #fff;
+}
+
+div.bar div.completed {
+  display: block;
+  float: left;
+  width: 50%;
+  height: 12px;
+  text-align: right;
+  background: #00f;
+}
