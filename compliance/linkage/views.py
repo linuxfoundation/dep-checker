@@ -10,7 +10,7 @@ from django.http import Http404
 from django.conf import settings
 from django.db.models import Q
 
-from compliance import load_static
+from compliance import load_static, task
 
 import sys
 import os
@@ -204,47 +204,26 @@ def lbindings(request):
 
 # settings - miscellaneous things to set, used for static db reloading
 def settings_form(request):
+
+    # This is the task to be executed.
+    def static_reload_task():
+        lib_list = load_static.get_library_list()
+        sys.stdout.write("COUNT: %d\n" % len(lib_list))
+        sys.stdout.flush()
+        StaticSymbol.objects.all().delete()
+        for lib in lib_list:
+            sys.stdout.write("ITEM: " + lib + "\n")
+            sys.stdout.flush()
+            load_static.load_symbols(lib)
+
     infomsg = None
-
-    # Look for PID file for previously-running reload job.
-    static_reload_pid_path = os.path.join(settings.PROJECT_ROOT, 
-                                          "compliance/reload.pid")
-    if os.path.exists(static_reload_pid_path):
-        static_reload_pid = int(open(static_reload_pid_path).read())
-    else:
-        static_reload_pid = -1
-
-    # Check the status of any previous reload jobs.
-    if static_reload_pid > 0 and \
-            not os.path.exists("/proc/%d" % static_reload_pid):
-        static_reload_pid = -1
-        if os.path.exists(static_reload_pid_path):
-            os.unlink(static_reload_pid_path)
+    tm = task.TaskManager()
 
     if request.method == 'POST':
         if 'reload_static' in request.POST:
-            # Do the database reload in the background.  We use the
-            # double-fork trick to avoid zombies.
-            if static_reload_pid < 0:
-                static_reload_pid = os.fork()
-                if static_reload_pid == 0:
-                    static_reload_pid = os.fork()
-                    if static_reload_pid == 0:
-                        os.setsid()
-                        try:
-                            StaticSymbol.objects.all().delete()
-                            for lib in load_static.get_library_list():
-                                load_static.load_symbols(lib)
-                        finally:
-                            os._exit(0)
-                    else:
-                        pid_file = open(static_reload_pid_path, "w")
-                        pid_file.write(str(static_reload_pid))
-                        pid_file.close()
-                        os._exit(0)
-                else:
-                    os.waitpid(static_reload_pid, 0)
-                    infomsg = "Reloading static database.  This may take a while."
+            if not tm.is_running():
+                tm.start(static_reload_task)
+                infomsg = "Reloading static database.  This may take a while."
             else:
                 infomsg = "The static database is already being reloaded."
         elif 'change_search_paths' in request.POST:
@@ -269,7 +248,7 @@ def settings_form(request):
     return render_to_response('linkage/settings.html', 
                               { 'info_message': infomsg, 
                                 'tab_settings': True,
-                                'reload_running': static_reload_pid > 0,
+                                'reload_running': tm.is_running(),
                                 'search_path_form': search_path_form })
 
 # process test form - this is where the real work happens
