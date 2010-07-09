@@ -147,11 +147,26 @@ def static_deps_check(target):
 
     # For each function, figure out where it came from.
     staticlib_list = []
+    staticlib_multiples = {}
     for func in staticsym_funcs:
         libs = find_static_library(func)
-        for lib in libs:
-            if lib not in staticlib_list:
-                staticlib_list.append(lib)
+        if len(libs) == 1:
+            if libs[0] not in staticlib_list:
+                staticlib_list.append(libs[0])
+        elif len(libs) > 1:
+            staticlib_multiples[func] = libs
+
+    # Symbols found in multiple libraries should be handled last.
+    # We pick the first library only if none of the libs has
+    # been picked yet.
+    for func in staticlib_multiples:
+        found = False
+        for lib in staticlib_multiples[func]:
+            if lib in staticlib_list:
+                found = True
+                break
+        if not found:
+            staticlib_list.append(staticlib_multiples[func][0])
 
     # Format and return the list.
     staticlib_list.sort()
