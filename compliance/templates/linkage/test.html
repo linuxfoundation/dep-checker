@@ -80,6 +80,16 @@
 </div>
 </form>
 <div class="cfooter">
+
+{% if not static_data %}
+<p>
+<b>NOTE:</b> The database contains no data about static symbols, and thus
+will be unable to find any possible static library dependencies that may
+exist.  If you want to perform static as well as dynamic checks, please
+<a href="/linkage/settings/">reload the static database</a>.
+</p>
+{% endif %}
+
 <hr>
 <b>Subscribe to the <a href="https://lists.linux-foundation.org/mailman/listinfo/dep-checker-dev">mailing list</a></b><br>
 <b>Get latest version from <a href="http://git.linuxfoundation.org/?p=dep-checker.git;a=summary">git</a></b><br>

@@ -252,6 +252,12 @@ def settings_form(request):
     search_path_str = "\n".join(search_paths)
     search_path_form = SearchPathForm({ 'dirlist': search_path_str })
 
+    # Warn the user if static data is missing and no other info
+    # is being presented.
+    if not infomsg and not tm.is_running() and \
+      StaticSymbol.objects.all().count() == 0:
+        infomsg = "No data for static symbols is present.  Please use the Reload button to load this data."
+
     return render_to_response('linkage/settings.html', 
                               { 'info_message': infomsg, 
                                 'tab_settings': True,
@@ -301,6 +307,7 @@ def test(request):
     return render_to_response('linkage/test.html', {
         'testform': testform,
         'tab_test': True,
+        'static_data': StaticSymbol.objects.all().count() > 0,
     })
 
 ### these are all basically documentation support
