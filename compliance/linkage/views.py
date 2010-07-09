@@ -548,7 +548,7 @@ def check_policy(flicense, llicense, library, static, issue):
         # only set the issue flag for the target coloring for the disallowed case
         if status == 'D':
             issue = issue or True
-        llicense = flag_policy_issue(llicense, status)
+            llicense = flag_policy_issue(llicense, status)
 
     # highlight if there is no policy defined      
     if not policyset and flicense != 'TBD':
@@ -566,11 +566,12 @@ def flag_policy_issue(value, status):
     tag_start = '<span class="'
     tag_mid = '">'
     tag_end = '</span>'
-    tcolor = "yellow"
-    if status == 'A':
-        tcolor = "green"
+    tcolor = ''
+    if status == 'U':
+        tcolor = 'orange'
+        tag_end += '<img src="/site_media/images/orange_flag.png" width="16" height="16" alt="orange_flag.png">'
     if status == 'D':
-        tcolor = "red"
+        tcolor = 'red'
         tag_end += '<img src="/site_media/images/red_flag.png" width="16" height="16" alt="red_flag.png">'
     value = tag_start + tcolor + tag_mid + value + tag_end
     return value

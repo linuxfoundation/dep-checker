@@ -432,9 +432,10 @@ have potential issues. You select the <i>Target License</i> and <i>Library Licen
 drop-downs and then select the relationship, either Static, Dynamic, or both. You can also
 set the state or either <i>Approve</i> or <i>Disapprove</i>. When a test is run, violations of 
 these policy settings will show up the the report detail printed in red with a red flag after 
-the License name. License pairings that are approved will have green text, and unknown/undefined
-pairings will be highlighted in yellow. Like the other tabs, you can select and delete policies 
-using the checkboxes and the <i>Delete Selected Policies</i> button.</p>
+the License name. License pairings that are approved will have normal black text, and 
+unknown/undefined pairings will be highlighted in orange with an orange flag. Like the other 
+tabs, you can select and delete policies using the checkboxes and the 
+<i>Delete Selected Policies</i> button.</p>
 
 <p>In the screenshot below, you can see an example of a flagged policy violation. The application
 <i>myapp</i> has been compiled against <i>libmylib.so</i>. The licenses: <i>L1 2.0</i> and 

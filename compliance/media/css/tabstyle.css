@@ -17,6 +17,9 @@ body {
 .red {
   color: red;
   }
+.orange {
+  color: orange;
+  }
 }
 @media screen {
 #header {
