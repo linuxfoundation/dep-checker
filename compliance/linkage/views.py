@@ -12,13 +12,12 @@ from django.db.models import Q
 
 from compliance import load_static, task
 
-import sys
-import os
-import re
-import urllib
+import sys, os, re, urllib, subprocess
 
 # used for binding and policy
 is_static = '(static)'
+# buffer size for Popen
+bufsize = 0
 
 ### each of these views has a corresponding html page in ../templates/linkage
 
@@ -399,7 +398,7 @@ def delete_test_record(testid):
 def do_dep_check(cli_command, testid):
     rbuff = []
     errmsg = ''
-    for data in os.popen(cli_command).readlines():
+    for data in subprocess.Popen(cli_command.split(), bufsize=bufsize, stdout=subprocess.PIPE).stdout:
         rbuff.append(data)
     if rbuff:
         errmsg = process_results(rbuff, testid)
@@ -514,7 +513,7 @@ def get_license_aliases(license):
     return alist
 
 # check a target/library pair for policy violations
-def check_policy(flicense, llicense, library, static, issue):
+def check_policy(flicense, llicense, static, issue):
     # is the lib dynamic or static?
     ltype = 'Dynamic'
     if static:
@@ -551,14 +550,10 @@ def check_policy(flicense, llicense, library, static, issue):
             llicense = flag_policy_issue(llicense, status)
 
     # highlight if there is no policy defined      
-    if not policyset and flicense != 'TBD':
+    if not policyset:
         llicense = flag_policy_issue(llicense, 'U')
 
-    # modify the target when there's been a problem somewhere in the whole license set
-    if issue:
-        flicense = flag_policy_issue(flicense, 'D')
-
-    return issue, llicense, flicense
+    return llicense, issue
         
 # flag a policy issue for the test results rendering
 def flag_policy_issue(value, status):
@@ -587,66 +582,45 @@ def render_detail(test_id):
 
     # the table renders too slow walking through the one-to-many of
     # files -> libs, prefill a list with file, license, libs, lib_license 
-    # and indent the recursion level here, template just blobs out the table
+    # and indent the recursion level, flag polices here, template just blobs out the table
 
-    flist = []
-    llist = []
-    for file in fileset:
-        flist.append(file.file)
-        if file.license:
-            llist.append(file.license)
-        else:
-            llist.append("TBD")
-
-    lastid = ''
-    masterlist = []
-    liblist = ''
-    # this gets incremented before the first record is complete
-    counter = -1
+    TBD = 'TBD'
     spacer = "&nbsp;&nbsp;"
-    
-    policy_issue = False
-    for lib in libset:
-        fileid = lib.file_id
-        # no indent for level 1
-        level = lib.level - 1
-        # we don't use this at the moment
-        parent = lib.parent_id
-        if lib.license:
-            policy_issue, llicense, flicense = check_policy(llist[counter], lib.license, lib.library, lib.static, policy_issue)
-        else:
-            llicense = 'TBD'
-        if fileid != lastid:
-            if liblist != '':
-                if policy_issue:
-                    llist[counter] = flicense
-                masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'statics': staticlist, 'licenses': liclist})
-            liblist = lib.library
-            counter += 1
-            # reset and check against the new binary, if we have a license
-            if lastid:            
-                policy_issue = False
-            if lib.license:
-                policy_issue, llicense, flicense = check_policy(llist[counter], lib.license, lib.library, lib.static, policy_issue)
-            staticlist = ''
-            if lib.static:
-                staticlist = 'x'           
-            liclist = llicense
-        else:
-            liblist += '<BR>' + spacer * level + lib.library
-            staticlist += '<BR>'
+    masterlist = []
+
+    for file in fileset:
+        flicense = TBD
+        policy_issue = False
+        if file.license:
+            flicense = file.license
+        liblist = ''
+        liclist = ''
+        staticlist = ''
+        newline = ''
+        # old way we only hit the database once, but things got messy tracking
+        # this doesn't seem to bog things down too much
+        for lib in libset.filter(file = file.id):
+            # no indent for level 1
+            level = lib.level - 1
+            liblist += newline + spacer * level + lib.library
+            staticlist += newline
             if lib.static:
                 staticlist += 'x'
-            liclist += '<BR>' + llicense
-        lastid = fileid
+            llicense = TBD
+            if lib.license:
+                # don't worry about policy if we don't have both licenses
+                if file.license:
+                    llicense, policy_issue = check_policy(file.license, lib.license, lib.static, policy_issue)
+                else:
+                    llicense = lib.license    
+            liclist += newline + llicense
+            newline = '<BR>'
 
-    # add the last record
-    if policy_issue:
-        llist[counter] = flicense
+        # flag the target license if there was any issue
+        if policy_issue:
+            flicense = flag_policy_issue(flicense, 'D')
 
-    # might not be any data if this was run outside the gui and something went wrong
-    if counter > -1:
-        masterlist.append({'file': flist[counter], 'license': llist[counter], 'libs': liblist, 'statics': staticlist, 'licenses': liclist})
-    
+        masterlist.append({'file': file.file, 'license': flicense, 'libs': liblist, 'statics': staticlist, 'licenses': liclist})
+
     return t, masterlist
 
