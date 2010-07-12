@@ -61,7 +61,8 @@ class ResultsBuffer(object):
         # always send to stdout, but buffer for the db write
         if do_db:
             self._buffered.append(text + "\n")
-        print text
+        sys.stdout.write(text + "\n")
+        sys.stdout.flush()
     def flush(self):
         self._buffered = []
     def dump(self):
@@ -268,7 +269,8 @@ def results_to_db(do_search, target, target_dir, project, comments):
         errmsg = process_results(rbuff.dump(), testid)
 
     if errmsg:
-        print errmsg
+        sys.stdout.write(errmsg + "\n")
+        sys.stdout.flush()
         delete_test_record(testid)
         sys.exit(1)
     else:

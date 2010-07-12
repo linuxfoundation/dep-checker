@@ -12,12 +12,12 @@ from django.db.models import Q
 
 from compliance import load_static, task
 
-import sys, os, re, urllib, subprocess
+import sys, os, re, urllib, subprocess, time
 
 # used for binding and policy
 is_static = '(static)'
-# buffer size for Popen
-bufsize = 0
+# buffer size for Popen, we want unbuffered
+bufsize = -1
 
 ### each of these views has a corresponding html page in ../templates/linkage
 
@@ -53,7 +53,7 @@ def results(request):
                     q = Lib.objects.filter(test = test)
                     q.delete()
 
-    latest_test_list = Test.objects.all().order_by('-test_date')
+    latest_test_list = Test.objects.filter(test_done = True).order_by('-test_date')
     return render_to_response('linkage/results.html', {'latest_test_list': latest_test_list, 'tab_results': True})
 
 # licenses entry/maintenance page
@@ -266,6 +266,81 @@ def settings_form(request):
 # process test form - this is where the real work happens
 def test(request):
     cli_command = settings.CLI_COMMAND + " -c"
+
+    # This is the task to be executed.
+    def get_deps_task():
+        sys.stdout.write("JOBDESC: Running " + cli_command + ".\n")
+        sys.stdout.flush()
+        # run the back end with given parameters and push the data into the database
+        rbuff = []
+        errmsg = None
+        sys.stdout.write("MSGADD: Collecting dependencies...\n")
+        sys.stdout.flush()        
+        proc = subprocess.Popen(cli_command.split(), bufsize=bufsize, stdout=subprocess.PIPE)
+        for data in iter(proc.stdout.readline,''):
+            rbuff.append(data)
+            sys.stdout.write("MSGADD: " + data)
+            sys.stdout.flush()
+        if rbuff:
+            sys.stdout.write("MSGADD: Loading test data into database...\n")
+            sys.stdout.flush()
+
+            errmsg = process_results(rbuff, testid)
+
+        # if we got an error, delete the test entry
+        if errmsg:
+            delete_test_record(testid)
+            sys.stdout.write("MSGADD: <b>Error: " + errmsg + "</b>\n")
+            sys.stdout.flush()   
+            time.sleep(30)      
+        else:
+            sys.stdout.write("MSGADD: Test Id=" + str(testid) + "\n")
+            sys.stdout.flush()   
+            sys.stdout.write('MSGADD: Test Complete, click <a href="/linkage/' + str(testid) + '/detail/">here</a> to view results\n')
+            sys.stdout.flush()
+            # the redirect doesn't happen without a delay here
+            time.sleep(10)
+       
+    infomsg = None
+    tm = task.TaskManager()
+
+    if request.method == 'POST': # If the form has been submitted...
+        testform = TestForm(request.POST) # A form bound to the POST data
+        if testform.is_valid(): # All validation rules pass
+            target = testform.cleaned_data['target']
+            disable_static = testform.cleaned_data['disable_static']
+            if disable_static:
+                cli_command += " --no-static "
+            do_search = testform.cleaned_data['do_search']
+            if do_search:
+                target_dir = testform.cleaned_data['target_dir']
+                cli_command += "-s " + target_dir
+            cli_command += " " + target
+            recursion = testform.cleaned_data['recursion']
+            cli_command += " " + str(recursion)
+            # form doesn't have the id, but we can get the db model and then get it
+            testdata = testform.save(commit=False)       
+            testdata.save()
+            testid = testdata.id
+
+            if not tm.is_running():
+                tm.start(get_deps_task)
+                return HttpResponseRedirect('/linkage/test/')
+            
+    else:
+        testform = TestForm() # An unbound form
+
+    return render_to_response('linkage/test.html', {
+                              'info_message': infomsg,
+                              'testform': testform,
+                              'tab_test': True,
+                              'reload_running': tm.is_running(),
+                              'static_data': StaticSymbol.objects.all().count() > 0,
+    })
+
+# process test form - this is where the real work happens
+def test_old(request):
+    cli_command = settings.CLI_COMMAND + " -c"
     if request.method == 'POST': # If the form has been submitted...
         testform = TestForm(request.POST) # A form bound to the POST data
         if testform.is_valid(): # All validation rules pass
@@ -461,6 +536,9 @@ def process_results(rbuff, testid):
                     parentlibid = libid
                 libdata.parent_id = parentlibid
                 libdata.save()
+
+            # mark the test as done
+            Test.objects.filter(id = testid).update(test_done = True)
                         
         else:
             # do feedback in the gui from here

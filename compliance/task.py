@@ -110,6 +110,7 @@ class TaskManager:
             current = ""
             message = None
             status_str = ""
+            msgadd = ""
             data = self._get_status_file().read()
             data_as_file = StringIO.StringIO(data)
             for line in data_as_file:
@@ -119,6 +120,8 @@ class TaskManager:
                         jobdesc = detail.strip()
                     elif tag == "MESSAGE":
                         message = detail.strip()
+                    elif tag == "MSGADD":
+                        msgadd += detail.strip() + "<br />"
                     elif tag == "COUNT":
                         total = int(detail.strip())
                     elif tag == "ITEM":
@@ -129,6 +132,8 @@ class TaskManager:
                 status_str = status_str + jobdesc
             if message:
                 status_str = "%s<br />%s<br />" % (status_str, message)
+            if msgadd:
+                status_str = "%s<br />%s" % (status_str, msgadd)
             else:
                 status_str = status_str + "<br />"
                 if current:

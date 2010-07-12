@@ -10,9 +10,8 @@
 
 {% block content %}
 
-<b>Create Dependency Checker Test:</b>
-
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+<div id="title">&nbsp;</div>
+<div id="job_status" class="executor"></div>
 
 <form name="entryform" method="post" action="" enctype="multipart/form-data">
 
@@ -75,10 +74,11 @@
 </table>
 </div>
 	
-<div class="container" id="target_select"> 
+<div class="container" id="target_select" style="display: none;"> 
 	<div id="target" class="browser"></div> 
 </div>
 </form>
+
 <div class="cfooter">
 
 {% if not static_data %}
@@ -113,7 +113,15 @@ exist.  If you want to perform static as well as dynamic checks, please
         document.entryform.target_dir.disabled = true;
         document.entryform.targetdirname.disabled = true;
         document.entryform.do_search.onClick = "toggledisabled()";
-        document.getElementById('target_select').style.display = 'none';
+        document.getElementById("job_status").style.display = 'none';
+        {% if reload_running %}
+            document.getElementById("entry_form").style.visibility = 'hidden';
+            document.getElementById("job_status").style.display = 'block';
+            document.getElementById("job_status").innerHTML = "Getting job status...<br /><br />";
+            setTimeout("reload_status();", 5000);
+        {% else %}
+            reload_status();
+        {% endif %}
     }
     function toggledisabled() {
         if (document.entryform.do_search.checked == true) {
@@ -149,6 +157,34 @@ exist.  If you want to perform static as well as dynamic checks, please
             e.style.display = 'none';
         else
             e.style.display = 'block';
+    }
+    function reload_status() {
+      testid = ""
+      xmlhttp = new XMLHttpRequest();
+      xmlhttp.open("GET", "/linkage/taskstatus/", false);
+      xmlhttp.send();
+      response = xmlhttp.responseText;
+      if (response == "None") {
+        document.getElementById("entry_form").style.visibility = 'visible';
+        document.getElementById("job_status").innerHTML = "";
+        document.getElementById("job_status").style.display = 'none';
+        document.getElementById("title").innerHTML = "<b>Create Dependency Checker Test:</b>";
+      } else {
+        document.getElementById("entry_form").style.visibility = 'hidden';
+        document.getElementById("title").innerHTML = "<b>Running task:</b>";
+        jdiv = document.getElementById("job_status");
+        jdiv.innerHTML = response;
+        jdiv.scrollTop = jdiv.scrollHeight;
+        setTimeout("reload_status();", 1000);
+      }
+      if (response.indexOf("Test Id=") != -1) {
+        ss = response.slice(response.indexOf("Test Id=")+8);
+        bs = ss.indexOf("<br");
+        testid = ss.slice(0,bs);
+      }
+      if (response.indexOf("Test Complete") != -1 && testid != "") {
+        window.location = "/linkage/" + testid + "/detail/";
+      }
     }
 </script>
 
