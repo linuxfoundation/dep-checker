@@ -338,52 +338,6 @@ def test(request):
                               'static_data': StaticSymbol.objects.all().count() > 0,
     })
 
-# process test form - this is where the real work happens
-def test_old(request):
-    cli_command = settings.CLI_COMMAND + " -c"
-    if request.method == 'POST': # If the form has been submitted...
-        testform = TestForm(request.POST) # A form bound to the POST data
-        if testform.is_valid(): # All validation rules pass
-            target = testform.cleaned_data['target']
-            disable_static = testform.cleaned_data['disable_static']
-            if disable_static:
-                cli_command += " --no-static "
-            do_search = testform.cleaned_data['do_search']
-            if do_search:
-                target_dir = testform.cleaned_data['target_dir']
-                cli_command += "-s " + target_dir
-            cli_command += " " + target
-            recursion = testform.cleaned_data['recursion']
-            cli_command += " " + str(recursion)
-            # form doesn't have the id, but we can get the db model and then get it
-            testdata = testform.save(commit=False)       
-            testdata.save()
-            testid = testdata.id
-
-            errmsg = do_dep_check(cli_command, testid)
-     
-            # if we got an error, delete the test entry
-            if errmsg:
-                delete_test_record(testid)
-                t = []
-                masterlist = []            
-            
-            else:
-                # render the results
-                t, masterlist = render_detail(testid)
-
-            return render_to_response('linkage/detail.html', 
-                {'test': t, 'master': masterlist, 'error_message': errmsg })
-            
-    else:
-        testform = TestForm() # An unbound form
-
-    return render_to_response('linkage/test.html', {
-        'testform': testform,
-        'tab_test': True,
-        'static_data': StaticSymbol.objects.all().count() > 0,
-    })
-
 ### these are all basically documentation support
 
 # doc page
