@@ -46,12 +46,7 @@ def results(request):
             # delete all the selected tests from the database
             for test in tests:
                 if test != '':
-                    q = Test.objects.filter(id = test)
-                    q.delete()
-                    q = File.objects.filter(test = test)
-                    q.delete()
-                    q = Lib.objects.filter(test = test)
-                    q.delete()
+                    delete_test_record(test)
 
     latest_test_list = Test.objects.filter(test_done = True).order_by('-test_date')
     return render_to_response('linkage/results.html', {'latest_test_list': latest_test_list, 'tab_results': True})
@@ -274,34 +269,35 @@ def test(request):
         sys.stdout.write("JOBDESC: Running " + cli_command + ".\n")
         sys.stdout.flush()
         # run the back end with given parameters and push the data into the database
-        rbuff = []
         errmsg = None
+        lastfile = ''
+        parentid = 0
+        libparentid = 0
         sys.stdout.write("MSGADD: Collecting dependencies...\n")
-        sys.stdout.flush()        
+        sys.stdout.flush()
         proc = subprocess.Popen(cli_command.split(), bufsize=bufsize, stdout=subprocess.PIPE)
         for data in iter(proc.stdout.readline,''):
-            rbuff.append(data)
+            errmsg, lastfile, parentid, libparentid = process_results(data, testid, lastfile, parentid, libparentid)
+            # if we got an error, delete the test entry
+            if errmsg:
+                delete_test_record(testid)
+                sys.stdout.write("MSGADD: <b>Error: " + errmsg + "</b>\n")
+                sys.stdout.flush()   
+                time.sleep(30)
+                return
+            
             sys.stdout.write("MSGADD: " + data)
             sys.stdout.flush()
-        if rbuff:
-            sys.stdout.write("MSGADD: Loading test data into database...\n")
-            sys.stdout.flush()
 
-            errmsg = process_results(rbuff, testid)
-
-        # if we got an error, delete the test entry
-        if errmsg:
-            delete_test_record(testid)
-            sys.stdout.write("MSGADD: <b>Error: " + errmsg + "</b>\n")
-            sys.stdout.flush()   
-            time.sleep(30)      
-        else:
+        if not errmsg:
+            mark_test_done(testid)
+            update_license_bindings()
             sys.stdout.write("MSGADD: Test Id=" + str(testid) + "\n")
             sys.stdout.flush()   
             sys.stdout.write('MSGADD: Test Complete, click <a href="/linkage/' + str(testid) + '/detail/">here</a> to view results\n')
             sys.stdout.flush()
-            # the redirect doesn't happen without a delay here
-            time.sleep(10)
+            # FIXME - the redirect doesn't happen without a delay here
+            time.sleep(5)
        
     infomsg = None
     tm = task.TaskManager()
@@ -316,7 +312,7 @@ def test(request):
             do_search = testform.cleaned_data['do_search']
             if do_search:
                 target_dir = testform.cleaned_data['target_dir']
-                cli_command += "-s " + target_dir
+                cli_command += " -s " + target_dir
             cli_command += " " + target
             recursion = testform.cleaned_data['recursion']
             cli_command += " " + str(recursion)
@@ -420,105 +416,82 @@ def create_test_record(do_search, disable_static, recursion, target, target_dir,
     testdata.save()
     return testdata.id
 
+# mark a test as done
+def mark_test_done(testid):
+    Test.objects.filter(id = testid).update(test_done = True)
+
 # to remove a test record
 def delete_test_record(testid):
     q = Test.objects.filter(id = testid)
     q.delete()
-
-# run the back end with given parameters and push the data into the database
-def do_dep_check(cli_command, testid):
-    rbuff = []
-    errmsg = ''
-    for data in subprocess.Popen(cli_command.split(), bufsize=bufsize, stdout=subprocess.PIPE).stdout:
-        rbuff.append(data)
-    if rbuff:
-        errmsg = process_results(rbuff, testid)
-    else:
-        errmsg = "No results"    
-    return errmsg
+    # seems django automagically cleans File, Lib due to the foreign key
 
 # we have the data, either from the cli or gui, process and load if ok
-def process_results(rbuff, testid):
-    lastdepth = 1
-    lastfile = ''
+def process_results(dbdata, testid, lastfile, parentid, parentlibid):
     errmsg = ''
-    dbdata = ''           
     t = get_object_or_404(Test, pk=testid)
-    for dbdata in rbuff:
-        # check for no result - these are known exit messages from the cli
-        if not re.search("(does not|was not found|not an ELF)", dbdata):
-            dbdata = dbdata.rstrip("\r\n")
-            # format for level 1 is: depth, parent, dep
-            # format for level 1 + N is: depth, child path, child, dep, dep...
-            deps = dbdata.split(",")
+    if not re.search("(does not|was not found|not an ELF)", dbdata):
+        dbdata = dbdata.rstrip("\r\n")
+        # format for level 1 is: depth, parent, dep
+        # format for level 1 + N is: depth, child path, child, dep, dep...
+        deps = dbdata.split(",")
 
-            # write the file record
-            depth = int(deps[0])
-            testfile = deps[1]
-            # the top level file may show multiple times, only get the first one
-            if depth == 1 and testfile != lastfile:
-                filedata = File(test_id = testid, file = testfile, level = depth, parent_id = 0)
-                filedata.save()
-                fileid = filedata.id
-                lastfile = testfile
-                parentid = fileid
-                filedata.parent_id = parentid
-                filedata.save()
-            elif depth != 1:
-                # FIXME - right now we're not really doing anything with these
-                filedata = File(test_id = testid, file = testfile, level = depth, parent_id = 0)
-                filedata.save()
-                fileid = filedata.id
-                # the 'child' files get the parent's id
-                filedata.parent_id = parentid
-                filedata.save()
-                  
-            # now the lib records
-            offset = 2
-            # child records have the lib path and the parent dep
-            if depth > 1:
-                offset = 3
-            checked_static = not t.disable_static
-            for lib in deps[offset:len(deps)]:
-                if re.search(r'WARNING: Could not check', lib):
-                    checked_static = False
-                    continue
-                static = False
-                if re.search(is_static, lib):
-                    lib = lib.split()[0]
-                    static = True
-                # we link file_id to parent_id of the file for recursion
-                libdata = Lib(test_id = testid, file_id = parentid, library = lib, static = static, level = depth, parent_id = 0)
-                libdata.save()
-                libid = libdata.id
+        # write the file record
+        depth = int(deps[0])
+        testfile = deps[1]
+        # the top level file may show multiple times, only get the first one
+        #filedata = File(test_id = testid, file = testfile, level = depth, parent_id = 0)
+        if depth == 1 and testfile != lastfile:
+            filedata = File(test_id = testid, file = testfile, level = depth, parent_id = 0)
+            filedata.save()
+            parentid = filedata.id
+            lastfile = testfile
+            filedata.parent_id = parentid
+            filedata.save()
+        elif depth != 1:
+            # FIXME - right now we're not really doing anything with these
+            # the 'child' gets the parent's id
+            filedata = File(test_id = testid, file = testfile, level = depth, parent_id = parentid)
+            filedata.save()
+            fileid = filedata.id
+                 
+        # now the lib records
+        offset = 2
+        # child records have the lib path and the parent dep
+        if depth > 1:
+            offset = 3
+        checked_static = not t.disable_static
+        for lib in deps[offset:len(deps)]:
+            if re.search(r'WARNING: Could not check', lib):
+                checked_static = False
+                continue
+            static = False
+            if re.search(is_static, lib):
+                lib = lib.split()[0]
+                static = True
+            # we link file_id to parent_id of the file for recursion
+            libdata = Lib(test_id = testid, file_id = parentid, library = lib, static = static, level = depth, parent_id = 0)
+            libdata.save()
+            libid = libdata.id
                        
-                # the 'child' libs get the parent's id
-                if depth == 1:
-                    parentlibid = libid
-                libdata.parent_id = parentlibid
-                libdata.save()
+            # the 'child' libs get the parent's id
+            if depth == 1:
+                parentlibid = libid
+            libdata.parent_id = parentlibid
+            libdata.save()
 
+        # FIXME - before I added the if, I got 4 target entries in the results for a recursive scan 
+        # (if I move filepath= out of the if above), or an error
+        if depth == 1 and testfile != lastfile:
             # save static status
             filedata.checked_static = checked_static
             filedata.save()
-
-            # mark the test as done
-            t.test_done = True
-            t.save()
                         
-        else:
-            # do feedback in the gui from here
-            errmsg += dbdata
+    else:
+        # do feedback in the gui from here
+        errmsg += dbdata
 
-    # cli didn't return anything
-    if not dbdata:
-        errmsg = "no result..."
-
-    if not errmsg:
-        # update the license bindings
-        update_license_bindings()
-
-    return errmsg
+    return errmsg, lastfile, parentid, parentlibid
 
 # delete table records requested by id from one of the input forms
 def delete_records(table, rlist):

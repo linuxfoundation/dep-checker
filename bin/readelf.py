@@ -21,7 +21,8 @@ django_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(django_path)
 
 from compliance.linkage.models import StaticSymbol
-from compliance.linkage.views import create_test_record, delete_test_record, process_results
+from compliance.linkage.views import create_test_record, delete_test_record, \
+                                     process_results, mark_test_done
 
 # Custom exceptions.
 
@@ -59,30 +60,37 @@ command_line_options = [
 depth = 1
 do_csv = False
 do_static = True
+do_search = False
 do_db = False
 project = ''
 comments = ''
+testid = None
+lastfile = ''
+parentid = 0
+parentlibid = 0
 
-class ResultsBuffer(object):
-    def __init__(self):  #OnInit
-        self._buffered = []
-    def write(self, text):
-        # always send to stdout, but buffer for the db write
-        if do_db:
-            self._buffered.append(text + "\n")
-        sys.stdout.write(text + "\n")
-        sys.stdout.flush()
-    def flush(self):
-        self._buffered = []
-    def dump(self):
-        return self._buffered
+def show_result(result):
+    sys.stdout.write(result + "\n")
+    sys.stdout.flush()
+    if do_db:
+        # we need all these for the recursive case, now that we write a line at a time to the db
+        global lastfile, parentid, parentlibid
+        errmsg = ''
 
-# initialize the results buffer
-rbuff = ResultsBuffer()
+        errmsg, lastfile, parentid, parentlibid = process_results(result, testid, lastfile, parentid, parentlibid)
+        
+        if errmsg:
+            show_error(errmsg)
+  
+def show_error(msg):
+    sys.stdout.write(msg + "\n")
+    sys.stdout.flush()
+    if do_db:
+        delete_test_record(testid)
+    sys.exit(1)
 
 def bad_depth():
-    rbuff.write("Recursion depth must be a positive number")
-    sys.exit(1)
+    show_error("Recursion depth must be a positive number")
 
 def dep_path(target, dep):
     # readelf gives us the lib, but not the path to check during recursion
@@ -235,32 +243,32 @@ def print_deps(target, deps):
         csvstring += str(1) + "," + target
         for dep in deps:
             csvstring += "," + dep
-        rbuff.write(csvstring)
+        show_result(csvstring)
 
     else:
-        rbuff.write(spacer + "[" + str(1) + "]" + target + ":")
+        show_result(spacer + "[" + str(1) + "]" + target + ":")
         spacer += "  "
         for dep in deps:
-            rbuff.write(spacer + dep)
+            show_result(spacer + dep)
 
 def print_dep(dep, indent):
     spacer = 2 * indent * " "
     if not do_csv:
-        rbuff.write(spacer + dep)
+        show_result(spacer + dep)
 
 def print_path_dep(parent, soname, dep, indent):
     csvstring = ''
     spacer = (indent - 1) * "  "
     token = "[" + str(indent) + "]"
     if not do_csv:
-        rbuff.write(spacer + token + parent + ":")
+        show_result(spacer + token + parent + ":")
     else:
         csvstring += str(indent) + "," + parent + ","
         # indent = level, treat level 1 slightly differently
         if indent != 1 and soname:
             csvstring += soname + ","
         csvstring += dep
-        rbuff.write(csvstring)
+        show_result(csvstring)
 
 def dep_loop(parent, soname, dep, level):
     if level > depth:
@@ -283,23 +291,12 @@ def dep_loop(parent, soname, dep, level):
         for childdep in childdeps:
             dep_loop(target, dep, childdep, level + 1)
 
-def results_to_db(do_search, target, target_dir, project, comments):
-    errmsg = ''
+def db_test_record(target, target_dir):
     testid = 0
     user = os.environ["USER"]
     testid = create_test_record(do_search, not(do_static), depth, target, target_dir, user, project, comments)
+    return testid
 
-    if testid:
-        errmsg = process_results(rbuff.dump(), testid)
-
-    if errmsg:
-        sys.stdout.write(errmsg + "\n")
-        sys.stdout.flush()
-        delete_test_record(testid)
-        sys.exit(1)
-    else:
-        rbuff.flush()
-       
 def main():
     opt_parser = optparse.OptionParser(usage=usage_line, 
                                        version="%prog version " + version,
@@ -314,7 +311,7 @@ def main():
     found = 0
     parent = ''
     target_dir = ''
-    global do_csv, depth, do_static, do_db, project, comments
+    global do_csv, depth, do_static, do_search, do_db, project, comments, testid
 
     do_static = options.do_static
     do_csv = options.do_csv
@@ -331,14 +328,11 @@ def main():
         target_file = args[0]
         target_dir = target
         if not os.path.isdir(target):
-            rbuff.write(target + " does not appear to be a directory...")
-    	    sys.exit(1)
+            show_error(target + " does not appear to be a directory...")
     else:
-        do_search = False
         target = args[0]
         if not(os.path.isdir(target) or os.path.isfile(target)):
-            rbuff.write(target + " does not appear to be a directory or file...")
-    	    sys.exit(1)
+            show_error(target + " does not appear to be a directory or file...")
 
     # sanity check on recursion level
     if len(args) == 1:
@@ -353,6 +347,9 @@ def main():
 
         if depth < 1:
             bad_depth()
+
+    if do_db:
+        testid = db_test_record(target, target_dir)
 
     if os.path.isdir(target):
         # walk the directory tree and find ELF files to process
@@ -378,8 +375,7 @@ def main():
                         break
 
         if do_search and not found:
-            rbuff.write(target_file + " was not found in " + target + " ...")
-            sys.exit(1)
+            show_error(target_file + " was not found in " + target + " ...")
 
     else:
 	    # single file, just check it and exit
@@ -391,8 +387,7 @@ def main():
         try:
             deps = deps_check(target)
         except NotELFError:
-            rbuff.write("not an ELF file...")
-            sys.exit(1)
+            show_error("not an ELF file...")
 
         if depth == 1:
             print_deps(target, deps)
@@ -402,9 +397,9 @@ def main():
             for dep in deps:
                 dep_loop(parent, None, dep, 1)
 
-    # print results and exit
-    if do_db:        
-        results_to_db(do_search, target, target_dir, project, comments)
+    # close the db test record
+    if do_db:
+        mark_test_done(testid)
 
     sys.exit(0)
 
