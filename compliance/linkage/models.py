@@ -204,3 +204,10 @@ class SearchPathForm(Form):
                 raise forms.ValidationError('Path %s cannot be found.' 
                                             % path.strip())
         return dl
+
+class Meta(models.Model):
+    name = models.CharField(max_length=32, db_index=True)
+    value = models.CharField(max_length=128)
+
+    def __unicode__(self):
+        return "%s = %s" % (self.name, self.value)

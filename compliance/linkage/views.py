@@ -221,6 +221,7 @@ def settings_form(request):
             sys.stdout.write("ITEM: " + lib + "\n")
             sys.stdout.flush()
             load_static.load_symbols(lib)
+        load_static.set_last_update_date()
 
     infomsg = None
     tm = task.TaskManager()
@@ -260,6 +261,7 @@ def settings_form(request):
     return render_to_response('linkage/settings.html', 
                               { 'info_message': infomsg, 
                                 'tab_settings': True,
+                                'last_staticdb_update': load_static.get_last_update_date(),
                                 'reload_running': tm.is_running(),
                                 'search_path_form': search_path_form })
 

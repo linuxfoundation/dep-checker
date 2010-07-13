@@ -12,10 +12,12 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import re
+import datetime
 
 from django.db import transaction
+from django.core import exceptions
 
-from compliance.linkage.models import StaticSymbol, StaticLibSearchPath
+from compliance.linkage.models import StaticSymbol, StaticLibSearchPath, Meta
 
 def get_library_list():
     lib_list = []
@@ -38,6 +40,22 @@ def get_symbols(lib_fn):
 
     return sym_list
 
+def set_last_update_date():
+    try:
+        last_update = Meta.objects.get(name="last_staticdb_update")
+        last_update.value = str(datetime.date.today())
+    except exceptions.ObjectDoesNotExist:
+        last_update = Meta(name="last_staticdb_update", 
+                           value=str(datetime.date.today()))
+
+    last_update.save()
+
+def get_last_update_date():
+    try:
+        return Meta.objects.get(name="last_staticdb_update").value
+    except exceptions.ObjectDoesNotExist:
+        return None
+
 @transaction.commit_on_success
 def load_symbols(lib_fn):
     lib_name = os.path.basename(lib_fn)
@@ -54,6 +72,7 @@ def main():
         sys.stdout.write(" " * 79)
         sys.stdout.write("\r")
         sys.stdout.flush()
+    set_last_update_date()
 
 if __name__ == "__main__":
     main()

@@ -16,9 +16,17 @@ status should be displayed and updated.
 </div>
 
 <div id="reload_form">
+
+{% if last_staticdb_update %}
+<p>The static database was last updated on {{ last_staticdb_update }}.</p>
+{% else %}
+<p>The static database has never been loaded.</p>
+{% endif %}
+
 <form action="" method="post">
   <input type="submit" name="reload_static" value="Reload Static Data" />
 </form>
+
 </div>
 
 <p>
