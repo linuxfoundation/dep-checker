@@ -441,6 +441,7 @@ def process_results(rbuff, testid):
     lastfile = ''
     errmsg = ''
     dbdata = ''           
+    t = get_object_or_404(Test, pk=testid)
     for dbdata in rbuff:
         # check for no result - these are known exit messages from the cli
         if not re.search("(does not|was not found|not an ELF)", dbdata):
@@ -475,7 +476,11 @@ def process_results(rbuff, testid):
             # child records have the lib path and the parent dep
             if depth > 1:
                 offset = 3
+            checked_static = not t.disable_static
             for lib in deps[offset:len(deps)]:
+                if re.search(r'WARNING: Could not check', lib):
+                    checked_static = False
+                    continue
                 static = False
                 if re.search(is_static, lib):
                     lib = lib.split()[0]
@@ -491,8 +496,13 @@ def process_results(rbuff, testid):
                 libdata.parent_id = parentlibid
                 libdata.save()
 
+            # save static status
+            filedata.checked_static = checked_static
+            filedata.save()
+
             # mark the test as done
-            Test.objects.filter(id = testid).update(test_done = True)
+            t.test_done = True
+            t.save()
                         
         else:
             # do feedback in the gui from here
@@ -617,6 +627,7 @@ def render_detail(test_id):
     # and indent the recursion level, flag polices here, template just blobs out the table
 
     TBD = 'TBD'
+    static_warning = '<a href="#staticwarn">WARNING</a>'
     spacer = "&nbsp;&nbsp;"
     masterlist = []
 
@@ -627,17 +638,21 @@ def render_detail(test_id):
             flicense = file.license
         liblist = ''
         liclist = ''
-        staticlist = ''
         newline = ''
+        if not t.disable_static and not file.checked_static:
+            staticlist = static_warning
+        else:
+            staticlist = ''
         # old way we only hit the database once, but things got messy tracking
         # this doesn't seem to bog things down too much
         for lib in libset.filter(file = file.id):
             # no indent for level 1
             level = lib.level - 1
             liblist += newline + spacer * level + lib.library
-            staticlist += newline
-            if lib.static:
-                staticlist += 'x'
+            if t.disable_static or file.checked_static:
+                staticlist += newline
+                if lib.static:
+                    staticlist += 'x'
             llicense = TBD
             if lib.license:
                 # don't worry about policy if we don't have both licenses

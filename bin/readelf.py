@@ -28,6 +28,15 @@ from compliance.linkage.views import create_test_record, delete_test_record, pro
 class NotELFError(StandardError):
     pass
 
+class StaticSymbolError(StandardError):
+    pass
+
+class NoDebugInfoError(StaticSymbolError):
+    pass
+
+class NoStaticDataError(StaticSymbolError):
+    pass
+
 # Globals.
 
 usage_line = "usage: %prog [options] <file/dir tree to examine> [recursion depth]"
@@ -113,18 +122,26 @@ def static_deps_check(target):
     # and debug information.  Any symbols that aren't covered by debug
     # information are considered to be source from static libraries.
 
+    # Check that we have static symbol data.
+    static_data_count = StaticSymbol.objects.all().count()
+    if static_data_count < 1:
+        raise NoStaticDataError, "no static symbol data"
+
     # Read the functions from the symbol list.
     symlist = [ x.split() for x in os.popen("readelf -s " + target) ]
     symlist = [ x for x in symlist if len(x) == 8 ]
     sym_funcs = set([ x[7] for x in symlist if x[3] == "FUNC" ])
 
     # Read the functions from the debug information.
+    found_debug_info = False
     debuginfo = os.popen("readelf -wi " + target)
     debug_funcs = set()
     debugstate = FIND_NEXT
     for line in debuginfo:
         if len(line) < 2:
             continue
+
+        found_debug_info = True
 
         if debugstate == FIND_NAME:
             if line[1] == "<":
@@ -142,6 +159,10 @@ def static_deps_check(target):
             if match and match.group(1) == "DW_TAG_subprogram":
                 found_name = None
                 debugstate = FIND_NAME
+
+    # If no debug information was reported, report the error.
+    if not found_debug_info:
+        raise NoDebugInfoError, "no debugging information was found"
 
     # Get the functions in the symbol list that have no debug info.
     staticsym_funcs = sym_funcs - debug_funcs
@@ -191,7 +212,10 @@ def deps_check(target):
                     deps.append(dep)
 
         if do_static:
-            deps.extend(static_deps_check(target))
+            try:
+                deps.extend(static_deps_check(target))
+            except StaticSymbolError:
+                deps.append("WARNING: Could not check for static dependencies")
 
     else:
         raise NotELFError, "not an ELF file"

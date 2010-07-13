@@ -75,6 +75,7 @@ class File(models.Model):
     license = models.CharField(max_length=200, blank=True)
     level = models.IntegerField()
     parent_id = models.IntegerField()
+    checked_static = models.BooleanField(default=False)
     def __unicode__(self):
         return self.file
 
