@@ -52,7 +52,8 @@ function setdefaults()
   document.getElementById("job_status").innerHTML = "Getting job status...<br /><br />";
   setTimeout("reload_status();", 5000);
 {% else %}
-  reload_status();
+  document.getElementById("reload_form").style.visibility = 'visible';
+  document.getElementById("job_status").innerHTML = "";
 {% endif %}
 }
 
@@ -62,8 +63,7 @@ function reload_status()
   xmlhttp.open("GET", "/linkage/taskstatus/", false);
   xmlhttp.send();
   if (xmlhttp.responseText == "None") {
-    document.getElementById("reload_form").style.visibility = 'visible';
-    document.getElementById("job_status").innerHTML = "";
+    location.reload();
   } else {
     document.getElementById("reload_form").style.visibility = 'hidden';
     document.getElementById("job_status").innerHTML = xmlhttp.responseText;
