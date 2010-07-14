@@ -55,15 +55,12 @@ def results(request):
 def licenses(request):
     if request.method == 'POST': # If the form has been submitted...
         mode = urllib.unquote(request.POST.get('submit'))
-        print mode
 
         if re.search("^Add License", mode):   
             licenseform = LicenseForm(request.POST) # A form bound to the POST data
             # request to add data
             if licenseform.is_valid(): # All validation rules pass
                 licenseform.save()
-            else:
-                print licenseform.errors
 
         if re.search("^Add", mode) and re.search("Aliases", mode):
             aliasesform = AliasesForm(request.POST) # A form bound to the POST data
@@ -75,7 +72,6 @@ def licenses(request):
                     if ainput:
                         aliasdata = Aliases(license = license, alias = ainput)
                         aliasdata.save()
-                        print ainput
 
         if re.search("^Delete Selected Licenses", mode): 
             # delete request
