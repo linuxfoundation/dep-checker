@@ -290,8 +290,12 @@ def test(request):
                 sys.stdout.flush()   
                 time.sleep(30)
                 return
-            
-            sys.stdout.write("MSGADD: " + data)
+
+            try:
+                (rlevel, item) = data.strip().split(",")[:2]
+                sys.stdout.write("MSGADD: %s (%s)\n" % (item, rlevel))
+            except:
+                sys.stdout.write("MSGADD: " + data)
             sys.stdout.flush()
 
         if not errmsg:
