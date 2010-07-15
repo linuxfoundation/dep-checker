@@ -16,8 +16,8 @@ You can add additional aliases to the list for a license simply by entering more
 and using the "Add Aliases" button again. Alias names must be unique.</p>
 <div class="container" id="license_form">
 <form name="licenseform" method="post" action="" enctype="multipart/form-data">   
-  <table border="1" width=450 style='table-layout:fixed'>
-    <col width=30>
+  <table border="1" width="440" cellspacing="1" style='table-layout:fixed'>
+    <col width=25>
     <col width=120>
     <col width=120>
     <col width=80>
@@ -41,21 +41,23 @@ License" /></td>
       <td><input type="checkbox" name="selectall" 
                  onclick="toggleall(this.form,'licensecheck','selectall')" />
       </td>
-      <td colspan="2">
+      <td colspan="4">
         <input type="submit" name="submit" value="Delete Selected Licenses" 
                onclick="buildlist(this.form,'licensecheck','licenselist')" />
       </td>
-      <td></td>
-      <td></td>
     </tr>
-
+    <tr align="center">
+      <td></td>
+      <th colspan="2">Long Name</th>
+      <th>Abbreviation</th>
+      <th>Version</th>
+    </tr>
     {% for lic in latest_license_list %}
     <tr>
       <td align="center"><input type="checkbox" name="licensecheck" value="{{ lic.id }}" /></td>
-      <td>{{ lic.longname }}</td>
+      <td colspan="2">{{ lic.longname }}</td>
       <td>{{ lic.license }}</td>
       <td>{{ lic.version }}</td>
-      <td></td>
     </tr>
     {% endfor %}
   </table>
@@ -69,8 +71,8 @@ License" /></td>
 <div class="container" id="aliases_form">
 <form name="aliasesform" method="post" action="" enctype="multipart/form-data">
   <!-- license aliases -->
-  <table border="1" width=450 style='table-layout:fixed' cellpadding="0">
-    <col width=30>
+  <table border="1" width="440" cellspacing="1" style='table-layout:fixed'>
+    <col width=25>
     <col width=70>
     <col width=140>
     <col width=50>
@@ -85,6 +87,7 @@ License" /></td>
       <td>{{ aliasesform.license }}</td>
       <td>
           {% autoescape off %}
+          {% if errmsg %}{{errmsg}}<br>{% endif %}
           {% for input in input_list %}
             {{ input }}
           {% endfor %}
@@ -98,11 +101,10 @@ Aliases" /></td>
       <td><input type="checkbox" name="selectall" 
                  onclick="toggleall(this.form,'aliascheck','selectall')" />
       </td>
-      <td colspan="2">
+      <td colspan="3">
         <input type="submit" name="submit" value="Delete Selected Aliases" 
                onclick="buildlist(this.form,'aliascheck','aliaslist')" />
       </td>
-      <td></td>
     </tr>
 
     {% for alias in latest_aliases_list %}

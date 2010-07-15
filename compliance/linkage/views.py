@@ -53,6 +53,7 @@ def results(request):
 
 # licenses entry/maintenance page
 def licenses(request):
+    errmsg = ''
     if request.method == 'POST': # If the form has been submitted...
         mode = urllib.unquote(request.POST.get('submit'))
 
@@ -67,11 +68,18 @@ def licenses(request):
             # request to add data - we may have multiple aliases to add
             if aliasesform.is_valid(): # All validation rules pass
                 license = aliasesform.cleaned_data['license']
+                errlist = []
                 for i in range(1,10):
                     ainput = request.POST.get('alinput' + str(i), '')
                     if ainput:
                         aliasdata = Aliases(license = license, alias = ainput)
-                        aliasdata.save()
+                        try:
+                            aliasdata.save()
+                        except:
+                            errlist.append(str(ainput))
+
+                if errlist:
+                    errmsg = "<b>Warning:</b> failed to add duplicate aliases " + str(errlist)
 
         if re.search("^Delete Selected Licenses", mode): 
             # delete request
@@ -112,6 +120,7 @@ def licenses(request):
         al_input.append('<input type="text" size="6" name="alinput' + str(i) + '">')
 
     return render_to_response('linkage/licenses.html', {
+                              'errmsg': errmsg,
                               'latest_license_list': latest_license_list,
                               'latest_aliases_list': aliases_list, 
                               'licenseform': licenseform,
