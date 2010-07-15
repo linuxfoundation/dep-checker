@@ -57,7 +57,7 @@ def licenses(request):
     if request.method == 'POST': # If the form has been submitted...
         mode = urllib.unquote(request.POST.get('submit'))
 
-        if re.search("^Add License", mode):   
+        if re.search("^Add", mode) and re.search("License", mode):
             licenseform = LicenseForm(request.POST) # A form bound to the POST data
             # request to add data
             if licenseform.is_valid(): # All validation rules pass
