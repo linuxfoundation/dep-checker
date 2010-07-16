@@ -3,7 +3,11 @@
     margin: 5px;
     padding: 5px;
 }
-			
+
+.container select {
+    width: 95%;
+}
+
 .cfooter {
     clear: both;
     margin: 20px;
