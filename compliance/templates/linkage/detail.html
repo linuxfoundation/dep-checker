@@ -19,6 +19,7 @@
       <td><b>Target: </b>{{ test.target }}</td>
       <td><b>User: </b>{{ test.user }}</td>
       <td><b>Date: </b>{{ test.test_date|date:"M d, Y H:i:s" }}</td>
+      <td><b>Static Checks: </b>{{ test.disable_static|yesno:"no,yes" }}</td>
       <td align = "center" id = "noprint">
         <input type="button" name="doprint" value="Print Results" onClick="javascript:window.print()">
       </td>
@@ -47,10 +48,14 @@
     {% endfor %}
   </table>
 
+{% if not test.disable_static %}
   <div id="staticwarn">
-  <p>If a WARNING appears in the static column, this means that static
-     checking could not be performed on this target.</p>
+  <p>"Not checked" in the Static Linkage column means that the necessary data
+     for detecting statically linked binaries was not present.  Static linkage
+     detection requires that the binary being tested was built with debugging
+     information.</p>
   </div>
+{% endif %}
 
   </div>
 {% endif %}
