@@ -611,7 +611,7 @@ def render_detail(test_id):
     # and indent the recursion level, flag polices here, template just blobs out the table
 
     TBD = 'TBD'
-    static_warning = '<a href="#staticwarn">Not checked</a>'
+    static_warning = '<a href="#staticwarn">Not available</a>'
     spacer = "&nbsp;&nbsp;"
     masterlist = []
 
