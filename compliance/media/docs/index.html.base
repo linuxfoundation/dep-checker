@@ -501,6 +501,10 @@ tables, although the id is not shown in the gui, only the date/time.</li>
     <li>id - test id, used for linking to the file and lib tables (primary key)</li>
     <li>do_search - boolean value used to determine whether to search a directory tree 
                     for a particular filename</li>
+    <li>disable_static - boolean value used to determine whether to test for static
+                         dependencies</li>
+    <li>test_done - boolean value used to suppressed test from the results page before it is
+                    completed</li>
     <li>recursion - recursion level for dependency checking, default is 1</li>
     <li>target - target file or directory</li>
     <li>target_dir - target directory when searching for a file by name</li>
@@ -521,6 +525,7 @@ tables, although the id is not shown in the gui, only the date/time.</li>
                 levels when doing recursive testing (these files are not exposed in the GUI).</li>
     <li>parent_id - When doing recursion, each <i>child</i> file has a parent. This field
                     captures that relationship.</li>
+    <li>checked_static - flag to indicate whether static checking was done on this file</li>
   </ul>
 <li><b>linkage_lib</b> - library dependencies of the files from the <i>files</i> table.</li>           
   <ul>
@@ -528,6 +533,7 @@ tables, although the id is not shown in the gui, only the date/time.</li>
     <li>test_id - reference to <i>id</i> from the <i>test</i> table</li>
     <li>file_id - reference to <i>id</i> from the <i>file</i> table</li>
     <li>library - library SONAME</li>
+    <li>static - flag to indicate whether the library is static or dynamic</li>
     <li>license - library license</li>
     <li>level - recursion level</li>
     <li>parent_id - When doing recursion, each <i>child</i> library has a parent. This field
@@ -538,7 +544,8 @@ is used to populate the target/library licenses and license policy drop-downs, w
 fills in the license data for a test and flags policy issues.</li>
   <ul>
     <li>id - record id, not exposed in the gui (primary key)</li>
-    <li>license - license string (e.g. GPL)</li>
+    <li>longname - long version of license string (e.g. GNU Public License)</li>
+    <li>license - abbreviated license string (e.g. GPL)</li>
     <li>version - license version number (e.g. 3.0)</li>
   </ul>
 <li><b>linkage_aliases</b> - This table is not linked to any of the test data tables, but
@@ -575,6 +582,7 @@ Licenses</b> tab.</li>
     <li>dlicense - library license selected from the concatenation of license/version from the <i>license</i> table</li>
     <li>relationship - relationship string, either 'Static', 'Dynamic', or 'Both'</li>
     <li>rank - problem ranking - currently not used</li>
+    <li>status - character flag for Approved (A) or Disapproved (D)</li>
     <li>edit_date - date/time the policy was entered</li>
   </ul>
 <li><b>linkage_staticsymbol</b></li>
