@@ -9,7 +9,11 @@ import re
 # setup some defaults/choices
 rchoices = tuple(enumerate(range(0, 100)))
 RECURSION_CHOICES = rchoices[1:]
-DEFAULT_USER = os.environ['USER']
+# fails under apache/wsgi
+try:
+    DEFAULT_USER = os.environ['USER']
+except:
+    DEFAULT_USER = 'nobody'
 REL_CHOICES = (('Static','Static'), ('Dynamic','Dynamic'), ('Both', 'Both'))
 RANK_CHOICES = (('Low','Low'), ('Normal','Normal'), ('Critical', 'Critical'))
 STAT_CHOICES = (('A', 'Approve'), ('D','Disapprove'))
