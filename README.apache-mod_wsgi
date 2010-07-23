@@ -1,0 +1,38 @@
+Using dep-checker with apache/mod_wsgi
+7/23/2010 Stew Benedict <stewb@linuxfoundation.org>
+
+Instead of the built in django server, you can use apache and mod_wsgi fairly easily.
+
+1) Put the dep-checker tree under DocumentRoot (or anywhere accessible to apache, in the 
+   example we use /var/www/html)
+
+2) Edit settings.py and add the working directory to project_root_paths:
+
+    project_root_paths = [ ".", "..", "/var/www/html/dep-checker" ]
+
+3) Edit http.conf or possibly a seperate conf for mod_wsgi (/etc/httpd/modules.d/B23_mod_wsgi.conf
+   on this system):
+
+    WSGIScriptAlias / /var/www/html/dep-checker/compliance/apache/django.wsgi
+
+   The above line is required. The referenced file is provided by dep-checker. There are 2
+   sys.path.append entries you may need to modify for your setup.
+
+   If you find performance to be slow, you may want to run wsgi in daemon mode:
+
+    WSGIDaemonProcess example.com threads=25
+    WSGIProcessGroup example.com
+
+   More info on mod_wsgi configuration can be found here:
+
+    http://code.google.com/p/modwsgi/wiki/QuickConfigurationGuide
+
+4) The sqlite database compliance/compliance must be writable by the user account running apache
+   (apache on this system). The compliance directory must also be writable by this user for both
+   database journal and the task.log file used by the task manager.
+
+Documentation for setting up django with mod_wsgi mentions serving the static media files by 
+apache or another server, although in my experiments things seemed to work leaving things as they
+are currently setup.
+
+
