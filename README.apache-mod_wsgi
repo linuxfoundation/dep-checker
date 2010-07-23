@@ -18,6 +18,12 @@ Instead of the built in django server, you can use apache and mod_wsgi fairly ea
    The above line is required. The referenced file is provided by dep-checker. There are 2
    sys.path.append entries you may need to modify for your setup.
 
+   Some older versions of mod_wsgi will not work for applications using stdout (which dep-checker
+   does to communicate with the task-manager). If your version has this issue, you will want to
+   add the following directive:
+
+    WSGIRestrictStdout Off
+
    If you find performance to be slow, you may want to run wsgi in daemon mode:
 
     WSGIDaemonProcess example.com threads=25
