@@ -44,6 +44,7 @@ rm -rf ${RPM_BUILD_ROOT}
 install -d ${RPM_BUILD_ROOT}%{basedir}
 cp -ar bin ${RPM_BUILD_ROOT}%{basedir}
 cp -ar compliance ${RPM_BUILD_ROOT}%{basedir}
+find ${RPM_BUILD_ROOT}%{basedir} -name '*.pyc' | xargs rm -f
 rm -f ${RPM_BUILD_ROOT}%{basedir}/compliance/media/docs/*
 install -m 644 compliance/media/docs/*.html ${RPM_BUILD_ROOT}%{basedir}/compliance/media/docs
 install -d ${RPM_BUILD_ROOT}%{basedir}/share/icons/hicolor/16x16/apps
@@ -52,7 +53,7 @@ install -d ${RPM_BUILD_ROOT}%{basedir}/share/applications
 install -m 644 desktop/%{name}.desktop ${RPM_BUILD_ROOT}%{basedir}/share/applications
 install -d ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install -m 644 doc/License doc/Contributing ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
-install -m 644 AUTHORS Changelog README.txt ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
+install -m 644 AUTHORS Changelog README.txt README.apache-mod_wsgi ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install -d ${RPM_BUILD_ROOT}/var%{basedir}/log/compliance
 
 #==================================================

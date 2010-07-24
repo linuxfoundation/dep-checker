@@ -1,7 +1,7 @@
 PACKAGE=dep-checker
 # version defined in site_settings.py
 VERSION=$(shell grep gui_version ../compliance/linkage/site_settings.py | awk '{print $$3}' | sed 's|"||g')
-RELEASE=2
+RELEASE=3
 
 # Derive date string for daily snapshots
 ISO_DATE=$(shell date +"%Y%m%d")
