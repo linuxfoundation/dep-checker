@@ -11,7 +11,7 @@ Release: %{rel}
 License: LF
 Group: Development/Tools
 Source: %{name}-%{version}.tar.gz
-URL: http://bzr.linux-foundation.org/lsb/compliance/devel/dep-checker
+URL: http://git.linux-foundation.org/dep-checker.git
 BuildRoot: %{_tmppath}/%{name}-root
 AutoReqProv: no
 Requires: python-django
