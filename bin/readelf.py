@@ -54,7 +54,7 @@ command_line_options = [
     optparse.make_option("--project", action="store", type="string", dest="project",
                          default = '', help="project name (when writing to database)"),
     optparse.make_option("--no-static", action="store_false", dest="do_static",
-                         default=True, help="don't look for static deps")
+                         default=True, help="don't look for static dependencies")
 ]
 
 depth = 1

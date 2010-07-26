@@ -225,7 +225,7 @@ Options:
   -s DIR               directory tree to search
   --comments=COMMENTS  test comments (when writing to database)
   --project=PROJECT    project name (when writing to database)
-  --no-static          don't look for static deps
+  --no-static          don't look for static dependencies
   --version            show program's version number and exit
   -h, --help           show this help message and exit
 </pre>
