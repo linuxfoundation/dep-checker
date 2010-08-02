@@ -1,7 +1,15 @@
 %define ver @VERSION@
 %define rel @RELEASE@
+%define django_ver @DJANGO_VERSION@
 
 %define basedir /opt/linuxfoundation
+
+# optionally bundle django
+%define bundle_django 0
+%{?_with_django: %{expand: %%global bundle_django 1}}
+%{?_without_django: %{expand: %%global bundle_django 0}}
+%if !%bundle_django
+%endif
  
 # %{version}, %{rel} are provided by the Makefile
 Summary: Dependency Checker Tool
@@ -11,10 +19,15 @@ Release: %{rel}
 License: LF
 Group: Development/Tools
 Source: %{name}-%{version}.tar.gz
+%if %bundle_django
+Source1: Django-%{django_ver}.tar.gz
+%endif
 URL: http://git.linux-foundation.org/dep-checker.git
 BuildRoot: %{_tmppath}/%{name}-root
 AutoReqProv: no
+%if !%bundle_django
 Requires: python-django
+%endif
 BuildRequires: python w3m
 
 %description
@@ -28,6 +41,8 @@ If a browser window or tab doesn't open, goto:
 
 The command-line tool is: 
 	%{basedir}/readelf.py
+
+Note: This package can be built with django bundled, using '--with django'
 
 #==================================================
 %prep
@@ -55,6 +70,12 @@ install -d ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install -m 644 doc/License doc/Contributing ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install -m 644 AUTHORS Changelog README.txt README.apache-mod_wsgi ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install -d ${RPM_BUILD_ROOT}/var%{basedir}/log/compliance
+%if %bundle_django
+  tar -xf %{SOURCE1}
+  cp -ar Django-%{django_ver}/django ${RPM_BUILD_ROOT}%{basedir}/compliance
+  cd ${RPM_BUILD_ROOT}%{basedir}/bin
+  ln -sf ../compliance/django .
+%endif
 
 #==================================================
 %clean
