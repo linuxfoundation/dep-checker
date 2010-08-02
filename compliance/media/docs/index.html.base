@@ -140,6 +140,16 @@ README.txt).
 make
 </pre>
 
+If you don't have root permissions on the machine to install Django, you can install it in-place 
+with the dep-checker install:
+
+<pre>
+tar -xf Django-x.x.x.tar-gz
+cp -ar Django-x.x.x/django cd dep-checker/compliance
+cd dep-checker/bin
+ln -s ../compliance/django .
+</pre>
+
 Run the server and the gui should show up in a browser window:
 <pre>
 ./bin/dep-checker.py start
