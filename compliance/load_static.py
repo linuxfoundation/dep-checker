@@ -99,7 +99,7 @@ def set_last_update_date():
 def get_last_update_date():
     try:
         return Meta.objects.get(name="last_staticdb_update").value
-    except exceptions.ObjectDoesNotExist:
+    except (Meta.DoesNotExist, exceptions.ObjectDoesNotExist):
         return None
 
 @transaction.commit_on_success
