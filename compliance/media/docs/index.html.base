@@ -145,7 +145,7 @@ with the dep-checker install:
 
 <pre>
 tar -xf Django-x.x.x.tar-gz
-cp -ar Django-x.x.x/django cd dep-checker/compliance
+cp -ar Django-x.x.x/django dep-checker/compliance
 cd dep-checker/bin
 ln -s ../compliance/django .
 </pre>
