@@ -18,8 +18,7 @@
     <tr>
       <th colspan=2 align="right">Target:&nbsp;<br>License:&nbsp;</th>
       <td colspan=2 align="center">{{ targetlicenseform.file }}<br>{{ targetlicenseform.license }}</td>
-      <td><input type="submit" name="submit" value="Add Target
-Binding" /></td>
+      <td align="center"><button type="submit" name="submit" value="Add Target Binding">Add Target<br>Binding</button></td>
     </tr>
     <tr align="center">
       <td><input type="checkbox" name="selectall"
@@ -27,13 +26,12 @@ Binding" /></td>
                 onclick="toggleall(this.form,'flcheck','selectall')" />
       </td>
       <td colspan=2>
-        <input type="submit" name="submit" value="Delete Selected
-Target Bindings" 
-               onclick="buildlist(this.form,'flcheck','targetlicenselist')" />
+        <button type="submit" name="submit" value="Delete Selected Target Bindings" 
+               onclick="buildlist(this.form,'flcheck','targetlicenselist')">Delete Selected<br>Target Bindings
+        </button>
       </td>
       <td colspan=2>
-        <input type="submit" name="submit" value="Update Target
-Test Data" />
+        <button type="submit" name="submit" value="Update Target Test Data">Update Target<br>Test Data</button>
       </td>
     <tr>
       <td></td>
@@ -69,8 +67,7 @@ Test Data" />
     <tr>
       <th colspan=2 align="right">Library:&nbsp;<br>License:&nbsp;</th>
       <td colspan=2 align="center">{{ liblicenseform.library }}<br>{{ liblicenseform.license }}</td>
-      <td><input type="submit" name="submit" value="Add Library
-Binding" /></td>
+      <td align="center"><button type="submit" name="submit" value="Add Library Binding">Add Library<br>Binding</td>
     </tr>
     <tr align="center">
       <td><input type="checkbox" name="selectall"
@@ -78,13 +75,12 @@ Binding" /></td>
                 onclick="toggleall(this.form,'llcheck','selectall')" />
       </td>
       <td colspan=2>
-        <input type="submit" name="submit" value="Delete Selected
-Library Bindings" 
-               onclick="buildlist(this.form,'llcheck','liblicenselist')" />
+        <button type="submit" name="submit" value="Delete Selected Library Bindings" 
+               onclick="buildlist(this.form,'llcheck','liblicenselist')">Delete Selected<br>Library Bindings
+        </button>
       </td>
       <td colspan=2>
-        <input type="submit" name="submit" value="Update Library
-Test Data" />
+        <button type="submit" name="submit" value="Update Library Test Data">Update Library<br>Test Data</button>
       </td>
     </tr>
     <tr>
