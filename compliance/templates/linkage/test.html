@@ -33,8 +33,9 @@
       <br>(Top-level directory to start file search)
     </td>
     <td>{{ testform.target_dir }}</td>
-    <td><input type="button" name="targetdirname" value="Select Dir" 
-               onclick="toggle_visibility('target_select')"/></td>
+    <td><input type="button" name="targetdirname" value="Select Dir"
+                title="Open a File/Directory Selector" 
+                onclick="toggle_visibility('target_select')"/></td>
   </tr>
   <tr>
     <td align="right"><b>{{ testform.recursion.label }}:</b>
@@ -47,8 +48,9 @@
       <br>(File or top-level directory to test)
     </td>
     <td>{{ testform.target }}</td>
-    <td><input type="button" name="targetfilename" value="Select File" 
-               onclick="toggle_visibility('target_select')"/></td>
+    <td><input type="button" name="targetfilename" value="Select File"
+              title="Open a File/Directory Selector"
+              onclick="toggle_visibility('target_select')"/></td>
   </tr>      
   <tr>
     <td align="right"><b>{{ testform.user.label }}:</b></td>

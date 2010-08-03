@@ -13,12 +13,13 @@
     <form name="resultsform" method="post" action="" enctype="multipart/form-data">   
     <table width = "100%" border="1">
       <tr align="left">
-        <td align="center"><input type="checkbox" name="selectall" 
-                   onclick="toggleall(this.form,'testcheck','selectall')" />
+        <td align="center"><input type="checkbox" name="selectall"
+                    title="Select/Deselect All Test Results" 
+                    onclick="toggleall(this.form,'testcheck','selectall')" />
         </td>
         <td></td>
         <td><input type="submit" name="submit" value="Delete Selected Tests"
-                   onclick="buildlist(this.form,'testcheck','testlist')" />
+                    onclick="buildlist(this.form,'testcheck','testlist')" />
         </td>
         <td></td>
       </tr>

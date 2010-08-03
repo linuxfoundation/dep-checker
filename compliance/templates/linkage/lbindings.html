@@ -16,14 +16,15 @@
     <col width=120>
     <col width=90>
     <tr>
-      <th colspan=2 align="right">Target:<br>License:</th>
+      <th colspan=2 align="right">Target:&nbsp;<br>License:&nbsp;</th>
       <td colspan=2 align="center">{{ targetlicenseform.file }}<br>{{ targetlicenseform.license }}</td>
       <td><input type="submit" name="submit" value="Add Target
 Binding" /></td>
     </tr>
     <tr align="center">
-      <td><input type="checkbox" name="selectall" 
-                 onclick="toggleall(this.form,'flcheck','selectall')" />
+      <td><input type="checkbox" name="selectall"
+                title="Select/Deselect All Target Bindings" 
+                onclick="toggleall(this.form,'flcheck','selectall')" />
       </td>
       <td colspan=2>
         <input type="submit" name="submit" value="Delete Selected
@@ -66,14 +67,15 @@ Test Data" />
     <col width=120>
     <col width=90>
     <tr>
-      <th colspan=2 align="right">Library:<br>License:</th>
+      <th colspan=2 align="right">Library:&nbsp;<br>License:&nbsp;</th>
       <td colspan=2 align="center">{{ liblicenseform.library }}<br>{{ liblicenseform.license }}</td>
       <td><input type="submit" name="submit" value="Add Library
 Binding" /></td>
     </tr>
     <tr align="center">
-      <td><input type="checkbox" name="selectall" 
-                 onclick="toggleall(this.form,'llcheck','selectall')" />
+      <td><input type="checkbox" name="selectall"
+                title="Select/Deselect All License Bindings" 
+                onclick="toggleall(this.form,'llcheck','selectall')" />
       </td>
       <td colspan=2>
         <input type="submit" name="submit" value="Delete Selected
