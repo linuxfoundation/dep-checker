@@ -4,7 +4,7 @@
 default: compliance/compliance compliance/media/docs/index.html README.txt
 
 package:
-	cd package && $(MAKE) rpm_package
+	cd package && $(MAKE)
 
 compliance/compliance: compliance/linkage/models.py compliance/linkage/fixtures/initial_data.xml
 	rm -f compliance/compliance
