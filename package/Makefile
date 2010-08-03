@@ -63,6 +63,7 @@ endif
 
 clean:
 	@rm -f *.rpm *.deb $(SOURCE1) $(SOURCE2) $(PACKAGE).spec
+	@rm -rf $(PACKAGE)-$(VERSION) $(PACKAGE)-$(VERSION).orig
 
 tarball: $(SOURCE1) 
 ifdef WITH_DJANGO 
@@ -74,7 +75,12 @@ endif
 	sed -e "s#@VERSION@#`echo $(VERSION)`#" -e "s#@RELEASE@#`echo $(RELEASE)`#" -e "s#@DJANGO_VERSION@#`echo $(DJANGO_VERSION)`#" < $< > $@
 
 deb_package: rpm_package
-	@fakeroot alien -cdk $(RPM_BINARY_NAME)
+	alien -gcdk $(RPM_BINARY_NAME)
+	perl -pe 's/^(Depends:.*)/\1, python-django/' < $(PACKAGE)-$(VERSION)/debian/control > $(PACKAGE)-$(VERSION)/debian/control.new
+	rm -f $(PACKAGE)-$(VERSION)/debian/control
+	cd $(PACKAGE)-$(VERSION)/debian && mv control.new control
+	cd $(PACKAGE)-$(VERSION) && fakeroot debian/rules binary
+	rm -rf $(PACKAGE)-$(VERSION) $(PACKAGE)-$(VERSION).orig
 
 rpm_package: $(RPM_BINARY_NAME) $(RPM_SOURCE_NAME) 
 
