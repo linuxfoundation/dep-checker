@@ -73,8 +73,6 @@ install -d ${RPM_BUILD_ROOT}/var%{basedir}/log/compliance
 %if %bundle_django
   tar -xf %{SOURCE1}
   cp -ar Django-%{django_ver}/django ${RPM_BUILD_ROOT}%{basedir}/compliance
-  cd ${RPM_BUILD_ROOT}%{basedir}/bin
-  ln -sf ../compliance/django .
 %endif
 
 #==================================================
@@ -106,6 +104,12 @@ fi
 if [ -x /usr/bin/xdg-desktop-menu ];then
   xdg-desktop-menu install /opt/linuxfoundation/share/applications/dep-checker.desktop
 fi
+%if %bundle_django
+if [ ! -e %{basedir}/bin/django ];then
+  cd %{basedir}/bin
+  ln -sf ../compliance/django .
+fi
+%endif
 
 %preun
 if [ -x /usr/bin/xdg-desktop-menu ];then
@@ -136,6 +140,12 @@ if [ "$1" = "0" ];then
 		echo "Warning: failed to delete group '$TESTGROUP'."
 	fi
     fi
+%if %bundle_django
+    if [ -d %{basedir}/janitor/django ];then
+        cd %{basedir}/bin
+        ln -sf ../janitor/django .
+    fi
+%endif
 fi
 
 #==================================================
