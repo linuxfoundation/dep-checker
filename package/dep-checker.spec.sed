@@ -117,8 +117,8 @@ if [ -x /usr/bin/xdg-desktop-menu ];then
 fi
 
 %postun
-# don't mess with things on an upgrade
-if [ "$1" = "0" ];then
+# don't mess with things on an upgrade, or if janitor is installed
+if [ "$1" = "0" -a ! -f %{basedir}/bin/code-janitor.py ];then
     TESTER=compliance
     id $TESTER > /dev/null 2>/dev/null
     if [ $? -eq 0 ]; then
