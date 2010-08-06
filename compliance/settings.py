@@ -13,6 +13,22 @@ def get_project_root():
     # Shouldn't get here unless we can't find the path.
     raise RuntimeError, "could not find the project path"
 
+# Return the proper directory to use for userdir mode.
+
+def get_userdir():
+    return os.path.join(os.environ["HOME"], ".dep-checker")
+
+# Should we use userdir mode?
+
+def use_userdir():
+    if os.getuid() == 0 or os.environ["LOGNAME"] == "compliance":
+        return False
+    project_root = get_project_root()
+    if os.access(os.path.join(project_root, "compliance"), os.W_OK):
+        return False
+
+    return True
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -23,8 +39,6 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'sqlite3'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-DATABASE_NAME = os.path.join(get_project_root(), 'compliance', 'compliance')
-                               # Or path to database file if using sqlite3.
 DATABASE_USER = ''             # Not used with sqlite3.
 DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
@@ -57,8 +71,15 @@ PROJECT_ROOT = get_project_root()
 # Command-line client.
 CLI_COMMAND = os.path.join(PROJECT_ROOT, 'bin/readelf.py')
 
-# State directory; use for log and pid files.
-STATE_ROOT = os.path.join(PROJECT_ROOT, 'compliance')
+# Writable file setup; use different settings for userdir or normal mode.
+if use_userdir():
+    USERDIR_ROOT = get_userdir()
+    DATABASE_NAME = os.path.join(USERDIR_ROOT, "compliance")
+    STATE_ROOT = USERDIR_ROOT
+else:
+    USERDIR_ROOT = ''
+    DATABASE_NAME = os.path.join(get_project_root(), 'compliance', 'compliance')
+    STATE_ROOT = os.path.join(PROJECT_ROOT, 'compliance')
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"

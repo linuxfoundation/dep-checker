@@ -10,6 +10,7 @@ import pwd
 import time
 import signal
 import optparse
+import shutil
 
 from django.core.management import execute_manager
 
@@ -33,6 +34,9 @@ def get_base_path():
 def set_import_path():
     sys.path.append(get_base_path())
 
+set_import_path()
+import settings
+
 def check_current_user():
     if os.getuid() == 0:
         try:
@@ -43,9 +47,18 @@ def check_current_user():
 
         os.setuid(compliance_user.pw_uid)
 
+# Setting up userdir mode.
+
+def setup_userdir():
+    if not os.path.exists(settings.USERDIR_ROOT):
+        os.mkdir(settings.USERDIR_ROOT)
+        shutil.copyfile(os.path.join(settings.PROJECT_ROOT, 
+                                     "compliance", "compliance"),
+                        os.path.join(settings.USERDIR_ROOT, "compliance"))
+
 def start(run_browser, interface=None):
-    set_import_path()
-    import settings
+    if settings.USERDIR_ROOT:
+        setup_userdir()
 
     childpid = os.fork()
     if childpid == 0:
@@ -92,9 +105,6 @@ def start(run_browser, interface=None):
             sys.exit(0)
 
 def stop():
-    set_import_path()
-    import settings
-
     pid_path = os.path.join(settings.STATE_ROOT, "server.pid")
     if os.path.exists(pid_path):
         server_pid = int(open(pid_path).read())
