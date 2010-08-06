@@ -44,14 +44,14 @@ def check_current_user():
         os.setuid(compliance_user.pw_uid)
 
 def start(run_browser, interface=None):
+    set_import_path()
+    import settings
+
     childpid = os.fork()
     if childpid == 0:
         os.setsid()
 
-        set_import_path()
-        import settings
-
-        log_fn = os.path.join(get_base_path(), "server.log")
+        log_fn = os.path.join(settings.STATE_ROOT, "server.log")
         try:
             log_fd = os.open(log_fn, os.O_WRONLY | os.O_APPEND | os.O_CREAT)
         except OSError:
@@ -70,7 +70,7 @@ def start(run_browser, interface=None):
 
         execute_manager(settings, manager_args)
     else:
-        pid_path = os.path.join(get_base_path(), "server.pid")
+        pid_path = os.path.join(settings.STATE_ROOT, "server.pid")
         pid_file = open(pid_path, "w")
         pid_file.write(str(childpid))
         pid_file.close()
@@ -92,7 +92,10 @@ def start(run_browser, interface=None):
             sys.exit(0)
 
 def stop():
-    pid_path = os.path.join(get_base_path(), "server.pid")
+    set_import_path()
+    import settings
+
+    pid_path = os.path.join(settings.STATE_ROOT, "server.pid")
     if os.path.exists(pid_path):
         server_pid = int(open(pid_path).read())
         sys.stdout.write("Killing process %d...\n" % server_pid)

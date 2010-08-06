@@ -57,6 +57,9 @@ PROJECT_ROOT = get_project_root()
 # Command-line client.
 CLI_COMMAND = os.path.join(PROJECT_ROOT, 'bin/readelf.py')
 
+# State directory; use for log and pid files.
+STATE_ROOT = os.path.join(PROJECT_ROOT, 'compliance')
+
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = '' 

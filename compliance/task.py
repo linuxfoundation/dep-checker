@@ -51,8 +51,7 @@ class TaskError(StandardError):
 
 class TaskManager:
     def __init__(self):
-        self._task_log_fn = os.path.join(settings.PROJECT_ROOT, 
-                                         "compliance/task.log")
+        self._task_log_fn = os.path.join(settings.STATE_ROOT, "task.log")
         self._task_log_file = None
 
     def _get_status_file(self):
