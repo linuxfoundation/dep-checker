@@ -56,7 +56,7 @@ def setup_userdir():
                                      "compliance", "compliance"),
                         os.path.join(settings.USERDIR_ROOT, "compliance"))
 
-def start(run_browser, interface=None):
+def start_server(run_browser, interface=None):
     if settings.USERDIR_ROOT:
         setup_userdir()
 
@@ -104,7 +104,7 @@ def start(run_browser, interface=None):
         else:
             sys.exit(0)
 
-def stop():
+def stop_server():
     pid_path = os.path.join(settings.STATE_ROOT, "server.pid")
     if os.path.exists(pid_path):
         server_pid = int(open(pid_path).read())
@@ -133,9 +133,9 @@ def main():
     if args[0] == "start":
         if not options.force_root:
             check_current_user()
-        start(not options.server_only, options.interface)
+        start_server(not options.server_only, options.interface)
     else:
-        stop()
+        stop_server()
 
 if __name__ == "__main__":
     main()
