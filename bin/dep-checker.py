@@ -57,6 +57,21 @@ def setup_userdir():
                         os.path.join(settings.USERDIR_ROOT, "compliance"))
 
 def start_server(run_browser, interface=None):
+    pid_path = os.path.join(settings.STATE_ROOT, "server.pid")
+    if os.path.exists(pid_path):
+        server_pid = int(open(pid_path).read())
+        pid_found = False
+        try:
+            os.kill(server_pid, 0)
+            pid_found = True
+        except OSError:
+            pid_found = False
+        if pid_found:
+            sys.stderr.write("The server is already running.\n")
+            sys.exit(1)
+        else:
+            os.unlink(pid_path)
+
     if settings.USERDIR_ROOT:
         setup_userdir()
 
@@ -83,7 +98,8 @@ def start_server(run_browser, interface=None):
 
         execute_manager(settings, manager_args)
     else:
-        pid_path = os.path.join(settings.STATE_ROOT, "server.pid")
+        time.sleep(1)
+
         pid_file = open(pid_path, "w")
         pid_file.write(str(childpid))
         pid_file.close()
