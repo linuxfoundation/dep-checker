@@ -109,8 +109,14 @@ def stop():
     if os.path.exists(pid_path):
         server_pid = int(open(pid_path).read())
         sys.stdout.write("Killing process %d...\n" % server_pid)
-        os.kill(server_pid, signal.SIGTERM)
-        os.unlink(pid_path)
+        try:
+            try:
+                os.kill(server_pid, signal.SIGTERM)
+            finally:
+                os.unlink(pid_path)
+        except OSError, e:
+            sys.stderr.write("Could not kill process: %s\n" % str(e))
+            sys.exit(1)
     else:
         sys.stderr.write("No server process found to stop.\n")
         sys.exit(1)
