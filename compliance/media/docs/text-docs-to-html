@@ -26,7 +26,7 @@ def html_ize(root, files):
 doc += html_ize(doc_root, files)
 
 doc_root = '../../../doc/'
-files = ('Contributing', 'License')
+files = ('Contributing', 'LICENSE')
 
 doc += html_ize(doc_root, files)
 
