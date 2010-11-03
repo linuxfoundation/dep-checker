@@ -67,7 +67,7 @@ install -m 644 desktop/lf_small.png ${RPM_BUILD_ROOT}%{basedir}/share/icons/hico
 install -d ${RPM_BUILD_ROOT}%{basedir}/share/applications
 install -m 644 desktop/%{name}.desktop ${RPM_BUILD_ROOT}%{basedir}/share/applications
 install -d ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
-install -m 644 doc/License doc/Contributing ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
+install -m 644 doc/LICENSE doc/Contributing ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install -m 644 AUTHORS Changelog README.txt README.apache-mod_wsgi ${RPM_BUILD_ROOT}%{basedir}/doc/%{name}
 install -d ${RPM_BUILD_ROOT}/var%{basedir}/log/compliance
 %if %bundle_django
