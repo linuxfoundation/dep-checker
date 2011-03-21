@@ -1,7 +1,7 @@
 PACKAGE=dep-checker
 # version defined in site_settings.py
 VERSION=$(shell grep gui_version ../compliance/linkage/site_settings.py | awk '{print $$3}' | sed 's|"||g')
-RELEASE=1
+RELEASE=2
 
 # we can optionally bundle django
 DJANGO_VERSION=1.2.1
