@@ -92,7 +92,7 @@ def start_server(run_browser, interface=None):
 
         os.close(0)
 
-        manager_args = ["dep-checker", "runserver"]
+        manager_args = ["dep-checker", "runserver", "--noreload"]
         if interface:
             manager_args.append(interface)
 
