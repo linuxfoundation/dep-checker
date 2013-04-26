@@ -26,7 +26,7 @@ URL: http://git.linux-foundation.org/dep-checker.git
 BuildRoot: %{_tmppath}/%{name}-root
 AutoReqProv: no
 %if !%bundle_django
-Requires: python-django
+Requires: python-django >= 1.2
 %endif
 BuildRequires: python w3m
 

@@ -5,8 +5,9 @@ Layout/Concept
 The cli command, readelf.py, should be standard python. It does run
 some system commands like readelf, file, and ldd.
 
-gui all lives under "compliance", uses django so you need python-django or
-  equivalent.  Recent versions of the cli also rely on django.
+gui all lives under "compliance".
+
+Both the web app and the cli rely on Django 1.2 or later.
 
 By default, typing "make" in the top-level will create the SQLite
   database both apps need.
