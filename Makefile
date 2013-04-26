@@ -11,7 +11,7 @@ compliance/compliance: compliance/linkage/models.py compliance/linkage/fixtures/
 	cd compliance && python manage.py syncdb --noinput
 
 fixture_regen:
-	(cd compliance && python manage.py dumpdata --format xml) | \
+	(cd compliance && python manage.py dumpdata --format xml linkage) | \
 	  xmllint --format - > compliance/linkage/fixtures/initial_data.xml
 
 compliance/media/docs/index.html:
