@@ -40,7 +40,6 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'NAME': 'compliance',
         'ENGINE': 'django.db.backends.sqlite3',
     }
 }
@@ -75,11 +74,12 @@ CLI_COMMAND = os.path.join(PROJECT_ROOT, 'bin/readelf.py')
 # Writable file setup; use different settings for userdir or normal mode.
 if use_userdir():
     USERDIR_ROOT = get_userdir()
-    DATABASE_NAME = os.path.join(USERDIR_ROOT, "compliance")
+    DATABASES['default']['NAME'] = os.path.join(USERDIR_ROOT, "compliance")
     STATE_ROOT = USERDIR_ROOT
 else:
     USERDIR_ROOT = ''
-    DATABASE_NAME = os.path.join(get_project_root(), 'compliance', 'compliance')
+    DATABASES['default']['NAME'] = os.path.join(get_project_root(),
+                                                'compliance', 'compliance')
     STATE_ROOT = os.path.join(PROJECT_ROOT, 'compliance')
 
 # Absolute path to the directory that holds media.
