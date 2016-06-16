@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 # dep-checker - command to start/stop the Dependency Checker web interface
 # Copyright 2010 Linux Foundation
@@ -12,7 +12,7 @@ import signal
 import optparse
 import shutil
 
-from django.core.management import execute_manager
+from django.core.management import execute_from_command_line
 
 command_line_usage = "%prog [options] start | stop"
 command_line_options = [
@@ -29,13 +29,13 @@ command_line_options = [
 
 def get_base_path():
     this_module_path = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(os.path.dirname(this_module_path), "compliance")
+    return os.path.dirname(this_module_path)
 
 def set_import_path():
     sys.path.append(get_base_path())
 
 set_import_path()
-import settings
+from compliance import settings
 
 def check_current_user():
     if os.getuid() == 0:
@@ -96,7 +96,7 @@ def start_server(run_browser, interface=None):
         if interface:
             manager_args.append(interface)
 
-        execute_manager(settings, manager_args)
+        execute_from_command_line(manager_args)
     else:
         time.sleep(1)
 
@@ -143,6 +143,10 @@ def main():
     (options, args) = cmdline_parser.parse_args()
     if len(args) != 1 or args[0] not in ["start", "stop"]:
         cmdline_parser.error("incorrect arguments")
+
+    # Set up environment for Django to find settings.
+
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "compliance.settings")
 
     # Switch users if needed.
 
