@@ -1,6 +1,8 @@
 # Top-level Makefile for dep-checker.
 # Copyright 2010 The Linux Foundation.  See LICENSE file for licensing.
 
+PYTHON ?= $(shell which python)
+
 default: compliance/compliance compliance/media/docs/index.html README.txt
 
 package:
@@ -8,10 +10,10 @@ package:
 
 compliance/compliance: compliance/linkage/models.py compliance/linkage/fixtures/initial_data.xml
 	rm -f compliance/compliance
-	python manage.py syncdb --noinput
+	$(PYTHON) manage.py syncdb --noinput
 
 fixture_regen:
-	python manage.py dumpdata --format xml linkage | \
+	$(PYTHON) manage.py dumpdata --format xml linkage | \
 	  xmllint --format - > compliance/linkage/fixtures/initial_data.xml
 
 compliance/media/docs/index.html:
