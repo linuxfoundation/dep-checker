@@ -1,6 +1,8 @@
 import os
 from setuptools import find_packages, setup
 
+from compliance.linkage import site_settings
+
 with open(os.path.join(os.path.dirname(__file__), '00README')) as readme:
     README = readme.read()
 
@@ -12,7 +14,7 @@ os.system("cd compliance/media/docs && make")
 
 setup(
     name='dep-checker',
-    version='0.2',
+    version=site_settings.gui_version,
     packages=find_packages(),
     scripts=['manage.py', 'bin/dep-checker.py', 'bin/readelf.py'],
     install_requires=['Django>=1.8,<1.9'],
