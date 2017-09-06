@@ -85,7 +85,7 @@ def get_symbols(lib_fn):
 
     return sym_list
 
-@transaction.commit_on_success
+@transaction.atomic
 def set_last_update_date():
     try:
         last_update = Meta.objects.get(name="last_staticdb_update")
@@ -102,14 +102,13 @@ def get_last_update_date():
     except (Meta.DoesNotExist, exceptions.ObjectDoesNotExist):
         return None
 
-@transaction.commit_on_success
+@transaction.atomic
 def load_symbols(lib_fn):
     lib_name = os.path.basename(lib_fn)
     for symbol in get_symbols(lib_fn):
         sym_db = StaticSymbol(symbol=symbol, libraryname=lib_name)
         sym_db.save()
 
-@transaction.commit_manually
 def main():
     sys.stdout.write("Clearing out old data...")
     sys.stdout.flush()

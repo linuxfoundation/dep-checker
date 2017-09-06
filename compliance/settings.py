@@ -51,6 +51,8 @@ def get_doc_root(candidate_paths, default_path):
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+ALLOWED_HOSTS = '*'
+
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )

@@ -15,7 +15,7 @@ setup(
     version='0.2',
     packages=find_packages(),
     scripts=['manage.py', 'bin/dep-checker.py', 'bin/readelf.py'],
-    install_requires=['Django>=1.4,<1.5'],
+    install_requires=['Django>=1.8,<1.9'],
     include_package_data=True,
     license='BSD License',  # example license
     description='A framework for finding license dependencies in binary applications.',
@@ -26,7 +26,7 @@ setup(
     classifiers=[
         'Environment :: Web Environment',
         'Framework :: Django',
-        'Framework :: Django :: 1.4',  # replace "X.Y" as appropriate
+        'Framework :: Django :: 1.8',  # replace "X.Y" as appropriate
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',  # example license
         'Operating System :: OS Independent',

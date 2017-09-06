@@ -4,7 +4,7 @@ VERSION=$(shell grep gui_version ../compliance/linkage/site_settings.py | awk '{
 RELEASE=2
 
 # we can optionally bundle django
-DJANGO_VERSION=1.4.22
+DJANGO_VERSION=1.8.18
 DJANGO_URL=http://www.djangoproject.com/download/$(DJANGO_VERSION)/tarball/
 ifdef WITH_DJANGO
 WITH_ARGS=--with django

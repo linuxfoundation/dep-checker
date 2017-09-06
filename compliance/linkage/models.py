@@ -59,8 +59,8 @@ def file_choices():
     return choices
 
 class Test(models.Model):
-    do_search = models.BooleanField('Identify dependencies for a specific target file in a target directory')
-    disable_static = models.BooleanField('Disable checking for static dependencies')
+    do_search = models.BooleanField('Identify dependencies for a specific target file in a target directory', default=False)
+    disable_static = models.BooleanField('Disable checking for static dependencies', default=False)
     test_done = models.BooleanField('Is the test complete?', default=False)
     recursion = models.IntegerField('Recursion level for dependency checking analysis', 
                                     default = '1', choices = RECURSION_CHOICES)
@@ -130,22 +130,27 @@ class Policy(models.Model):
 
 class TestForm(ModelForm):   
     class Meta:
+        fields = "__all__"
         model = Test
 
 class FileForm(ModelForm):
     class Meta:
+        fields = "__all__"
         model = File
 
 class LibForm(ModelForm):
     class Meta:
+        fields = "__all__"
         model = Lib
 
 class LicenseForm(ModelForm):
     class Meta:
+        fields = "__all__"
         model = License
 
 class PolicyForm(ModelForm):
     class Meta:
+        fields = "__all__"
         model = Policy
 
     tlicense = forms.ChoiceField()
@@ -158,6 +163,7 @@ class PolicyForm(ModelForm):
 
 class LibLicenseForm(ModelForm):
     class Meta:
+        fields = "__all__"
         model = LibLicense
 
     license = forms.ChoiceField()
@@ -170,6 +176,7 @@ class LibLicenseForm(ModelForm):
 
 class FileLicenseForm(ModelForm):
     class Meta:
+        fields = "__all__"
         model = FileLicense
 
     license = forms.ChoiceField()
@@ -182,6 +189,7 @@ class FileLicenseForm(ModelForm):
 
 class AliasesForm(ModelForm):
     class Meta:
+        fields = "__all__"
         model = Aliases
 
     license = forms.ChoiceField()
