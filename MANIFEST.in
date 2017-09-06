@@ -1,0 +1,4 @@
+include doc/LICENSE
+include 00README
+recursive-include compliance/media *
+recursive-include compliance/templates *
