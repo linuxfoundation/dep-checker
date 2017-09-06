@@ -7,7 +7,10 @@ some system commands like readelf, file, and ldd.
 
 gui all lives under "compliance".
 
-Both the web app and the cli rely on Django 1.8 or later.
+Both the web app and the cli rely on Django 1.8.  Older or newer
+versions of Django may work, but changes to the APIs may cause
+problems.  Because of this dependency, Python 2.7 is strongly
+recommended as well.
 
 By default, typing "make" in the top-level will create the SQLite
   database both apps need.
